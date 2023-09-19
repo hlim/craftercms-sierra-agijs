@@ -1,0 +1,50 @@
+import * as React from 'react';
+
+import { Tooltip } from '@mui/material';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import RoomRoundedIcon from '@mui/icons-material/RoomRounded';
+import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
+import { AgiBridge } from './AgiBridge';
+
+export function SetEgoPosition(props) {
+  const siteId = useActiveSiteId();
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+
+    var x = prompt('X coordinate');
+    var y = prompt('Y coordinate');
+
+    if (x && y && x != '' && y != '') {
+      AgiBridge.agiExecute('Set Ego X Coordinate', 'Agi.interpreter.gameObjects[0].x=' + x);
+      AgiBridge.agiExecute('Set Ego Y Coordinate', 'Agi.interpreter.gameObjects[0].y=' + y);
+    }
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <Tooltip title={'Set Ego Position'}>
+        <IconButton
+          size="medium"
+          style={{ padding: 4 }}
+          id="go-positioned-button"
+          aria-controls={open ? 'demo-positioned-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+        >
+          <RoomRoundedIcon />
+        </IconButton>
+      </Tooltip>
+    </>
+  );
+}
+
+export default SetEgoPosition;

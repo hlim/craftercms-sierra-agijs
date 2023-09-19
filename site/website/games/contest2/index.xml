@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+	<content-type>/page/gametitle</content-type>
+	<display-template>/templates/web/Game.ftl</display-template>
+	<no-template-required>true</no-template-required>
+	<merge-strategy>inherit-levels</merge-strategy>
+	<objectGroupId>2e65</objectGroupId>
+	<objectId>2e650e16-13cc-2b2a-01c9-6b0bd85b8044</objectId>
+	<internal-name>Contest 2</internal-name>
+	<navLabel>Contest 2</navLabel>
+	<game_s>contest2</game_s>
+	<placeInNav>false</placeInNav>
+	<orderDefault_f>-1</orderDefault_f>
+	<file-name>index.xml</file-name>
+	<folder-name>contest2</folder-name>
+	<createdDate>2023-09-18T03:53:01.184Z</createdDate>
+	<createdDate_dt>2023-09-18T03:53:01.184Z</createdDate_dt>
+	<lastModifiedDate>2023-09-18T03:53:01.184Z</lastModifiedDate>
+	<lastModifiedDate_dt>2023-09-18T03:53:01.184Z</lastModifiedDate_dt>
+</page>
