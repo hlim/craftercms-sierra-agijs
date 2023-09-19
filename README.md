@@ -1,0 +1,34 @@
+# craftercms-sierra-agijs
+Sierra AGI emulator running AGI.JS in CrafterCMS  -- Why? because it's cool. 
+
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/950a604a-20ca-4e9c-8cfb-154355c6fc59)
+
+# Is there a bigger picture?
+Yeah, there is. CrafterCMS supports plugins so we can turn Crafter Studio into an AGI Studio and player with custom plugins.
+This project already contains a few plugins for interacting with the game in the preview area.
+
+## Studio Customizations
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/44d8244f-bc9f-4a36-9626-a40ed1b5d786)
+
+### Each tool is a plugin of its own
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/eeb865b3-d2ec-4ec4-8eb7-5e9cb1bef18d)
+
+
+### Ability to switch / teleport between rooms
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/97612b72-d00d-42d9-924b-f217cae7a825)
+
+### Ability to see and play all the sound resources
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/0683691e-7873-44a5-a69a-8f2b60c09bb4)
+
+### Ability to enable/disable user interaction
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/7b3fa1fd-7410-4441-9085-ce83ffe0b1a7)
+
+## Set the Ego's X and Y coordinates
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/5688d522-38fe-4695-85b3-1412e700477f)
+
+### Render the Priority buffer instead of the Visual buffer
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/a99e0feb-06f2-4868-bb67-2aaa5a9bc07e)
+
+### Decompile active logic resources
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/6b78bf87-5874-4e6f-9eea-2a52374d4da3)
+
