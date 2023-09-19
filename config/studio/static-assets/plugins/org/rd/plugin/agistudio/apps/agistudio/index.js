@@ -9,9 +9,10 @@ const MenuList = craftercms.libs.MaterialUI.MenuList && Object.prototype.hasOwnP
 const MenuItem = craftercms.libs.MaterialUI.MenuItem && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.MenuItem, 'default') ? craftercms.libs.MaterialUI.MenuItem['default'] : craftercms.libs.MaterialUI.MenuItem;
 const Menu = craftercms.libs.MaterialUI.Menu && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.Menu, 'default') ? craftercms.libs.MaterialUI.Menu['default'] : craftercms.libs.MaterialUI.Menu;
 const AudiotrackRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded');
-const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
+const ControlCameraRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded');
 const CopyAllRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded');
 const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded');
+const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -28,6 +29,7 @@ const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/ic
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 function useActiveSiteId() {
   return useSelector((state) => state.sites.active);
 }
@@ -47,6 +49,7 @@ function useActiveSiteId() {
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 function usePreviewNavigation() {
   return useSelector((state) => state.previewNavigation);
 }
@@ -258,7 +261,7 @@ function SetEgoPosition(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Set Ego Position' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
-                React.createElement(RoomRoundedIcon, null)))));
+                React.createElement(ControlCameraRoundedIcon, null)))));
 }
 
 function ShowPriorityBuffer(props) {
@@ -673,6 +676,39 @@ function ShowCode(props) {
                 React.createElement(DataObjectRoundedIcon, null)))));
 }
 
+function CurrentRoom(props) {
+    useDispatch();
+    useActiveSiteId();
+    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
+    var open = Boolean(anchorEl);
+    var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
+    var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
+    var _d = useState(-1), currentRoom = _d[0], setCurrentRoom = _d[1];
+    var loadRoomData = function () {
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        var roomInt = (parseInt(roomValue)) ? roomValue : -1;
+        setCurrentRoom(roomInt);
+    };
+    useEffect(function () {
+        setInterval(function () {
+            loadRoomData();
+        }, 3 * 1000);
+    }, []);
+    useEffect(function () {
+        currentUrlPath && setInternalUrl(currentUrlPath);
+        loadRoomData();
+    }, [currentUrlPath]);
+    var handleClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        AgiBridge.agiExecute('Reload Current Room', 'Agi.interpreter.newroom = currentRoom');
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(Tooltip, { title: 'Reload Current Room' },
+            React.createElement(Badge, { badgeContent: currentRoom != -1 ? currentRoom : null, color: "success", overlap: "circular", style: { position: 'relative' } },
+                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                    React.createElement(RoomRoundedIcon, null))))));
+}
+
 var plugin = {
     locales: undefined,
     scripts: undefined,
@@ -684,8 +720,9 @@ var plugin = {
         'org.rd.plugin.agistudio.SoundSelector': SoundSelector,
         'org.rd.plugin.agistudio.SetEgoPosition': SetEgoPosition,
         'org.rd.plugin.agistudio.ShowPriorityBuffer': ShowPriorityBuffer,
-        'org.rd.plugin.agistudio.ShowCode': ShowCode
+        'org.rd.plugin.agistudio.ShowCode': ShowCode,
+        'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom
     }
 };
 
-export { AllowInput, RoomSelector, SetEgoPosition, SoundSelector, plugin as default };
+export { AllowInput, CurrentRoom, RoomSelector, SetEgoPosition, SoundSelector, plugin as default };
