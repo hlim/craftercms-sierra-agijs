@@ -11,8 +11,10 @@ This project already contains a few plugins for interacting with the game in the
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/44d8244f-bc9f-4a36-9626-a40ed1b5d786)
 
 ### Each tool is a plugin of its own
-![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/eeb865b3-d2ec-4ec4-8eb7-5e9cb1bef18d)
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/7b6226c8-0085-4abb-ada1-2162294fc013)
 
+### Tell which room you are in and re-load it
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/03c84565-ddd1-4f64-a78a-106c3a946b6f)
 
 ### Ability to switch / teleport between rooms
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/97612b72-d00d-42d9-924b-f217cae7a825)
@@ -32,3 +34,17 @@ This project already contains a few plugins for interacting with the game in the
 ### Decompile active logic resources
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/6b78bf87-5874-4e6f-9eea-2a52374d4da3)
 
+### Read WORDS.TOK files
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/476a3ebe-ea42-4639-b63f-dea3f520d747)
+
+# Updates to AGI.js 
+In support of this project, we've made the following contributions to AGI.js
+* Implemented PC Speaker Sound
+* Implemented a reading of Words.TOK
+* Implemented a basic dialog box / input
+  
+# Acknowlegements
+- All the hard work done by the crew at CrafterCMS (http://craftercms.com.) The plugin system makes it so easy to build out this little IDE.
+- https://github.com/r1sc for creating AGI JS
+- To all the folks at ScumVM, without the AGI specs and documentation none of this would get done
+- Barry Harmsen for his Python extraction examples https://twitter.com/meneerharmsen
