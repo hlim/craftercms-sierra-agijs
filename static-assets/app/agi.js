@@ -10,7 +10,7 @@
   This is not a straight port, but has been implemented from the specs
   defined by Lance Ewing, Peter Kelly, Claudio Matsuoka, Stu George and David Symonds
   at http://wiki.scummvm.org/index.php/AGI/Specifications
-*/ 
+*/
 var Agi;
 (function (Agi) {
     Agi.palette = [
@@ -1694,6 +1694,7 @@ var Agi;
             // where do thes get cleared out -- it should be in the main loop after the response.
             this.flags[2] = false;
             this.inputBuffer = "";
+            this.setEgoDir(0);
             var msg = this.loadedLogics[this.logicNo].logic.messages[msgNo];
             msg = msg.replace("%s1", "Philbert"); // need to get the users name and centralize string processing
             this.allowInput = true;
@@ -2368,6 +2369,7 @@ var Resources;
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
     var volBuffers = [];
     var availableVols = [];
+    Resources.words = [];
     function parseDirfile(buffer, records) {
         var length = buffer.length / 3;
         for (var i = 0; i < length; i++) {
@@ -2380,6 +2382,54 @@ var Resources;
             if (availableVols[volNo] === undefined)
                 availableVols[volNo] = true;
         }
+    }
+    function parseWordFile(buffer) {
+        buffer.position = 52;
+        let words = [];
+        let previousWord = "";
+        let currentWord = "";
+        let bytesRead = 0;
+        while (true) {
+            previousWord = currentWord;
+            currentWord = '';
+            if (bytesRead >= buffer.length)
+                break;
+            var byteIn = buffer.readUint8(true);
+            bytesRead++;
+            currentWord = previousWord.substring(0, byteIn);
+            while (true) {
+                if (bytesRead >= buffer.length)
+                    break;
+                var byteIn = buffer.readUint8(true);
+                bytesRead++;
+                if (byteIn < 32) {
+                    currentWord += String.fromCharCode(byteIn ^ 127);
+                }
+                else if (byteIn == 95) {
+                    currentWord += " ";
+                }
+                else if (byteIn > 127) {
+                    currentWord += String.fromCharCode((byteIn - 128) ^ 127);
+                    break;
+                }
+            }
+            var wordNoLo = buffer.readUint8(true);
+            var wordNoHi = buffer.readUint8(true);
+            var wordblockNum = wordNoLo * 256 + wordNoHi;
+            if (wordblockNum > 10000)
+                wordblockNum = 0;
+            bytesRead += 2;
+            if (!isNaN(wordblockNum)) {
+                if (words[wordblockNum]) {
+                    words[wordblockNum].push(currentWord);
+                }
+                else {
+                    words[wordblockNum] = [];
+                    words[wordblockNum].push(currentWord);
+                }
+            }
+        }
+        return words;
     }
     let AgiResource;
     (function (AgiResource) {
@@ -2438,6 +2488,12 @@ var Resources;
                 fontPath = fontPath.substring(0, fontPath.lastIndexOf("/") + 1); // remove last folder 
                 Fs.downloadAllFiles(fontPath, ["font.bin"], (buffers) => {
                     Resources.fontStream = buffers["font.bin"];
+                    done();
+                });
+                // WORDS.TOK
+                Fs.downloadAllFiles(path, ["WORDS.TOK"], (buffers) => {
+                    var wordsStream = buffers["WORDS.TOK"];
+                    Resources.words = parseWordFile(wordsStream);
                     done();
                 });
             });
