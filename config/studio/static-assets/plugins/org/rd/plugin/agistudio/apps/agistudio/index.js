@@ -14,7 +14,7 @@ const CopyAllRoundedIcon = craftercms.utils.constants.components.get('@mui/icons
 const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded');
 const SpeakerNotesRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded');
 const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
- 
+
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
@@ -693,15 +693,15 @@ function ShowWords(props) {
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Words"),
             React.createElement(DialogContent, null,
-                React.createElement("table", null,
+                React.createElement("table", { style: { width: '100%' } },
                     React.createElement("th", null, "Word Group"),
                     React.createElement("th", null, "Words"),
                     words
                         .map(function (words, i) { return (React.createElement(React.Fragment, null,
-                        React.createElement("tr", null,
+                        React.createElement("tr", { style: { width: '100%' } },
                             React.createElement("td", null,
                                 React.createElement("h1", null, i)),
-                            React.createElement("td", null,
+                            React.createElement("td", { style: { width: '100%' } },
                                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: words.join("\n") }))))); })))),
         React.createElement(Tooltip, { title: 'Show Words' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
@@ -752,10 +752,10 @@ var plugin = {
         'org.rd.plugin.agistudio.SoundSelector': SoundSelector,
         'org.rd.plugin.agistudio.SetEgoPosition': SetEgoPosition,
         'org.rd.plugin.agistudio.ShowPriorityBuffer': ShowPriorityBuffer,
-        'org.rd.plugin.agistudio.ShowCode': ShowCode,
         'org.rd.plugin.agistudio.ShowWords': ShowWords,
+        'org.rd.plugin.agistudio.ShowCode': ShowCode,
         'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom
     }
 };
 
-export { AllowInput, CurrentRoom, RoomSelector, SetEgoPosition, SoundSelector, plugin as default };
+export { AllowInput, CurrentRoom, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
