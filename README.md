@@ -11,9 +11,9 @@ This project already contains a few plugins for interacting with the game in the
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/44d8244f-bc9f-4a36-9626-a40ed1b5d786)
 
 ### Each tool is a plugin of its own
-![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/eeb865b3-d2ec-4ec4-8eb7-5e9cb1bef18d)
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/7b6226c8-0085-4abb-ada1-2162294fc013)
 
-xx
+
 ### Ability to switch / teleport between rooms
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/97612b72-d00d-42d9-924b-f217cae7a825)
 
