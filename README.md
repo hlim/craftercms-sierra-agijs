@@ -42,6 +42,7 @@ In support of this project, we've made the following contributions to AGI.js
 * Implemented a basic dialog box / input
   
 # Acknowlegements
+- All the hard work done by the crew at CrafterCMS (http://craftercms.com.) The plugin system makes it so easy to build out this little IDE.
 - https://github.com/r1sc for creating AGI JS
 - To all the folks at ScumVM, without the AGI specs and documentation none of this would get done
 - Barry Harmsen for his python extraction examples https://twitter.com/meneerharmsen
