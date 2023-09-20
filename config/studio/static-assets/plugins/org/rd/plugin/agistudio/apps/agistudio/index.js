@@ -12,6 +12,7 @@ const AudiotrackRoundedIcon = craftercms.utils.constants.components.get('@mui/ic
 const ControlCameraRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded');
 const CopyAllRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded');
 const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded');
+const SpeakerNotesRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded');
 const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
 
 /*
@@ -676,6 +677,37 @@ function ShowCode(props) {
                 React.createElement(DataObjectRoundedIcon, null)))));
 }
 
+function ShowWords(props) {
+    useDispatch();
+    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
+    var open = Boolean(anchorEl);
+    var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
+    var _c = React.useState([]), words = _c[0], setWords = _c[1];
+    var handleClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        var words = AgiBridge.agiExecute('Get Words', 'Resources.words');
+        setWords(words);
+        setDialogOpen(true);
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
+            React.createElement(DialogTitle, null, "Words"),
+            React.createElement(DialogContent, null,
+                React.createElement("table", null,
+                    React.createElement("th", null, "Word Group"),
+                    React.createElement("th", null, "Words"),
+                    words
+                        .map(function (words, i) { return (React.createElement(React.Fragment, null,
+                        React.createElement("tr", null,
+                            React.createElement("td", null,
+                                React.createElement("h1", null, i)),
+                            React.createElement("td", null,
+                                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: words.join("\n") }))))); })))),
+        React.createElement(Tooltip, { title: 'Show Words' },
+            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(SpeakerNotesRoundedIcon, null)))));
+}
+
 function CurrentRoom(props) {
     useDispatch();
     useActiveSiteId();
@@ -721,6 +753,7 @@ var plugin = {
         'org.rd.plugin.agistudio.SetEgoPosition': SetEgoPosition,
         'org.rd.plugin.agistudio.ShowPriorityBuffer': ShowPriorityBuffer,
         'org.rd.plugin.agistudio.ShowCode': ShowCode,
+        'org.rd.plugin.agistudio.ShowWords': ShowWords,
         'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom
     }
 };
