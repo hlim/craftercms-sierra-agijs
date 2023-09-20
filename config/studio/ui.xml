@@ -359,6 +359,15 @@
                     		file="index.js"/>                        
                     </widget>
 
+                    <widget id="org.rd.plugin.agistudio.ShowWords">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
                     
                     <widget id="org.rd.plugin.agistudio.ShowCode">
                     	<plugin
