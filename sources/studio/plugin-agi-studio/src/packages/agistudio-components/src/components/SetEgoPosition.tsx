@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { Tooltip } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-import RoomRoundedIcon from '@mui/icons-material/RoomRounded';
+import ControlCameraRoundedIcon from '@mui/icons-material/ControlCameraRounded';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { AgiBridge } from './AgiBridge';
 
@@ -40,7 +40,7 @@ export function SetEgoPosition(props) {
           aria-expanded={open ? 'true' : undefined}
           onClick={handleClick}
         >
-          <RoomRoundedIcon />
+          <ControlCameraRoundedIcon />
         </IconButton>
       </Tooltip>
     </>
