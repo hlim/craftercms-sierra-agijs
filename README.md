@@ -13,6 +13,8 @@ This project already contains a few plugins for interacting with the game in the
 ### Each tool is a plugin of its own
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/7b6226c8-0085-4abb-ada1-2162294fc013)
 
+### Tell which room you are in and re-load it
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/03c84565-ddd1-4f64-a78a-106c3a946b6f)
 
 ### Ability to switch / teleport between rooms
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/97612b72-d00d-42d9-924b-f217cae7a825)
@@ -45,4 +47,4 @@ In support of this project, we've made the following contributions to AGI.js
 - All the hard work done by the crew at CrafterCMS (http://craftercms.com.) The plugin system makes it so easy to build out this little IDE.
 - https://github.com/r1sc for creating AGI JS
 - To all the folks at ScumVM, without the AGI specs and documentation none of this would get done
-- Barry Harmsen for his python extraction examples https://twitter.com/meneerharmsen
+- Barry Harmsen for his Python extraction examples https://twitter.com/meneerharmsen
