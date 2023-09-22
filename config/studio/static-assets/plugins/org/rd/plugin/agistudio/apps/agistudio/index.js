@@ -14,6 +14,7 @@ const CopyAllRoundedIcon = craftercms.utils.constants.components.get('@mui/icons
 const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded');
 const SpeakerNotesRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded');
 const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
+const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AddRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AddRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AddRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AddRounded');
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -741,6 +742,23 @@ function CurrentRoom(props) {
                     React.createElement(RoomRoundedIcon, null))))));
 }
 
+function AddGame(props) {
+    useDispatch();
+    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
+    var open = Boolean(anchorEl);
+    var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
+    var handleClick = function (event) {
+        setAnchorEl(event.currentTarget);
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
+            React.createElement(DialogTitle, null, "Add Game"),
+            React.createElement(DialogContent, null)),
+        React.createElement(Tooltip, { title: 'Show Code' },
+            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(AddRoundedIcon, null)))));
+}
+
 var plugin = {
     locales: undefined,
     scripts: undefined,
@@ -754,8 +772,9 @@ var plugin = {
         'org.rd.plugin.agistudio.ShowPriorityBuffer': ShowPriorityBuffer,
         'org.rd.plugin.agistudio.ShowWords': ShowWords,
         'org.rd.plugin.agistudio.ShowCode': ShowCode,
-        'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom
+        'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom,
+        'org.rd.plugin.agistudio.AddGame': AddGame
     }
 };
 
-export { AllowInput, CurrentRoom, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
+export { AddGame, AllowInput, CurrentRoom, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
