@@ -795,7 +795,7 @@ function AddGame(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState(""); _c[0]; var setGameId = _c[1];
+    var _c = React.useState(""), gameId = _c[0], setGameId = _c[1];
     var _d = React.useState(""); _d[0]; var setGameTitle = _d[1];
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
@@ -809,12 +809,14 @@ function AddGame(props) {
     };
     var handleUploadAsset = function () {
         createCustomDocumentEventListener('AGISTUDIO_UPLOAD_GAME', function (response) {
-            console.log('Stuff was upliaded!');
+            console.log('Game files uploaded. Add the game page to the library');
             console.log(response);
-            //attachContent(response.item.internalName, siteId, card.id, response.item.uri);
+            new Date().toISOString();
+            generateUUID();
         });
+        var gamePath = "/static-assets/games/" + gameId;
         dispatch(showUploadDialog({
-            path: '/static-assets/images/library',
+            path: gamePath,
             site: siteId,
             onClose: batchActions([
                 closeUploadDialog(),
@@ -827,12 +829,28 @@ function AddGame(props) {
     var handleAdd = function () {
         handleUploadAsset();
     };
+    var generateUUID = function () {
+        var d = new Date().getTime(); //Timestamp
+        var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0; //Time in microseconds since page-load or 0 if unsupported
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16; //random number between 0 and 16
+            if (d > 0) { //Use timestamp until depleted
+                r = (d + r) % 16 | 0;
+                d = Math.floor(d / 16);
+            }
+            else { //Use microseconds since page-load if supported
+                r = (d2 + r) % 16 | 0;
+                d2 = Math.floor(d2 / 16);
+            }
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+    };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Add Game"),
             React.createElement(DialogContent, null,
                 React.createElement(FormControl, { margin: "normal", fullWidth: true },
-                    React.createElement(TextField, { defaultValue: "", id: "gameId", label: "Game ID?", variant: "outlined", onChange: handleIdChange })),
+                    React.createElement(TextField, { defaultValue: "", id: "gameId", label: "Game ID", variant: "outlined", onChange: handleIdChange })),
                 React.createElement(FormControl, { margin: "normal", fullWidth: true },
                     React.createElement(TextField, { defaultValue: "", id: "gameTitle", label: "Game Title", variant: "outlined", onChange: handleTitleChange })),
                 React.createElement(DialogActions, null,
