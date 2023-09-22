@@ -17,6 +17,7 @@ const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-ma
 const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AddRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AddRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AddRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AddRounded');
 const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
+const { post } = craftercms.utils.ajax;
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -796,7 +797,8 @@ function AddGame(props) {
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
     var _c = React.useState(""), gameId = _c[0], setGameId = _c[1];
-    var _d = React.useState(""); _d[0]; var setGameTitle = _d[1];
+    var _d = React.useState(""), gameTitle = _d[0], setGameTitle = _d[1];
+    var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         setDialogOpen(true);
@@ -811,8 +813,36 @@ function AddGame(props) {
         createCustomDocumentEventListener('AGISTUDIO_UPLOAD_GAME', function (response) {
             console.log('Game files uploaded. Add the game page to the library');
             console.log(response);
-            new Date().toISOString();
-            generateUUID();
+            var NowDate = new Date().toISOString();
+            var objectId = generateUUID();
+            var objectGroupId = objectId.substring(0, 4);
+            var gameContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<page>\n" +
+                "\t<content-type>/page/gametitle</content-type>\n" +
+                "\t<display-template>/templates/web/Game.ftl</display-template>\n" +
+                "\t<no-template-required>true</no-template-required>\n" +
+                "\t<merge-strategy>inherit-levels</merge-strategy>\n" +
+                "\t<file-name>index.xml</file-name>\n" +
+                "\t<orderDefault_f>4000</orderDefault_f>\n" +
+                "\t<placeInNav>true</placeInNav>\n" +
+                "\t<game_s>" + gameId + "</game_s>\n" +
+                "\t<folder-name>" + gameId + "</folder-name>\n" +
+                "\t<navLabel>" + gameTitle + "</navLabel>\n" +
+                "\t<internal-name>" + gameTitle + "</internal-name>\n" +
+                "\t<objectGroupId>" + objectGroupId + "</objectGroupId>\n" +
+                "\t<objectId>" + objectId + "</objectId>\n" +
+                "\t<createdDate>" + NowDate + "</createdDate>\n" +
+                "\t<createdDate_dt>" + NowDate + "</createdDate_dt>\n" +
+                "\t<lastModifiedDate>" + NowDate + "</lastModifiedDate>\n" +
+                "\t<lastModifiedDate_dt>" + NowDate + "</lastModifiedDate_dt>\n" +
+                "</page>";
+            var serviceUrl = API_WRITE_CONTENT + "?site=${siteId}&path=${gameContentPath}&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true";
+            post(serviceUrl, gameContent).subscribe({
+                next: function (response) {
+                    console.log("content created");
+                },
+                error: function (e) { }
+            });
         });
         var gamePath = "/static-assets/games/" + gameId;
         dispatch(showUploadDialog({
