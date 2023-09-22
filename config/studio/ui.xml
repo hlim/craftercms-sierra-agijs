@@ -31,7 +31,7 @@
                     <configuration>
                         <id>Pages</id>
                         <label>Game Titles</label>
-                        <icon id="@mui/icons-material/VideogameAssetRoundedIcon"/>
+                        <icon id="@mui/icons-material/VideogameAssetRounded"/>
                         <rootPath>/site/website/index.xml</rootPath>
                         <locale>en</locale>
                     </configuration>
