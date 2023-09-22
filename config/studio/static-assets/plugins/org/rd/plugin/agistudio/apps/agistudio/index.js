@@ -753,8 +753,8 @@ function AddGame(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Add Game"),
-            React.createElement(DialogContent, null)),
-        React.createElement(Tooltip, { title: 'Show Code' },
+            React.createElement(DialogContent, null, "Test")),
+        React.createElement(Tooltip, { title: 'Add Game' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(AddRoundedIcon, null)))));
 }
