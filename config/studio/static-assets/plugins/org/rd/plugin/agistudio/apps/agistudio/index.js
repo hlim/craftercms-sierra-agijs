@@ -791,6 +791,7 @@ const closeUploadDialog = /*#__PURE__*/ createAction('CLOSE_UPLOAD_DIALOG');
 
 function AddGame(props) {
     var dispatch = useDispatch();
+    var siteId = useActiveSiteId();
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
@@ -812,7 +813,6 @@ function AddGame(props) {
             console.log(response);
             //attachContent(response.item.internalName, siteId, card.id, response.item.uri);
         });
-        var siteId = useActiveSiteId();
         dispatch(showUploadDialog({
             path: '/static-assets/images/library',
             site: siteId,
