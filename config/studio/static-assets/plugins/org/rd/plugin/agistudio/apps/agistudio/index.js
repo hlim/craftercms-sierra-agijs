@@ -853,7 +853,7 @@ function AddGame(props) {
                 error: function (e) { }
             });
         });
-        var gamePath = "/static-assets/games/" + gameId;
+        var gamePath = "/static-assets/games/" + gameId + "/";
         dispatch(showUploadDialog({
             path: gamePath,
             site: siteId,
