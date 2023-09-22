@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -15,6 +15,9 @@ const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/ic
 const SpeakerNotesRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded');
 const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
 const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AddRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AddRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AddRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AddRounded');
+const { createAction } = craftercms.libs.ReduxToolkit;
+const { createCustomDocumentEventListener } = craftercms.utils.dom;
+const { post } = craftercms.utils.ajax;
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -742,19 +745,154 @@ function CurrentRoom(props) {
                     React.createElement(RoomRoundedIcon, null))))));
 }
 
+/*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// region Batch Actions
+const batchActions = /*#__PURE__*/ createAction('BATCH_ACTIONS');
+// endregion
+// region dispatch DOM Event
+const dispatchDOMEvent = /*#__PURE__*/ createAction('DISPATCH_DOM_EVENT');
+// endregion
+
+/*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// endregion
+// region Upload Dialog
+const showUploadDialog = /*#__PURE__*/ createAction('SHOW_UPLOAD_DIALOG');
+const closeUploadDialog = /*#__PURE__*/ createAction('CLOSE_UPLOAD_DIALOG');
+// endregion
+
 function AddGame(props) {
-    useDispatch();
+    var dispatch = useDispatch();
+    var siteId = useActiveSiteId();
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
+    var _c = React.useState(""), gameId = _c[0], setGameId = _c[1];
+    var _d = React.useState(""), gameTitle = _d[0], setGameTitle = _d[1];
+    var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
+        setDialogOpen(true);
+    };
+    var handleIdChange = function (event) {
+        setGameId(event.target.value);
+    };
+    var handleTitleChange = function (event) {
+        setGameTitle(event.target.value);
+    };
+    var handleAdd = function () {
+        handleUploadAsset();
+    };
+    var cancelClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        setDialogOpen(false);
+    };
+    var handleUploadAsset = function () {
+        createCustomDocumentEventListener('AGISTUDIO_UPLOAD_GAME', function (response) {
+            console.log('Game files uploaded. Add the game page to the library');
+            console.log(response);
+            var NowDate = new Date().toISOString();
+            var objectId = generateUUID();
+            var objectGroupId = objectId.substring(0, 4);
+            var gameContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<page>\n" +
+                "\t<content-type>/page/gametitle</content-type>\n" +
+                "\t<display-template>/templates/web/Game.ftl</display-template>\n" +
+                "\t<no-template-required>true</no-template-required>\n" +
+                "\t<merge-strategy>inherit-levels</merge-strategy>\n" +
+                "\t<file-name>index.xml</file-name>\n" +
+                "\t<orderDefault_f>4000</orderDefault_f>\n" +
+                "\t<placeInNav>true</placeInNav>\n" +
+                "\t<game_s>" + gameId + "</game_s>\n" +
+                "\t<folder-name>" + gameId + "</folder-name>\n" +
+                "\t<navLabel>" + gameTitle + "</navLabel>\n" +
+                "\t<internal-name>" + gameTitle + "</internal-name>\n" +
+                "\t<objectGroupId>" + objectGroupId + "</objectGroupId>\n" +
+                "\t<objectId>" + objectId + "</objectId>\n" +
+                "\t<createdDate>" + NowDate + "</createdDate>\n" +
+                "\t<createdDate_dt>" + NowDate + "</createdDate_dt>\n" +
+                "\t<lastModifiedDate>" + NowDate + "</lastModifiedDate>\n" +
+                "\t<lastModifiedDate_dt>" + NowDate + "</lastModifiedDate_dt>\n" +
+                "</page>";
+            var gameContentPath = "/site/website/games/" + gameId;
+            var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=index.xml&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true");
+            post(serviceUrl, gameContent).subscribe({
+                next: function (response) {
+                    console.log("content created");
+                    setDialogOpen(false);
+                },
+                error: function (e) { }
+            });
+        });
+        var gamePath = "/static-assets/games/" + gameId + "/";
+        dispatch(showUploadDialog({
+            path: gamePath,
+            site: siteId,
+            onClose: batchActions([
+                closeUploadDialog(),
+                dispatchDOMEvent({
+                    id: 'AGISTUDIO_UPLOAD_GAME'
+                })
+            ])
+        }));
+    };
+    var generateUUID = function () {
+        var d = new Date().getTime(); //Timestamp
+        var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0; //Time in microseconds since page-load or 0 if unsupported
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16; //random number between 0 and 16
+            if (d > 0) { //Use timestamp until depleted
+                r = (d + r) % 16 | 0;
+                d = Math.floor(d / 16);
+            }
+            else { //Use microseconds since page-load if supported
+                r = (d2 + r) % 16 | 0;
+                d2 = Math.floor(d2 / 16);
+            }
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Add Game"),
-            React.createElement(DialogContent, null)),
-        React.createElement(Tooltip, { title: 'Show Code' },
+            React.createElement(DialogContent, null,
+                React.createElement(FormControl, { margin: "normal", fullWidth: true },
+                    React.createElement(TextField, { defaultValue: "", id: "gameId", label: "Game ID", variant: "outlined", onChange: handleIdChange })),
+                React.createElement(FormControl, { margin: "normal", fullWidth: true },
+                    React.createElement(TextField, { defaultValue: "", id: "gameTitle", label: "Game Title", variant: "outlined", onChange: handleTitleChange })),
+                React.createElement(DialogActions, null,
+                    React.createElement(Button, { onClick: cancelClick, variant: "outlined", sx: { mr: 1 } }, "Cancel"),
+                    React.createElement(Button, { onClick: handleAdd, variant: "outlined", sx: { mr: 1 } }, "Upload Game Files & Save")))),
+        React.createElement(Tooltip, { title: 'Add Game' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(AddRoundedIcon, null)))));
 }

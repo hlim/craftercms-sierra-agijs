@@ -7,6 +7,7 @@ import ShowPriorityBuffer from './components/ShowPriorityBuffer';
 import ShowCode from './components/ShowCode';
 import ShowWords from './components/ShowWords';
 import CurrentRoom from './components/CurrentRoom';
+import AddGame from './components/AddGame';
 
 const plugin: PluginDescriptor = {
   locales: undefined,
@@ -21,11 +22,11 @@ const plugin: PluginDescriptor = {
     'org.rd.plugin.agistudio.ShowPriorityBuffer': ShowPriorityBuffer,
     'org.rd.plugin.agistudio.ShowWords': ShowWords,
     'org.rd.plugin.agistudio.ShowCode': ShowCode,
-    'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom
-
+    'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom,
+    'org.rd.plugin.agistudio.AddGame': AddGame
   }
 };
 
-export { RoomSelector, SoundSelector, AllowInput, SetEgoPosition, CurrentRoom, ShowCode, ShowWords };
+export { RoomSelector, SoundSelector, AllowInput, SetEgoPosition, CurrentRoom, ShowCode, ShowWords, AddGame };
 
 export default plugin;
