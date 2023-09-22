@@ -890,10 +890,8 @@ function AddGame(props) {
                 React.createElement(FormControl, { margin: "normal", fullWidth: true },
                     React.createElement(TextField, { defaultValue: "", id: "gameTitle", label: "Game Title", variant: "outlined", onChange: handleTitleChange })),
                 React.createElement(DialogActions, null,
+                    React.createElement(Button, { onClick: cancelClick, variant: "outlined", sx: { mr: 1 } }, "Cancel"),
                     React.createElement(Button, { onClick: handleAdd, variant: "outlined", sx: { mr: 1 } }, "Add Game")))),
-        React.createElement(Tooltip, { title: 'Cancel' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: cancelClick },
-                React.createElement(AddRoundedIcon, null))),
         React.createElement(Tooltip, { title: 'Upload Game Files & Save' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(AddRoundedIcon, null)))));
