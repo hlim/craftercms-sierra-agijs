@@ -32,6 +32,7 @@
                         <id>Pages</id>
                         <label>Game Titles</label>
                         <icon id="@mui/icons-material/VideogameAssetRounded"/>
+                        <showRootFolder>false</showRootFolder>
                         <rootPath>/site/website/games</rootPath>
                         <locale>en</locale>
                     </configuration>
