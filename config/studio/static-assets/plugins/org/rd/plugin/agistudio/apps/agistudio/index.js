@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -747,14 +747,31 @@ function AddGame(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
+    var _c = React.useState(""); _c[0]; var setGameId = _c[1];
+    var _d = React.useState(""); _d[0]; var setGameTitle = _d[1];
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         setDialogOpen(true);
     };
+    var handleIdChange = function (event) {
+        setGameId(event.target.value);
+    };
+    var handleTitleChange = function (event) {
+        setGameTitle(event.target.value);
+    };
+    var handleAdd = function () {
+        alert("Add");
+    };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Add Game"),
-            React.createElement(DialogContent, null, "Test")),
+            React.createElement(DialogContent, null,
+                React.createElement(FormControl, { margin: "normal", fullWidth: true },
+                    React.createElement(TextField, { defaultValue: "", id: "gameId", label: "Game ID?", variant: "outlined", onChange: handleIdChange })),
+                React.createElement(FormControl, { margin: "normal", fullWidth: true },
+                    React.createElement(TextField, { defaultValue: "", id: "gameTitle", label: "Game Title", variant: "outlined", onChange: handleTitleChange })),
+                React.createElement(DialogActions, null,
+                    React.createElement(Button, { onClick: handleAdd, variant: "outlined", sx: { mr: 1 } }, "Add Game")))),
         React.createElement(Tooltip, { title: 'Add Game' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(AddRoundedIcon, null)))));
