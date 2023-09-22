@@ -836,8 +836,8 @@ function AddGame(props) {
                 "\t<lastModifiedDate>" + NowDate + "</lastModifiedDate>\n" +
                 "\t<lastModifiedDate_dt>" + NowDate + "</lastModifiedDate_dt>\n" +
                 "</page>";
-            var gameContentPath = "/site/website/games/" + gameId + "/index.xml";
-            var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true");
+            var gameContentPath = "/site/website/games/" + gameId;
+            var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=index.xml&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true");
             post(serviceUrl, gameContent).subscribe({
                 next: function (response) {
                     console.log("content created");
