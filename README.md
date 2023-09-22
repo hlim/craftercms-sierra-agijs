@@ -41,7 +41,8 @@ This project already contains a few plugins for interacting with the game in the
 In support of this project, we've made the following contributions to AGI.js
 * Implemented PC Speaker Sound
 * Implemented a reading of Words.TOK
-* Implemented a basic dialog box / input
+* Implemented a basic dialog box
+* Implemented basic input value evaluation (test_said)
   
 # Acknowlegements
 - All the hard work done by the crew at CrafterCMS (http://craftercms.com.) The plugin system makes it so easy to build out this little IDE.
