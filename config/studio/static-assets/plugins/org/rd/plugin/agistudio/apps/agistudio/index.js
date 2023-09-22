@@ -15,6 +15,8 @@ const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/ic
 const SpeakerNotesRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded');
 const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
 const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AddRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AddRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AddRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AddRounded');
+const { createAction } = craftercms.libs.ReduxToolkit;
+const { createCustomDocumentEventListener } = craftercms.utils.dom;
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -742,8 +744,53 @@ function CurrentRoom(props) {
                     React.createElement(RoomRoundedIcon, null))))));
 }
 
+/*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// region Batch Actions
+const batchActions = /*#__PURE__*/ createAction('BATCH_ACTIONS');
+// endregion
+// region dispatch DOM Event
+const dispatchDOMEvent = /*#__PURE__*/ createAction('DISPATCH_DOM_EVENT');
+// endregion
+
+/*
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// endregion
+// region Upload Dialog
+const showUploadDialog = /*#__PURE__*/ createAction('SHOW_UPLOAD_DIALOG');
+const closeUploadDialog = /*#__PURE__*/ createAction('CLOSE_UPLOAD_DIALOG');
+// endregion
+
 function AddGame(props) {
-    useDispatch();
+    var dispatch = useDispatch();
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
@@ -759,8 +806,26 @@ function AddGame(props) {
     var handleTitleChange = function (event) {
         setGameTitle(event.target.value);
     };
+    var handleUploadAsset = function () {
+        createCustomDocumentEventListener('AGISTUDIO_UPLOAD_GAME', function (response) {
+            console.log('Stuff was upliaded!');
+            console.log(response);
+            //attachContent(response.item.internalName, siteId, card.id, response.item.uri);
+        });
+        var siteId = useActiveSiteId();
+        dispatch(showUploadDialog({
+            path: '/static-assets/images/library',
+            site: siteId,
+            onClose: batchActions([
+                closeUploadDialog(),
+                dispatchDOMEvent({
+                    id: 'AGISTUDIO_UPLOAD_GAME'
+                })
+            ])
+        }));
+    };
     var handleAdd = function () {
-        alert("Add");
+        handleUploadAsset();
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
