@@ -749,6 +749,7 @@ function AddGame(props) {
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
+        setDialogOpen(true);
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
