@@ -809,6 +809,13 @@ function AddGame(props) {
     var handleTitleChange = function (event) {
         setGameTitle(event.target.value);
     };
+    var handleAdd = function () {
+        handleUploadAsset();
+    };
+    var cancelClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        setDialogOpen(false);
+    };
     var handleUploadAsset = function () {
         createCustomDocumentEventListener('AGISTUDIO_UPLOAD_GAME', function (response) {
             console.log('Game files uploaded. Add the game page to the library');
@@ -841,6 +848,7 @@ function AddGame(props) {
             post(serviceUrl, gameContent).subscribe({
                 next: function (response) {
                     console.log("content created");
+                    setDialogOpen(false);
                 },
                 error: function (e) { }
             });
@@ -856,9 +864,6 @@ function AddGame(props) {
                 })
             ])
         }));
-    };
-    var handleAdd = function () {
-        handleUploadAsset();
     };
     var generateUUID = function () {
         var d = new Date().getTime(); //Timestamp
@@ -886,7 +891,10 @@ function AddGame(props) {
                     React.createElement(TextField, { defaultValue: "", id: "gameTitle", label: "Game Title", variant: "outlined", onChange: handleTitleChange })),
                 React.createElement(DialogActions, null,
                     React.createElement(Button, { onClick: handleAdd, variant: "outlined", sx: { mr: 1 } }, "Add Game")))),
-        React.createElement(Tooltip, { title: 'Add Game' },
+        React.createElement(Tooltip, { title: 'Cancel' },
+            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: cancelClick },
+                React.createElement(AddRoundedIcon, null))),
+        React.createElement(Tooltip, { title: 'Upload Game Files & Save' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(AddRoundedIcon, null)))));
 }
