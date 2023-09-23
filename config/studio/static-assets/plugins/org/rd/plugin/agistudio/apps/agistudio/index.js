@@ -79,9 +79,9 @@ var AgiBridge = /** @class */ (function () {
                     else if (command.startsWith('Resources')) {
                         commandToSend = commandToSend.replaceAll('Resources', resourcesPath);
                     }
-                    console.log('Sending Command :' + intent);
-                    console.log('Command :' + command);
-                    console.log('Sending Command :' + commandToSend);
+                    //          console.log('Sending Command :' + intent);
+                    //          console.log('Command :' + command);
+                    //          console.log('Sending Command :' + commandToSend);
                     // Can the rollup message be disabled?
                     var result = eval(commandToSend);
                     return result;
