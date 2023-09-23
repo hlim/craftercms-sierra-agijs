@@ -772,7 +772,7 @@ function ShowPicture(props) {
                     opCode = 255;
                     break;
             }
-            console.log("decoding " + i + " :" + commandName + " => " + opCode);
+            console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
             encodedBuffer[i] = opCode;
             if (opCode != 255) {
                 i++;
@@ -941,7 +941,7 @@ function ShowPicture(props) {
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
-        console.log("Updated :" + updatedCommands);
+        console.log('Updated :' + updatedCommands);
         setCommands(updatedCommands);
     };
     return (React.createElement(React.Fragment, null,
@@ -950,9 +950,9 @@ function ShowPicture(props) {
             React.createElement(DialogActions, null,
                 React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
             React.createElement(DialogContent, null,
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: commands }))),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: commands, onChange: handleCommandUpdate }))),
         React.createElement(Tooltip, { title: 'Show Picture' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick, onChange: handleCommandUpdate },
+            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
 }
 
