@@ -720,9 +720,9 @@ function ShowPicture(props) {
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
     var _c = React.useState([]), commands = _c[0], setCommands = _c[1];
     var prettyPrintCommands = function (commands) {
-        var code = "";
+        var code = '';
         commands.forEach(function (command) {
-            code += command + "\n";
+            code += command + '\n';
         });
         return code;
     };
@@ -746,20 +746,35 @@ function ShowPicture(props) {
                 switch (opCode) {
                     case 240: // PicSetColor
                         var picColor = stream.readUint8();
-                        decodedCommands.push("PicSetColor(" + picColor + ")");
+                        decodedCommands.push('PicSetColor(' + picColor + ');');
                         break;
                     case 241: // PicOpcode.PicDisable
-                        decodedCommands.push("PicDisable()");
+                        decodedCommands.push('PicDisable();');
                         break;
                     case 242: // PriSetcolor
                         var priColor = stream.readUint8();
-                        decodedCommands.push("PriSetColor(" + priColor + ")");
+                        decodedCommands.push('PriSetColor(' + priColor + ');');
                         break;
                     case 241: // PriDisable
-                        decodedCommands.push("PriDisable()");
+                        decodedCommands.push('PriDisable();');
                         break;
                     case 242: // DrawYCorner
-                        decodedCommands.push("DrawYCorner(...)");
+                        var x1 = stream.readUint8();
+                        var y1 = stream.readUint8();
+                        var x2 = -1;
+                        var y2 = -1;
+                        while (true) {
+                            y2 = stream.readUint8();
+                            if (y2 >= 0xf0)
+                                break;
+                            y1 = y2;
+                            x2 = stream.readUint8();
+                            if (x2 >= 0xf0)
+                                break;
+                            x1 = x2;
+                        }
+                        //stream.position--;
+                        decodedCommands.push('DrawYCorner(' + x1 + ',' + y1 + ',' + x2 + ',' + y2 + ');');
                         break;
                     case 243: // DrawXCorner
                         var x1 = stream.readUint8();
@@ -768,34 +783,91 @@ function ShowPicture(props) {
                         var y2 = -1;
                         while (true) {
                             x2 = stream.readUint8();
-                            if (x2 >= 0xF0)
+                            if (x2 >= 0xf0)
                                 break;
                             x1 = x2;
                             y2 = stream.readUint8();
-                            if (y2 >= 0xF0)
+                            if (y2 >= 0xf0)
                                 break;
                             y1 = y2;
                         }
                         //stream.position--;
-                        decodedCommands.push("DrawXCorner(" + x1 + "," + y1 + "," + x2 + "," + y2 + ")");
+                        decodedCommands.push('DrawXCorner(' + x1 + ',' + y1 + ',' + x2 + ',' + y2 + ');');
                         break;
                     case 244: // DrawAbs
-                        decodedCommands.push("DrawAbs(...)");
+                        var x1 = stream.readUint8();
+                        var y1 = stream.readUint8();
+                        while (true) {
+                            var nextX = stream.readUint8();
+                            if (nextX >= 0xf0)
+                                break;
+                            var nextY = stream.readUint8();
+                            x1 = nextX;
+                            y1 = nextY;
+                        }
+                        //this.stream.position--;
+                        decodedCommands.push('DrawAbs(' + x1 + ',' + y1 + ');');
                         break;
                     case 245: // DrawRel
-                        decodedCommands.push("DrawRel(...)");
+                        var x1 = stream.readUint8();
+                        var y1 = stream.readUint8();
+                        while (true) {
+                            var val = stream.readUint8();
+                            if (val >= 0xf0)
+                                break;
+                            var xDisp = (val >>> 4) & 0x07;
+                            if ((val & 0x80) === 0x80)
+                                xDisp = -xDisp;
+                            var yDisp = val & 0x07;
+                            if ((val & 8) == 8)
+                                yDisp = -yDisp;
+                            var nextX = x1 + xDisp;
+                            var nextY = y1 + yDisp;
+                            x1 = nextX;
+                            y1 = nextY;
+                        }
+                        //this.stream.position--;
+                        decodedCommands.push('DrawRel(' + x1 + ',' + y1 + ');');
                         break;
                     case 246: // DrawFill
-                        decodedCommands.push("DrawFill(...)");
+                        var x1, y1;
+                        while (true) {
+                            x1 = stream.readUint8();
+                            if (x1 >= 0xf0)
+                                break;
+                            var y1 = stream.readUint8();
+                        }
+                        //this.stream.position--;
+                        decodedCommands.push('DrawFill(' + x1 + ',' + y1 + ');');
                         break;
                     case 247: // SetPen
-                        decodedCommands.push("SetPen(...)");
+                        var value = stream.readUint8();
+                        decodedCommands.push('SetPen(' + value + ');');
                         break;
                     case 248: // DrawPen
-                        decodedCommands.push("DrawPen(...)");
+                        var firstArg;
+                        while (true) {
+                            firstArg = stream.readUint8();
+                            if (firstArg >= 0xf0)
+                                break;
+                            {
+                                stream.readUint8();
+                                // if (this.penSize == 0) {
+                                //     this.setPixel(x, y);
+                                // }
+                                // else if (this.penRectangle) {
+                                //     this.drawPenRect(x, y);
+                                // }
+                                // else {
+                                //     this.drawPenCircle(x, y);
+                                // }
+                            }
+                        }
+                        // this.stream.position--;
+                        decodedCommands.push('DrawPen(' + firstArg + ');');
                         break;
                     case 255: // End
-                        decodedCommands.push("End()");
+                        decodedCommands.push('End();');
                         processing = false;
                         break;
                 }
