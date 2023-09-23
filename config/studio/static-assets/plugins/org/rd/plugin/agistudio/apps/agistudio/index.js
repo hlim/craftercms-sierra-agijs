@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -718,7 +718,7 @@ function ShowPicture(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState([]), commands = _c[0], setCommands = _c[1];
+    var _c = React.useState(''), commands = _c[0], setCommands = _c[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -726,13 +726,56 @@ function ShowPicture(props) {
         });
         return code;
     };
-    var handleClick = function (event) {
-        setAnchorEl(event.currentTarget);
-        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-        var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
-        var decodedPictureCommands = decodePictureStream(currentPictureStream);
-        setCommands(decodedPictureCommands);
-        setDialogOpen(true);
+    var encodeCommands = function () {
+        var encodedBuffer = new Uint8Array();
+        var parsedCommands = commands.replaceAll('\n', '').split(';');
+        var i = 0;
+        parsedCommands.forEach(function (command) {
+            var commandName = command.substring(0, command.indexOf('('));
+            command.replace(commandName, '').replace('(', '').replace(')', '').split(',');
+            var opCode = 255; // End
+            switch (commandName) {
+                case 'PicSetColor':
+                    opCode = 240;
+                    break;
+                case 'PicDisable':
+                    opCode = 241;
+                    break;
+                case 'PriSetcolor':
+                    opCode = 242;
+                    break;
+                case 'PriDisable':
+                    opCode = 243;
+                    break;
+                case 'DrawYCorner':
+                    opCode = 244;
+                    break;
+                case 'DrawXCorner':
+                    opCode = 245;
+                    break;
+                case 'DrawAbs':
+                    opCode = 246;
+                    break;
+                case 'DrawRel':
+                    opCode = 247;
+                    break;
+                case 'DrawFill':
+                    opCode = 248;
+                    break;
+                case 'SetPen':
+                    opCode = 249;
+                    break;
+                case 'DrawPen':
+                    opCode = 250;
+                    break;
+                case 'End':
+                    opCode = 255;
+                    break;
+            }
+            encodedBuffer[i] = opCode;
+            i++;
+        });
+        return encodedBuffer;
     };
     var decodePictureStream = function (stream) {
         var decodedCommands = [];
@@ -755,10 +798,10 @@ function ShowPicture(props) {
                         var priColor = stream.readUint8();
                         decodedCommands.push('PriSetColor(' + priColor + ');');
                         break;
-                    case 241: // PriDisable
+                    case 243: // PriDisable
                         decodedCommands.push('PriDisable();');
                         break;
-                    case 242: // DrawYCorner
+                    case 244: // DrawYCorner
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
                         var x2 = -1;
@@ -776,7 +819,7 @@ function ShowPicture(props) {
                         //stream.position--;
                         decodedCommands.push('DrawYCorner(' + x1 + ',' + y1 + ',' + x2 + ',' + y2 + ');');
                         break;
-                    case 243: // DrawXCorner
+                    case 245: // DrawXCorner
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
                         var x2 = -1;
@@ -794,7 +837,7 @@ function ShowPicture(props) {
                         //stream.position--;
                         decodedCommands.push('DrawXCorner(' + x1 + ',' + y1 + ',' + x2 + ',' + y2 + ');');
                         break;
-                    case 244: // DrawAbs
+                    case 246: // DrawAbs
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
                         while (true) {
@@ -808,7 +851,7 @@ function ShowPicture(props) {
                         //this.stream.position--;
                         decodedCommands.push('DrawAbs(' + x1 + ',' + y1 + ');');
                         break;
-                    case 245: // DrawRel
+                    case 247: // DrawRel
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
                         while (true) {
@@ -829,7 +872,7 @@ function ShowPicture(props) {
                         //this.stream.position--;
                         decodedCommands.push('DrawRel(' + x1 + ',' + y1 + ');');
                         break;
-                    case 246: // DrawFill
+                    case 248: // DrawFill
                         var x1, y1;
                         while (true) {
                             x1 = stream.readUint8();
@@ -840,11 +883,11 @@ function ShowPicture(props) {
                         //this.stream.position--;
                         decodedCommands.push('DrawFill(' + x1 + ',' + y1 + ');');
                         break;
-                    case 247: // SetPen
+                    case 249: // SetPen
                         var value = stream.readUint8();
                         decodedCommands.push('SetPen(' + value + ');');
                         break;
-                    case 248: // DrawPen
+                    case 250: // DrawPen
                         var firstArg;
                         firstArg = stream.readUint8();
                         // while (true) {
@@ -880,11 +923,26 @@ function ShowPicture(props) {
         }
         return decodedCommands;
     };
+    var handleClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
+        var decodedPictureCommands = decodePictureStream(currentPictureStream);
+        setCommands(prettyPrintCommands(decodedPictureCommands));
+        setDialogOpen(true);
+    };
+    var renderClick = function (event) {
+        var encodedBuffer = encodeCommands();
+        console.log('PICTURE');
+        console.log(encodedBuffer);
+    };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Show Picture"),
+            React.createElement(DialogActions, null,
+                React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
             React.createElement(DialogContent, null,
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: prettyPrintCommands(commands) }))),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: commands }))),
         React.createElement(Tooltip, { title: 'Show Picture' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
@@ -1066,10 +1124,10 @@ function AddGame(props) {
                 React.createElement(FormControl, { margin: "normal", fullWidth: true },
                     React.createElement(TextField, { defaultValue: "", id: "gameId", label: "Game ID", variant: "outlined", onChange: handleIdChange })),
                 React.createElement(FormControl, { margin: "normal", fullWidth: true },
-                    React.createElement(TextField, { defaultValue: "", id: "gameTitle", label: "Game Title", variant: "outlined", onChange: handleTitleChange })),
-                React.createElement(DialogActions, null,
-                    React.createElement(Button, { onClick: cancelClick, variant: "outlined", sx: { mr: 1 } }, "Cancel"),
-                    React.createElement(Button, { onClick: handleAdd, variant: "outlined", sx: { mr: 1 } }, "Upload Game Files & Save")))),
+                    React.createElement(TextField, { defaultValue: "", id: "gameTitle", label: "Game Title", variant: "outlined", onChange: handleTitleChange }))),
+            React.createElement(DialogActions, null,
+                React.createElement(Button, { onClick: cancelClick, variant: "outlined", sx: { mr: 1 } }, "Cancel"),
+                React.createElement(Button, { onClick: handleAdd, variant: "outlined", sx: { mr: 1 } }, "Upload Game Files & Save"))),
         React.createElement(Tooltip, { title: 'Add Game' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(AddRoundedIcon, null)))));
