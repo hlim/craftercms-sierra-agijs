@@ -831,11 +831,12 @@ function ShowPicture(props) {
                         break;
                     case 246: // DrawFill
                         var x1, y1;
-                        // while (true) {
-                        //   x1 = stream.readUint8();
-                        //   if (x1 >= 0xf0) break;
-                        //   var y1 = stream.readUint8();
-                        // }
+                        while (true) {
+                            x1 = stream.readUint8();
+                            if (x1 >= 0xf0)
+                                break;
+                            var y1 = stream.readUint8();
+                        }
                         //this.stream.position--;
                         decodedCommands.push('DrawFill(' + x1 + ',' + y1 + ');');
                         break;
