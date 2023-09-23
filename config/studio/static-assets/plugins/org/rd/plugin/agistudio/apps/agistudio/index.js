@@ -773,13 +773,13 @@ function ShowPicture(props) {
                     break;
             }
             console.log("decoding " + i + " :" + commandName + " => " + opCode);
-            encodedBuffer.buffer[i] = opCode;
+            encodedBuffer[i] = opCode;
             if (opCode != 255)
                 i++;
         });
         var rightsizedBuffer = new Uint8Array(i);
-        for (var l = 0; i < i; l++) {
-            rightsizedBuffer.buffer[l] = 10; //encodedBuffer[l]
+        for (var l = 0; l < i; l++) {
+            rightsizedBuffer[l] = encodedBuffer[l];
         }
         return rightsizedBuffer;
     };
