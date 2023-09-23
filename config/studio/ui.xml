@@ -396,6 +396,15 @@
             </middleSection>
             <rightSection>
                 <widgets>
+
+                    <widget id="org.rd.plugin.agistudio.Picture">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
                     
                     
                     <!--
