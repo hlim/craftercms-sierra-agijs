@@ -806,16 +806,14 @@ function ShowPicture(props) {
                         var y1 = stream.readUint8();
                         var x2 = -1;
                         var y2 = -1;
-                        while (true) {
-                            y2 = stream.readUint8();
-                            if (y2 >= 0xf0)
-                                break;
-                            y1 = y2;
-                            x2 = stream.readUint8();
-                            if (x2 >= 0xf0)
-                                break;
-                            x1 = x2;
-                        }
+                        // while (true) {
+                        //   y2 = stream.readUint8();
+                        //   if (y2 >= 0xf0) break;
+                        //   y1 = y2;
+                        //   x2 = stream.readUint8();
+                        //   if (x2 >= 0xf0) break;
+                        //   x1 = x2;
+                        // }
                         //stream.position--;
                         decodedCommands.push('DrawYCorner(' + x1 + ',' + y1 + ',' + x2 + ',' + y2 + ');');
                         break;
@@ -824,62 +822,55 @@ function ShowPicture(props) {
                         var y1 = stream.readUint8();
                         var x2 = -1;
                         var y2 = -1;
-                        while (true) {
-                            x2 = stream.readUint8();
-                            if (x2 >= 0xf0)
-                                break;
-                            x1 = x2;
-                            y2 = stream.readUint8();
-                            if (y2 >= 0xf0)
-                                break;
-                            y1 = y2;
-                        }
+                        // while (true) {
+                        //   x2 = stream.readUint8();
+                        //   if (x2 >= 0xf0) break;
+                        //   x1 = x2;
+                        //   y2 = stream.readUint8();
+                        //   if (y2 >= 0xf0) break;
+                        //   y1 = y2;
+                        // }
                         //stream.position--;
                         decodedCommands.push('DrawXCorner(' + x1 + ',' + y1 + ',' + x2 + ',' + y2 + ');');
                         break;
                     case 246: // DrawAbs
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
-                        while (true) {
-                            var nextX = stream.readUint8();
-                            if (nextX >= 0xf0)
-                                break;
-                            var nextY = stream.readUint8();
-                            x1 = nextX;
-                            y1 = nextY;
-                        }
+                        // while (true) {
+                        //   var nextX = stream.readUint8();
+                        //   if (nextX >= 0xf0) break;
+                        //   var nextY = stream.readUint8();
+                        //   x1 = nextX;
+                        //   y1 = nextY;
+                        // }
                         //this.stream.position--;
                         decodedCommands.push('DrawAbs(' + x1 + ',' + y1 + ');');
                         break;
                     case 247: // DrawRel
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
-                        while (true) {
-                            var val = stream.readUint8();
-                            if (val >= 0xf0)
-                                break;
-                            var xDisp = (val >>> 4) & 0x07;
-                            if ((val & 0x80) === 0x80)
-                                xDisp = -xDisp;
-                            var yDisp = val & 0x07;
-                            if ((val & 8) == 8)
-                                yDisp = -yDisp;
-                            var nextX = x1 + xDisp;
-                            var nextY = y1 + yDisp;
-                            x1 = nextX;
-                            y1 = nextY;
-                        }
+                        // while (true) {
+                        //   var val = stream.readUint8();
+                        //   if (val >= 0xf0) break;
+                        //   var xDisp = (val >>> 4) & 0x07;
+                        //   if ((val & 0x80) === 0x80) xDisp = -xDisp;
+                        //   var yDisp = val & 0x07;
+                        //   if ((val & 8) == 8) yDisp = -yDisp;
+                        //   var nextX = x1 + xDisp;
+                        //   var nextY = y1 + yDisp;
+                        //   x1 = nextX;
+                        //   y1 = nextY;
+                        // }
                         //this.stream.position--;
                         decodedCommands.push('DrawRel(' + x1 + ',' + y1 + ');');
                         break;
                     case 248: // DrawFill
                         var x1, y1;
-                        while (true) {
-                            x1 = stream.readUint8();
-                            if (x1 >= 0xf0)
-                                break;
-                            var y1 = stream.readUint8();
-                        }
+                        // while (true) {
+                        //   x1 = stream.readUint8();
+                        //   if (x1 >= 0xf0) break;
+                        //   var y1 = stream.readUint8();
+                        // }
                         //this.stream.position--;
                         decodedCommands.push('DrawFill(' + x1 + ',' + y1 + ');');
                         break;
