@@ -949,8 +949,8 @@ function ShowPicture(props) {
         var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
         var picNo = agiInterpreter.variables[0];
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
-        agiInterpreter.agi_draw_pic(picNo);
-        agiInterpreter.agi_show_pic(picNo);
+        agiInterpreter.agi_draw_pic(picNo - 1);
+        agiInterpreter.agi_show_pic(picNo - 1);
         // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
         // Agi.interpreter.agi_draw_pic(0)  
         // Agi.interpreter.agi_show_pic(0)  
