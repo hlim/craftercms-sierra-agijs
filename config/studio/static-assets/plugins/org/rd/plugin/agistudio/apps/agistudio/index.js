@@ -940,7 +940,9 @@ function ShowPicture(props) {
         console.log(encodedBuffer);
     };
     var handleCommandUpdate = function (event) {
-        setCommands(event.target.value);
+        var updatedCommands = event.target.value;
+        console.log("Updated :" + updatedCommands);
+        setCommands(updatedCommands);
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
