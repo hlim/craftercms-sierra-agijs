@@ -734,6 +734,7 @@ function ShowPicture(props) {
             var commandName = command.substring(0, command.indexOf('('));
             command.replace(commandName, '').replace('(', '').replace(')', '').split(',');
             var opCode = 255; // End
+            console.log("decoding :" + opCode);
             switch (commandName) {
                 case 'PicSetColor':
                     opCode = 240;
