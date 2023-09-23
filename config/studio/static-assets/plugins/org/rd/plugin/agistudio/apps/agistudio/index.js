@@ -732,7 +732,7 @@ function ShowPicture(props) {
         var i = 0;
         parsedCommands.forEach(function (command) {
             var commandName = command.substring(0, command.indexOf('('));
-            command.replace(commandName, '').replace('(', '').replace(')', '').split(',');
+            var args = command.replace(commandName, '').replace('(', '').replace(')', '').split(',');
             var opCode = 255; // End
             switch (commandName) {
                 case 'PicSetColor':
@@ -774,8 +774,14 @@ function ShowPicture(props) {
             }
             console.log("decoding " + i + " :" + commandName + " => " + opCode);
             encodedBuffer[i] = opCode;
-            if (opCode != 255)
+            if (opCode != 255) {
                 i++;
+                for (var a = 0; a < args.length; a++) {
+                    var value = args[a];
+                    encodedBuffer[i] = parseInt(value);
+                    i++;
+                }
+            }
         });
         var rightsizedBuffer = new Uint8Array(i);
         for (var l = 0; l < i; l++) {
