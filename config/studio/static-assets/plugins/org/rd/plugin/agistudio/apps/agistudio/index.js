@@ -939,6 +939,9 @@ function ShowPicture(props) {
         console.log('PICTURE');
         console.log(encodedBuffer);
     };
+    var handleCommandUpdate = function (event) {
+        setCommands(event.target.value);
+    };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Show Picture"),
@@ -947,7 +950,7 @@ function ShowPicture(props) {
             React.createElement(DialogContent, null,
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: commands }))),
         React.createElement(Tooltip, { title: 'Show Picture' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick, onChange: handleCommandUpdate },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
 }
 
