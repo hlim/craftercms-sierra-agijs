@@ -69,6 +69,7 @@ var AgiBridge = /** @class */ (function () {
         if (previewFrameEl) {
             var agiPath = frameElPath + '.contentWindow.Agi';
             var resourcesPath = frameElPath + '.contentWindow.Resources';
+            var fsPath = frameElPath + '.contentWindow.Fs';
             var agiBooted = eval(agiPath);
             if (agiBooted) {
                 try {
@@ -78,6 +79,9 @@ var AgiBridge = /** @class */ (function () {
                     }
                     else if (command.startsWith('Resources')) {
                         commandToSend = commandToSend.replaceAll('Resources', resourcesPath);
+                    }
+                    else if (command.startsWith('Fs')) {
+                        commandToSend = commandToSend.replaceAll('Fs', fsPath);
                     }
                     //          console.log('Sending Command :' + intent);
                     //          console.log('Command :' + command);
@@ -733,6 +737,7 @@ function ShowPicture(props) {
         parsedCommands.forEach(function (command) {
             var commandName = command.substring(0, command.indexOf('('));
             var args = command.replace(commandName, '').replace('(', '').replace(')', '').split(',');
+            var terminateArgs = false;
             var opCode = 0; // End
             switch (commandName) {
                 case 'PicSetColor':
@@ -761,6 +766,7 @@ function ShowPicture(props) {
                     break;
                 case 'DrawFill':
                     opCode = 248;
+                    terminateArgs = true;
                     break;
                 case 'SetPen':
                     opCode = 249;
@@ -778,6 +784,10 @@ function ShowPicture(props) {
             for (var a = 0; a < args.length; a++) {
                 var value = args[a];
                 encodedBuffer[i] = parseInt(value);
+                i++;
+            }
+            if (terminateArgs) {
+                encodedBuffer[i] = 255;
                 i++;
             }
         });
@@ -936,8 +946,14 @@ function ShowPicture(props) {
         var encodedBuffer = encodeCommands();
         var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
         var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
+        var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
         var picNo = agiInterpreter.variables[0];
-        agiInterpreter.loadedPics[picNo] = new AgiPic(encodedBuffer);
+        agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
+        agiInterpreter.agi_draw_pic(picNo);
+        agiInterpreter.agi_show_pic(picNo);
+        // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
+        // Agi.interpreter.agi_draw_pic(0)  
+        // Agi.interpreter.agi_show_pic(0)  
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
