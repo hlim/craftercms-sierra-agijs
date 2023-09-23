@@ -811,18 +811,21 @@ function ShowPicture(props) {
                     case 245: // DrawRel
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
-                        // while (true) {
-                        //   var val = stream.readUint8();
-                        //   if (val >= 0xf0) break;
-                        //   var xDisp = (val >>> 4) & 0x07;
-                        //   if ((val & 0x80) === 0x80) xDisp = -xDisp;
-                        //   var yDisp = val & 0x07;
-                        //   if ((val & 8) == 8) yDisp = -yDisp;
-                        //   var nextX = x1 + xDisp;
-                        //   var nextY = y1 + yDisp;
-                        //   x1 = nextX;
-                        //   y1 = nextY;
-                        // }
+                        while (true) {
+                            var val = stream.readUint8();
+                            if (val >= 0xf0)
+                                break;
+                            var xDisp = (val >>> 4) & 0x07;
+                            if ((val & 0x80) === 0x80)
+                                xDisp = -xDisp;
+                            var yDisp = val & 0x07;
+                            if ((val & 8) == 8)
+                                yDisp = -yDisp;
+                            var nextX = x1 + xDisp;
+                            var nextY = y1 + yDisp;
+                            x1 = nextX;
+                            y1 = nextY;
+                        }
                         //this.stream.position--;
                         decodedCommands.push('DrawRel(' + x1 + ',' + y1 + ');');
                         break;
