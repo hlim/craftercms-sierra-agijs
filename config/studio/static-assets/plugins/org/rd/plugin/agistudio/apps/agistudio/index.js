@@ -718,9 +718,13 @@ function ShowPicture(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState([]); _c[0]; var setCommands = _c[1];
+    var _c = React.useState([]), commands = _c[0], setCommands = _c[1];
     var prettyPrintCommands = function (commands) {
-        return "todo";
+        var code = "";
+        commands.forEach(function (command) {
+            code += command + "\n";
+        });
+        return code;
     };
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
@@ -732,7 +736,7 @@ function ShowPicture(props) {
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Show Picture"),
             React.createElement(DialogContent, null,
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: prettyPrintCommands() }))),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: prettyPrintCommands(commands) }))),
         React.createElement(Tooltip, { title: 'Show Picture' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
