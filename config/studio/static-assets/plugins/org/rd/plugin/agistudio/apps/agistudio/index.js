@@ -797,13 +797,14 @@ function ShowPicture(props) {
                     case 244: // DrawAbs
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
-                        // while (true) {
-                        //   var nextX = stream.readUint8();
-                        //   if (nextX >= 0xf0) break;
-                        //   var nextY = stream.readUint8();
-                        //   x1 = nextX;
-                        //   y1 = nextY;
-                        // }
+                        while (true) {
+                            var nextX = stream.readUint8();
+                            if (nextX >= 0xf0)
+                                break;
+                            var nextY = stream.readUint8();
+                            x1 = nextX;
+                            y1 = nextY;
+                        }
                         //this.stream.position--;
                         decodedCommands.push('DrawAbs(' + x1 + ',' + y1 + ');');
                         break;
