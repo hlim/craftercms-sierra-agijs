@@ -772,7 +772,7 @@ function ShowPicture(props) {
                     opCode = 255;
                     break;
             }
-            console.log("decoding :" + commandName + " => " + opCode);
+            console.log("decoding " + i + " :" + commandName + " => " + opCode);
             encodedBuffer[i] = opCode;
             if (opCode != 255)
                 i++;
