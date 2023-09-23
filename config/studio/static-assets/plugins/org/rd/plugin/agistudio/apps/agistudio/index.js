@@ -728,9 +728,65 @@ function ShowPicture(props) {
     };
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
-        AgiBridge.agiExecute('Get Logic Array', 'Agi.interpreter.loadedLogics');
-        setCommands([]);
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
+        var decodedPictureCommands = decodePictureStream(currentPictureStream);
+        setCommands(decodedPictureCommands);
         setDialogOpen(true);
+    };
+    var decodePictureStream = function (stream) {
+        var decodedCommands = [];
+        stream.position = 0;
+        //this.visible = visualBuffer;
+        //this.priority = priorityBuffer;
+        var processing = true;
+        while (processing) {
+            var opCode = stream.readUint8();
+            if (opCode >= 0xf0) {
+                switch (opCode) {
+                    case 240: // PicSetColor
+                        var picColor = stream.readUint8();
+                        decodedCommands.push("PicSetColor(" + picColor + ")");
+                        break;
+                    case 241: // PicOpcode.PicDisable
+                        decodedCommands.push("PicDisable()");
+                        break;
+                    case 242: // PriSetcolor
+                        var priColor = stream.readUint8();
+                        decodedCommands.push("PriSetColor(" + priColor + ")");
+                        break;
+                    case 241: // PriDisable
+                        decodedCommands.push("PriDisable()");
+                        break;
+                    case 242: // DrawYCorner
+                        decodedCommands.push("DrawYCorner(...)");
+                        break;
+                    case 243: // DrawXCorner
+                        decodedCommands.push("DrawXCorner(...)");
+                        break;
+                    case 244: // DrawAbs
+                        decodedCommands.push("DrawAbs(...)");
+                        break;
+                    case 245: // DrawRel
+                        decodedCommands.push("DrawRel(...)");
+                        break;
+                    case 246: // DrawFill
+                        decodedCommands.push("DrawFill(...)");
+                        break;
+                    case 247: // SetPen
+                        decodedCommands.push("SetPen(...)");
+                        break;
+                    case 248: // DrawPen
+                        decodedCommands.push("DrawPen(...)");
+                        break;
+                    case 255: // End
+                        decodedCommands.push("End()");
+                        processing = false;
+                        break;
+                }
+            }
+        }
+        return decodedCommands;
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
