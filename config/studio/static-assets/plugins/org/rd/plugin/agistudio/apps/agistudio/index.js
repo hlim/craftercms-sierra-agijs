@@ -772,7 +772,7 @@ function ShowPicture(props) {
                     opCode = 255;
                     break;
             }
-            console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
+            //      console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
             encodedBuffer[i] = opCode;
             i++;
             for (var a = 0; a < args.length; a++) {
@@ -934,8 +934,10 @@ function ShowPicture(props) {
     };
     var renderClick = function (event) {
         var encodedBuffer = encodeCommands();
-        console.log('PICTURE');
-        console.log(encodedBuffer);
+        var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
+        var resourcesPic = AgiBridge.agiExecute('Get Resources.Pic', 'Resources.Pic');
+        var picNo = agiInterpreter.variables[0];
+        agiInterpreter.loadedPics[picNo] = new resourcesPic(encodedBuffer);
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
