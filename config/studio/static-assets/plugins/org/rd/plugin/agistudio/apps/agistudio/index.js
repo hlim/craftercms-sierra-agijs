@@ -774,11 +774,12 @@ function ShowPicture(props) {
             }
             console.log("decoding :" + commandName + " => " + opCode);
             encodedBuffer[i] = opCode;
-            i++;
+            if (opCode != 255)
+                i++;
         });
         var rightsizedBuffer = new Uint8Array(i);
         for (var l = 0; i < i; l++) {
-            rightsizedBuffer[l] = encodedBuffer[l];
+            rightsizedBuffer[l] = 10; //encodedBuffer[l]
         }
         return rightsizedBuffer;
     };
