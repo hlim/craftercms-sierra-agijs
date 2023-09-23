@@ -797,46 +797,41 @@ function ShowPicture(props) {
                     case 244: // DrawAbs
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
-                        while (true) {
-                            var nextX = stream.readUint8();
-                            if (nextX >= 0xf0)
-                                break;
-                            var nextY = stream.readUint8();
-                            x1 = nextX;
-                            y1 = nextY;
-                        }
+                        // while (true) {
+                        //   var nextX = stream.readUint8();
+                        //   if (nextX >= 0xf0) break;
+                        //   var nextY = stream.readUint8();
+                        //   x1 = nextX;
+                        //   y1 = nextY;
+                        // }
                         //this.stream.position--;
                         decodedCommands.push('DrawAbs(' + x1 + ',' + y1 + ');');
                         break;
                     case 245: // DrawRel
                         var x1 = stream.readUint8();
                         var y1 = stream.readUint8();
-                        while (true) {
-                            var val = stream.readUint8();
-                            if (val >= 0xf0)
-                                break;
-                            var xDisp = (val >>> 4) & 0x07;
-                            if ((val & 0x80) === 0x80)
-                                xDisp = -xDisp;
-                            var yDisp = val & 0x07;
-                            if ((val & 8) == 8)
-                                yDisp = -yDisp;
-                            var nextX = x1 + xDisp;
-                            var nextY = y1 + yDisp;
-                            x1 = nextX;
-                            y1 = nextY;
-                        }
+                        // while (true) {
+                        //   var val = stream.readUint8();
+                        //   if (val >= 0xf0) break;
+                        //   var xDisp = (val >>> 4) & 0x07;
+                        //   if ((val & 0x80) === 0x80) xDisp = -xDisp;
+                        //   var yDisp = val & 0x07;
+                        //   if ((val & 8) == 8) yDisp = -yDisp;
+                        //   var nextX = x1 + xDisp;
+                        //   var nextY = y1 + yDisp;
+                        //   x1 = nextX;
+                        //   y1 = nextY;
+                        // }
                         //this.stream.position--;
                         decodedCommands.push('DrawRel(' + x1 + ',' + y1 + ');');
                         break;
                     case 246: // DrawFill
                         var x1, y1;
-                        while (true) {
-                            x1 = stream.readUint8();
-                            if (x1 >= 0xf0)
-                                break;
-                            var y1 = stream.readUint8();
-                        }
+                        // while (true) {
+                        //   x1 = stream.readUint8();
+                        //   if (x1 >= 0xf0) break;
+                        //   var y1 = stream.readUint8();
+                        // }
                         //this.stream.position--;
                         decodedCommands.push('DrawFill(' + x1 + ',' + y1 + ');');
                         break;
@@ -846,23 +841,27 @@ function ShowPicture(props) {
                         break;
                     case 248: // DrawPen
                         var firstArg;
-                        while (true) {
-                            firstArg = stream.readUint8();
-                            if (firstArg >= 0xf0)
-                                break;
-                            {
-                                stream.readUint8();
-                                // if (this.penSize == 0) {
-                                //     this.setPixel(x, y);
-                                // }
-                                // else if (this.penRectangle) {
-                                //     this.drawPenRect(x, y);
-                                // }
-                                // else {
-                                //     this.drawPenCircle(x, y);
-                                // }
-                            }
-                        }
+                        //while (true) {
+                        //  firstArg = stream.readUint8();
+                        //   if (firstArg >= 0xf0) break;
+                        //   if (false) {
+                        //     //this.penSplatter) {
+                        //     var x = stream.readUint8();
+                        //     var y = stream.readUint8();
+                        //   } else {
+                        //     var x = firstArg;
+                        //     var y = stream.readUint8();
+                        //     // if (this.penSize == 0) {
+                        //     //     this.setPixel(x, y);
+                        //     // }
+                        //     // else if (this.penRectangle) {
+                        //     //     this.drawPenRect(x, y);
+                        //     // }
+                        //     // else {
+                        //     //     this.drawPenCircle(x, y);
+                        //     // }
+                        //   }
+                        // }
                         // this.stream.position--;
                         decodedCommands.push('DrawPen(' + firstArg + ');');
                         break;
