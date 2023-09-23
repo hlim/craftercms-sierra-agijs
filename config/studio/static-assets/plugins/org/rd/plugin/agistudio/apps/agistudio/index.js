@@ -727,7 +727,7 @@ function ShowPicture(props) {
         return code;
     };
     var encodeCommands = function () {
-        var encodedBuffer = new Uint8Array();
+        var encodedBuffer = new Uint8Array(1000);
         var parsedCommands = commands.replaceAll('\n', '').split(';');
         var i = 0;
         parsedCommands.forEach(function (command) {
@@ -775,7 +775,11 @@ function ShowPicture(props) {
             encodedBuffer[i] = opCode;
             i++;
         });
-        return encodedBuffer;
+        var rightsizedBuffer = new Uint8Array(i);
+        for (var l = 0; i < i; l++) {
+            rightsizedBuffer[l] = encodedBuffer[l];
+        }
+        return rightsizedBuffer;
     };
     var decodePictureStream = function (stream) {
         var decodedCommands = [];
