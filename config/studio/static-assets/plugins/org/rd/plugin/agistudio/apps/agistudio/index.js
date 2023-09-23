@@ -935,9 +935,9 @@ function ShowPicture(props) {
     var renderClick = function (event) {
         var encodedBuffer = encodeCommands();
         var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
-        var Resources = AgiBridge.agiExecute('Get Resources.Pic', 'Resources');
+        var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
         var picNo = agiInterpreter.variables[0];
-        agiInterpreter.loadedPics[picNo] = new Resources.Pic(encodedBuffer);
+        agiInterpreter.loadedPics[picNo] = new AgiPic(encodedBuffer);
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
