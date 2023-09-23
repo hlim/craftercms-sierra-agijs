@@ -846,28 +846,28 @@ function ShowPicture(props) {
                         break;
                     case 248: // DrawPen
                         var firstArg;
-                        while (true) {
-                            firstArg = stream.readUint8();
-                            if (firstArg >= 0xf0)
-                                break;
-                            // if (false) {
-                            //   //this.penSplatter) {
-                            //   var x = stream.readUint8();
-                            //   var y = stream.readUint8();
-                            // } else {
-                            //   var x = firstArg;
-                            //   var y = stream.readUint8();
-                            //   // if (this.penSize == 0) {
-                            //   //     this.setPixel(x, y);
-                            //   // }
-                            //   // else if (this.penRectangle) {
-                            //   //     this.drawPenRect(x, y);
-                            //   // }
-                            //   // else {
-                            //   //     this.drawPenCircle(x, y);
-                            //   // }
-                            // }
-                        }
+                        firstArg = stream.readUint8();
+                        // while (true) {
+                        //   firstArg = stream.readUint8();
+                        //   if (firstArg >= 0xf0) break;
+                        //   // if (false) {
+                        //   //   //this.penSplatter) {
+                        //   //   var x = stream.readUint8();
+                        //   //   var y = stream.readUint8();
+                        //   // } else {
+                        //   //   var x = firstArg;
+                        //   //   var y = stream.readUint8();
+                        //   //   // if (this.penSize == 0) {
+                        //   //   //     this.setPixel(x, y);
+                        //   //   // }
+                        //   //   // else if (this.penRectangle) {
+                        //   //   //     this.drawPenRect(x, y);
+                        //   //   // }
+                        //   //   // else {
+                        //   //   //     this.drawPenCircle(x, y);
+                        //   //   // }
+                        //   // }
+                        // }
                         // this.stream.position--;
                         decodedCommands.push('DrawPen(' + firstArg + ');');
                         break;
