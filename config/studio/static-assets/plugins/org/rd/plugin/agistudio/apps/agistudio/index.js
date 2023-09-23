@@ -762,7 +762,22 @@ function ShowPicture(props) {
                         decodedCommands.push("DrawYCorner(...)");
                         break;
                     case 243: // DrawXCorner
-                        decodedCommands.push("DrawXCorner(...)");
+                        var x1 = stream.readUint8();
+                        var y1 = stream.readUint8();
+                        var x2 = -1;
+                        var y2 = -1;
+                        while (true) {
+                            x2 = stream.readUint8();
+                            if (x2 >= 0xF0)
+                                break;
+                            x1 = x2;
+                            y2 = stream.readUint8();
+                            if (y2 >= 0xF0)
+                                break;
+                            y1 = y2;
+                        }
+                        //stream.position--;
+                        decodedCommands.push("DrawXCorner(" + x1 + "," + y1 + "," + x2 + "," + y2 + ")");
                         break;
                     case 244: // DrawAbs
                         decodedCommands.push("DrawAbs(...)");
