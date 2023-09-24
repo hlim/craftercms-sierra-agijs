@@ -316,7 +316,7 @@
                     <widget id="craftercms.components.PreviewAddressBar"/>
 -->
                 <widgets>
-<!--   
+
                     <widget id="org.rd.plugin.agistudio.CurrentRoom">
                     	<plugin
                     		id="org.rd.plugin.agistudio"
@@ -325,7 +325,6 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
--->
 
 
                     <widget id="org.rd.plugin.agistudio.RoomSelector">
@@ -336,6 +335,72 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
+
+                    <widget id="org.rd.plugin.agistudio.SoundSelector">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
+
+                    <widget id="org.rd.plugin.agistudio.AllowInput">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
+                    <widget id="org.rd.plugin.agistudio.SetEgoPosition">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
+                    <widget id="org.rd.plugin.agistudio.ShowPriorityBuffer">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
+                    <widget id="org.rd.plugin.agistudio.ShowWords">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
+                    
+                    <widget id="org.rd.plugin.agistudio.ShowCode">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
+                    <widget id="org.rd.plugin.agistudio.OpenPicDialogButton">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
+
 
                 </widgets>
 
