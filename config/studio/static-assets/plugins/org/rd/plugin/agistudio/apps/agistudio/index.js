@@ -942,15 +942,19 @@ function EditPictureDialog(props) {
                         break;
                     case 'DrawYCorner':
                         opCode = 244;
+                        terminateArgs = true;
                         break;
                     case 'DrawXCorner':
                         opCode = 245;
+                        terminateArgs = true;
                         break;
                     case 'DrawAbs':
                         opCode = 246;
+                        terminateArgs = true;
                         break;
                     case 'DrawRel':
                         opCode = 247;
+                        terminateArgs = true;
                         break;
                     case 'DrawFill':
                         opCode = 248;
