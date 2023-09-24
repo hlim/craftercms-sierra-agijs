@@ -324,7 +324,7 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
-
+<!--
                     <widget id="org.rd.plugin.agistudio.RoomSelector">
                     	<plugin
                     		id="org.rd.plugin.agistudio"
@@ -398,7 +398,7 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
-                    
+-->                    
 
                 </widgets>
 
@@ -406,8 +406,6 @@
             <rightSection>
                 <widgets>
 
-                    
-                    
                     <!--
                     <widget id="craftercms.components.EditModesSwitcher"/>
                     <widget id="craftercms.components.PublishingStatusButton">
