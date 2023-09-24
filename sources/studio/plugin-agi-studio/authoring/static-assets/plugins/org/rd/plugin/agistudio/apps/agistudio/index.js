@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, SwipeableDrawer } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -902,6 +902,7 @@ function AddGame(props) {
 
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
+    var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -909,23 +910,23 @@ function EditPictureDialog(props) {
         });
         return code;
     };
-    var encodeCommands = function () {
+    var encodeCommands = function (commandsToEncode) {
         var encodedBuffer = new Uint8Array(100000);
-        var parsedCommands = commands.replaceAll('\n', '').split(';');
+        var parsedCommands = commandsToEncode.replaceAll('\n', '').split(';');
         var i = 0;
         var skip = false;
         parsedCommands.forEach(function (command) {
             var commandName = command.substring(0, command.indexOf('('));
             var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
             var opCode = 0; // End
-            if (commandName.startsWith("/*"))
+            if (commandName.startsWith('/*'))
                 skip = true;
-            else if (commandName.startsWith("//"))
+            else if (commandName.startsWith('//'))
                 skip = true;
-            else if (skip = commandName.startsWith("*/"))
+            else if ((skip = commandName.startsWith('*/')))
                 skip = false;
             if (!skip) {
-                console.log("Executing Command:" + commandName + "(" + args.join(",") + ");");
+                console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
                 switch (commandName) {
                     case 'PicSetColor':
                         opCode = 240;
@@ -1052,8 +1053,8 @@ function EditPictureDialog(props) {
         }
         return decodedCommands;
     };
-    var renderClick = function (event) {
-        var encodedBuffer = encodeCommands();
+    var renderCommands = function (commandsToRender) {
+        var encodedBuffer = encodeCommands(commandsToRender);
         var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
         var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
         var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
@@ -1061,14 +1062,31 @@ function EditPictureDialog(props) {
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
         agiInterpreter.agi_draw_pic(picNo - 1);
         agiInterpreter.agi_show_pic(picNo - 1);
-        // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
-        // Agi.interpreter.agi_draw_pic(0)
-        // Agi.interpreter.agi_show_pic(0)
     };
-    var handleCommandUpdate = function (event) {
-        var updatedCommands = event.target.value;
-        console.log('Updated :' + updatedCommands);
-        setCommands(updatedCommands);
+    var renderClick = function (event) {
+        if (!mouseTrapped) {
+            var printMousePosition = function (event) {
+                // something is wrong with getting commands from inside this event :-/
+                var x = Math.round(event.clientX);
+                var y = Math.round(event.clientY);
+                //@ts-ignore
+                var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+                var newCommands = existingCommands.replace('End();', '');
+                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
+                setCommands(newCommands);
+                //@ts-ignore
+                window.agistudioPicCommands = newCommands;
+                renderCommands(newCommands);
+            };
+            setMouseTrapped(true);
+            //@ts-ignore
+            var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+            var canvas = previewDocument.getElementById('canvas');
+            canvas.addEventListener('click', printMousePosition);
+        }
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        renderCommands(existingCommands);
     };
     var getCurrentPictureCommands = function () {
         try {
@@ -1077,17 +1095,22 @@ function EditPictureDialog(props) {
             var decodedPictureCommands = decodePictureStream(currentPictureStream);
             setCommands(prettyPrintCommands(decodedPictureCommands));
         }
-        catch (err) {
-        }
+        catch (err) { }
     };
-    useEffect(function () {
-        // Initialize the dialog
-    }, []);
     var handleSwitchBuffer = function () {
         AgiBridge.agiExecute('Get buffer mode', 'Agi.interpreter.gbm = (Agi.interpreter.gbm && Agi.interpreter.gbm==1) ? 0 : 1');
         AgiBridge.agiExecute('Keep Orig Visual Buffer', 'Agi.interpreter.gvb = (!Agi.interpreter.gvb) ? Agi.interpreter.visualBuffer : Agi.interpreter.gvb');
         AgiBridge.agiExecute('Set Visual Buffer', 'Agi.interpreter.visualBuffer = (Agi.interpreter.gbm==1) ? Agi.interpreter.priorityBuffer : Agi.interpreter.gvb');
         AgiBridge.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
+    };
+    var setColor = function (color) {
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        var newCommands = existingCommands.replace('End();', '');
+        newCommands = newCommands + "PicSetColor(".concat(color, ");\nEnd();");
+        setCommands(newCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
@@ -1095,7 +1118,35 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: commands, onChange: handleCommandUpdate }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, null, "Picture Mode"),
+                    React.createElement(Button, null, "Priorty Mode"))),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, null, "Draw Relative"),
+                    React.createElement(Button, null, "Draw Absolute"),
+                    React.createElement(Button, null, "Draw Fill"))),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, { onClick: function () { setColor(0); }, sx: { height: "35px", 'background-color': 'black' } }),
+                    React.createElement(Button, { onClick: function () { setColor(1); }, sx: { height: "35px", 'background-color': 'darkblue' } }),
+                    React.createElement(Button, { onClick: function () { setColor(2); }, sx: { height: "35px", 'background-color': 'green' } }),
+                    React.createElement(Button, { onClick: function () { setColor(3); }, sx: { height: "35px", 'background-color': 'crayon' } }),
+                    React.createElement(Button, { onClick: function () { setColor(4); }, sx: { height: "35px", 'background-color': 'darkred' } }),
+                    React.createElement(Button, { onClick: function () { setColor(5); }, sx: { height: "35px", 'background-color': 'purple' } }),
+                    React.createElement(Button, { onClick: function () { setColor(6); }, sx: { height: "35px", 'background-color': 'brown' } }),
+                    React.createElement(Button, { onClick: function () { setColor(7); }, sx: { height: "35px", 'background-color': 'lightgray' } })),
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, { onClick: function () { setColor(8); }, sx: { height: "35px", 'background-color': 'gray' } }),
+                    React.createElement(Button, { onClick: function () { setColor(9); }, sx: { height: "35px", 'background-color': 'blue' } }),
+                    React.createElement(Button, { onClick: function () { setColor(10); }, sx: { height: "35px", 'background-color': 'lightgreen' } }),
+                    React.createElement(Button, { onClick: function () { setColor(11); }, sx: { height: "35px", 'background-color': 'lightcrayon' } }),
+                    React.createElement(Button, { onClick: function () { setColor(12); }, sx: { height: "35px", 'background-color': 'red' } }),
+                    React.createElement(Button, { onClick: function () { setColor(13); }, sx: { height: "35px", 'background-color': 'magenta' } }),
+                    React.createElement(Button, { onClick: function () { setColor(14); }, sx: { height: "35px", 'background-color': 'yellow', color: 'black' } }),
+                    React.createElement(Button, { onClick: function () { setColor(15); }, sx: { height: "35px", 'background-color': 'white', color: 'black' } }))))));
 }
 
 function OpenPicDialogButton(props) {
@@ -1105,21 +1156,10 @@ function OpenPicDialogButton(props) {
         var drawerState = drawerOpen ? false : true;
         setDrawerOpen(drawerState);
     };
-    // const handleClick = () => {
-    //   dispatch(
-    //     showWidgetDialog({
-    //       title: "Edit Current Room Picture",
-    //       extraProps: props,
-    //       widget: {
-    //         id: 'org.rd.plugin.agistudio.EditPictureDialog'
-    //       }
-    //     })
-    //   );
-    // };
     return (React.createElement(React.Fragment, null,
-        React.createElement(SwipeableDrawer, { anchor: "bottom", open: drawerOpen, onClose: function (event) {
-            }, onOpen: function (event) {
-            } },
+        React.createElement(SwipeableDrawer, { anchor: 'left', variant: "persistent", ModalProps: {
+                keepMounted: false
+            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } },
             React.createElement(EditPictureDialog, { props: true })),
         React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },

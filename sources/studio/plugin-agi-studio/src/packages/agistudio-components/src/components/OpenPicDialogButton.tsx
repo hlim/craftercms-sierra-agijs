@@ -1,59 +1,50 @@
 import * as React from 'react';
-import { showWidgetDialog } from '@craftercms/studio-ui/state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { SwipeableDrawer, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ImageAspectRatioRoundedIcon from '@mui/icons-material/ImageAspectRatioRounded';
-import EditPictureDialog from './EditPictureDialog'
+import EditPictureDialog from './EditPictureDialog';
 
 export function OpenPicDialogButton(props) {
   const dispatch = useDispatch();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
-const handleClick = () => {
-  let drawerState = drawerOpen ? false : true;
-  setDrawerOpen(drawerState)
-}
+  const handleClick = () => {
+    let drawerState = drawerOpen ? false : true;
+    setDrawerOpen(drawerState);
+  };
 
-const toggleDrawer = (open) => {
-    setDrawerOpen(true)
-}
-
-  // const handleClick = () => {
-  //   dispatch(
-  //     showWidgetDialog({
-  //       title: "Edit Current Room Picture",
-  //       extraProps: props,
-  //       widget: {
-  //         id: 'org.rd.plugin.agistudio.EditPictureDialog'
-  //       }
-  //     })
-  //   );
-  // };
-
+  const toggleDrawer = (open) => {
+    setDrawerOpen(true);
+  };
   return (
     <>
-    <SwipeableDrawer
-        anchor={"bottom"}
-        open={drawerOpen} onClose={function (event: React.SyntheticEvent<{}, Event>): void {
-        } } onOpen={function (event: React.SyntheticEvent<{}, Event>): void {
-        } }    >
-      <EditPictureDialog props />
-    </SwipeableDrawer>
-
-    <Tooltip title={'Edit Current Room Picture'}>
-      <IconButton
-        size="medium"
-        style={{ padding: 4 }}
-        id="go-positioned-button"
-        aria-controls={drawerOpen ? 'demo-positioned-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={drawerOpen ? 'true' : undefined}
-        onClick={handleClick}
+      <SwipeableDrawer
+        anchor={'left'}
+        variant="persistent"
+        ModalProps={{
+          keepMounted: false
+        }}
+        open={drawerOpen}
+        onClose={function (event: React.SyntheticEvent<{}, Event>): void {}}
+        onOpen={function (event: React.SyntheticEvent<{}, Event>): void {}}
       >
-        <ImageAspectRatioRoundedIcon />
-      </IconButton>
-    </Tooltip>
+        <EditPictureDialog props />
+      </SwipeableDrawer>
+
+      <Tooltip title={'Edit Current Room Picture'}>
+        <IconButton
+          size="medium"
+          style={{ padding: 4 }}
+          id="go-positioned-button"
+          aria-controls={drawerOpen ? 'demo-positioned-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={drawerOpen ? 'true' : undefined}
+          onClick={handleClick}
+        >
+          <ImageAspectRatioRoundedIcon />
+        </IconButton>
+      </Tooltip>
     </>
   );
 }

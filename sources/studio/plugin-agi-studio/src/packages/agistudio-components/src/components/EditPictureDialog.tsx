@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Button, DialogActions } from '@mui/material';
+import { Button, ButtonGroup, DialogActions, Paper } from '@mui/material';
 import { DialogContent, TextField } from '@mui/material';
 import { AgiBridge } from './AgiBridge';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export function EditPictureDialog(props) {
   const [commands, setCommands] = React.useState('');
+  const [mouseTrapped, setMouseTrapped] = useState(false);
 
   const prettyPrintCommands = (commands: any) => {
     let code = '';
@@ -16,25 +17,24 @@ export function EditPictureDialog(props) {
     return code;
   };
 
-  const encodeCommands = () => {
+  const encodeCommands = (commandsToEncode) => {
     let encodedBuffer = new Uint8Array(100000);
-    let parsedCommands = commands.replaceAll('\n', '').split(';');
+    let parsedCommands = commandsToEncode.replaceAll('\n', '').split(';');
 
     let i = 0;
-    var skip = false
+    var skip = false;
 
     parsedCommands.forEach(function (command) {
       var commandName = command.substring(0, command.indexOf('('));
       var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
-      var terminateArgs = false;
       var opCode = 0; // End
 
-      if(commandName.startsWith("/*")) skip = true
-      else if(commandName.startsWith("//")) skip = true
-      else if(skip=true && commandName.startsWith("*/")) skip = false
+      if (commandName.startsWith('/*')) skip = true;
+      else if (commandName.startsWith('//')) skip = true;
+      else if ((skip = true && commandName.startsWith('*/'))) skip = false;
 
-      if(!skip) {
-        console.log("Executing Command:"+commandName+"("+args.join(",")+");")
+      if (!skip) {
+        console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
         switch (commandName) {
           case 'PicSetColor':
             opCode = 240;
@@ -73,17 +73,17 @@ export function EditPictureDialog(props) {
             opCode = 255;
             break;
         }
-  
+
         // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
-  
+
         encodedBuffer[i] = opCode;
         i++;
-  
+
         for (var a = 0; a < args.length; a++) {
           var value = args[a];
           encodedBuffer[i] = parseInt(value);
           i++;
-        }  
+        }
       }
     });
 
@@ -93,7 +93,7 @@ export function EditPictureDialog(props) {
     }
 
     // for the picture to terminate
-    rightsizedBuffer[rightsizedBuffer.length-1]=255
+    rightsizedBuffer[rightsizedBuffer.length - 1] = 255;
 
     return rightsizedBuffer;
   };
@@ -175,8 +175,8 @@ export function EditPictureDialog(props) {
     return decodedCommands;
   };
 
-  const renderClick = (event: React.MouseEvent<HTMLElement>) => {
-    let encodedBuffer = encodeCommands();
+  const renderCommands = (commandsToRender) => {
+    let encodedBuffer = encodeCommands(commandsToRender);
 
     let agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
     let AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
@@ -186,40 +186,63 @@ export function EditPictureDialog(props) {
     agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
     agiInterpreter.agi_draw_pic(picNo - 1);
     agiInterpreter.agi_show_pic(picNo - 1);
+  };
 
-    // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
-    // Agi.interpreter.agi_draw_pic(0)
-    // Agi.interpreter.agi_show_pic(0)
+  const renderClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (!mouseTrapped) {
+      var printMousePosition = function (event) {
+        // something is wrong with getting commands from inside this event :-/
+
+        let x = Math.round(event.clientX/2);
+        let y = Math.round(event.clientY);
+
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+
+        var newCommands = existingCommands.replace('End();', '');
+        newCommands = newCommands + `DrawAbs(${x},${y},${x + 5},${y + 5});\nEnd();`;
+        setCommands(newCommands);
+
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
+
+        renderCommands(newCommands);
+      };
+
+      setMouseTrapped(true);
+
+      //@ts-ignore
+      let previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+      let canvas = previewDocument.getElementById('canvas');
+      canvas.addEventListener('click', printMousePosition);
+    }
+    //@ts-ignore
+    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+
+    renderCommands(existingCommands);
   };
 
   const handleCommandUpdate = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     let updatedCommands = event.target.value;
+    //@ts-ignore
+    window.agistudioPicCommands = updatedCommands;
 
-    console.log('Updated :' + updatedCommands);
     setCommands(updatedCommands);
   };
 
-const getCurrentPictureCommands = () => {
-  try {
+  const getCurrentPictureCommands = () => {
+    try {
+      let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+      let currentPictureStream = AgiBridge.agiExecute(
+        'Get Pic Stream',
+        'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')'
+      );
 
-    let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-    let currentPictureStream = AgiBridge.agiExecute(
-      'Get Pic Stream',
-      'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')'
-    );
+      let decodedPictureCommands = decodePictureStream(currentPictureStream);
 
-    let decodedPictureCommands = decodePictureStream(currentPictureStream);
-
-    setCommands(prettyPrintCommands(decodedPictureCommands));
-  }
-  catch(err) {
-
-  }
-}  
-  useEffect(() => {
-    // Initialize the dialog
-
-    }, []);
+      setCommands(prettyPrintCommands(decodedPictureCommands));
+    } catch (err) {}
+  };
 
   const handleSwitchBuffer = () => {
     AgiBridge.agiExecute(
@@ -235,7 +258,18 @@ const getCurrentPictureCommands = () => {
       'Agi.interpreter.visualBuffer = (Agi.interpreter.gbm==1) ? Agi.interpreter.priorityBuffer : Agi.interpreter.gvb'
     );
     AgiBridge.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
-  }
+  };
+
+  const setColor = (color: number) => {
+    //@ts-ignore
+    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+    var newCommands = existingCommands.replace('End();', '');
+    newCommands = newCommands + `PicSetColor(${color});\nEnd();`;
+    setCommands(newCommands);
+    
+    //@ts-ignore
+    window.agistudioPicCommands = newCommands
+  };
 
   return (
     <>
@@ -251,18 +285,48 @@ const getCurrentPictureCommands = () => {
         <Button onClick={renderClick} variant="outlined" sx={{ mr: 1 }}>
           Render
         </Button>
-
       </DialogActions>
 
       <DialogContent>
-        <TextField
-          id="outlined-textarea"
-          sx={{ width: '100%' }}
-          multiline
-          rows={10}
-          defaultValue={commands}
-          onChange={handleCommandUpdate}
-        />
+        <TextField id="outlined-textarea" sx={{ width: '100%' }} multiline rows={10} value={commands} />
+
+        <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
+          <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            <Button>Picture Mode</Button>
+            <Button>Priorty Mode</Button>
+          </ButtonGroup>
+        </Paper>
+        <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
+          <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            <Button>Draw Relative</Button>
+            <Button>Draw Absolute</Button>
+            <Button>Draw Fill</Button>
+          </ButtonGroup>
+        </Paper>
+
+        <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
+          <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            <Button onClick={()=>{setColor(0)}} sx={{ height: "35px",  'background-color': 'black' }}></Button>
+            <Button onClick={()=>{setColor(1)}} sx={{ height: "35px", 'background-color': 'darkblue' }}></Button>
+            <Button onClick={()=>{setColor(2)}} sx={{ height: "35px", 'background-color': 'green' }}></Button>
+            <Button onClick={()=>{setColor(3)}} sx={{ height: "35px", 'background-color': 'crayon' }}></Button>
+            <Button onClick={()=>{setColor(4)}} sx={{ height: "35px", 'background-color': 'darkred' }}></Button>
+            <Button onClick={()=>{setColor(5)}} sx={{ height: "35px", 'background-color': 'purple' }}></Button>
+            <Button onClick={()=>{setColor(6)}} sx={{ height: "35px", 'background-color': 'brown' }}></Button>
+            <Button onClick={()=>{setColor(7)}} sx={{ height: "35px", 'background-color': 'lightgray' }}></Button>
+          </ButtonGroup>
+
+          <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            <Button onClick={()=>{setColor(8)}}  sx={{ height: "35px", 'background-color': 'gray' }}></Button>
+            <Button onClick={()=>{setColor(9)}}  sx={{ height: "35px", 'background-color': 'blue' }}></Button>
+            <Button onClick={()=>{setColor(10)}} sx={{ height: "35px", 'background-color': 'lightgreen' }}></Button>
+            <Button onClick={()=>{setColor(11)}} sx={{ height: "35px", 'background-color': 'lightcrayon' }}></Button>
+            <Button onClick={()=>{setColor(12)}} sx={{ height: "35px", 'background-color': 'red' }}></Button>
+            <Button onClick={()=>{setColor(13)}} sx={{ height: "35px", 'background-color': 'magenta' }}></Button>
+            <Button onClick={()=>{setColor(14)}} sx={{ height: "35px", 'background-color': 'yellow', color: 'black' }}></Button>
+            <Button onClick={()=>{setColor(15)}} sx={{ height: "35px", 'background-color': 'white', color: 'black' }}></Button>
+          </ButtonGroup>
+        </Paper>
       </DialogContent>
     </>
   );
