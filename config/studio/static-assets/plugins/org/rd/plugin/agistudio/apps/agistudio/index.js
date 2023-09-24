@@ -1066,14 +1066,17 @@ function EditPictureDialog(props) {
     var renderClick = function (event) {
         if (!mouseTrapped) {
             var printMousePosition = function (event) {
-                //alert("Click: "+ event.clientX + ", " + event.clientY)
+                // something is wrong with getting commands from inside this event :-/
                 var x = Math.round(event.clientX / 10);
                 var y = Math.round(event.clientY / 10);
                 alert(commands);
-                var newCommands = commands.replace('End();', '');
+                //@ts-ignore
+                var existingCommands = window.agistudioPicCommands;
+                var newCommands = existingCommands.replace('End();', '');
                 newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
                 setCommands(newCommands);
-                alert(newCommands);
+                //@ts-ignore
+                window.agistudioPicCommands = newCommands;
                 renderCommands();
             };
             setMouseTrapped(true);
