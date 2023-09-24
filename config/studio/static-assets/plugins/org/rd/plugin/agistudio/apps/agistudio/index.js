@@ -18,7 +18,6 @@ const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-mat
 const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
 const { post } = craftercms.utils.ajax;
-import 'react-dom';
 const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
 
 /*
@@ -793,6 +792,9 @@ const dispatchDOMEvent = /*#__PURE__*/ createAction('DISPATCH_DOM_EVENT');
 const showUploadDialog = /*#__PURE__*/ createAction('SHOW_UPLOAD_DIALOG');
 const closeUploadDialog = /*#__PURE__*/ createAction('CLOSE_UPLOAD_DIALOG');
 // endregion
+// region Widget Dialog
+const showWidgetDialog = /*#__PURE__*/ createAction('SHOW_WIDGET_DIALOG');
+// endregion
 
 function AddGame(props) {
     var dispatch = useDispatch();
@@ -996,17 +998,15 @@ function EditPictureDialog(props) {
 }
 
 function OpenPicDialogButton(props) {
-    useDispatch();
+    var dispatch = useDispatch();
     var handleClick = function () {
-        // dispatch(
-        //   showWidgetDialog({
-        //     title: "Edit Current Room Picture",
-        //     extraProps: props,
-        //     widget: {
-        //       id: 'org.rd.plugin.agistudio.EditPictureDialog'
-        //     }
-        //   })
-        // );
+        dispatch(showWidgetDialog({
+            title: "Edit Current Room Picture",
+            extraProps: props,
+            widget: {
+                id: 'org.rd.plugin.agistudio.EditPictureDialog'
+            }
+        }));
     };
     return (React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
         React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
