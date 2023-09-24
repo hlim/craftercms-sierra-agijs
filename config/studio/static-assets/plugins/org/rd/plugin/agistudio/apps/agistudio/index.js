@@ -925,9 +925,8 @@ function EditPictureDialog(props) {
                 skip = true;
             else if (skip = commandName.startsWith("*/"))
                 skip = false;
-            if (commandName === "DrawFill")
-                skip = true;
             if (!skip) {
+                console.log("Executing Command:" + commandName + "(" + args.join(",") + ");");
                 switch (commandName) {
                     case 'PicSetColor':
                         opCode = 240;
