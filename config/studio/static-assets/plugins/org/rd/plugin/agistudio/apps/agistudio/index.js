@@ -902,8 +902,7 @@ function AddGame(props) {
 
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
-    var _b = React.useState(''), commandsValue = _b[0], setCommandsValue = _b[1];
-    var _c = React.useState(false), mouseTrapped = _c[0], setMouseTrapped = _c[1];
+    var _b = React.useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1070,7 +1069,7 @@ function EditPictureDialog(props) {
                 //alert("Click: "+ event.clientX + ", " + event.clientY)
                 var x = event.clientX / 10;
                 var y = event.clientY / 10;
-                setCommandsValue(commandsValue.replace('End();', "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();")));
+                setCommands(commands.replace('End();', "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();")));
                 renderCommands();
             };
             setMouseTrapped(true);
@@ -1107,7 +1106,7 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: commands, value: commandsValue, onChange: handleCommandUpdate }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands, onChange: handleCommandUpdate }))));
 }
 
 function OpenPicDialogButton(props) {
