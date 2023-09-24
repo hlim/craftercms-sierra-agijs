@@ -910,7 +910,7 @@ function EditPictureDialog(props) {
         return code;
     };
     var encodeCommands = function () {
-        var encodedBuffer = new Uint8Array(1000);
+        var encodedBuffer = new Uint8Array(100000);
         var parsedCommands = commands.replaceAll('\n', '').split(';');
         var i = 0;
         var skip = false;
