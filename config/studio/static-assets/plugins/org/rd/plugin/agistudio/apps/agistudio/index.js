@@ -910,9 +910,9 @@ function EditPictureDialog(props) {
         });
         return code;
     };
-    var encodeCommands = function () {
+    var encodeCommands = function (commandsToEncode) {
         var encodedBuffer = new Uint8Array(100000);
-        var parsedCommands = commands.replaceAll('\n', '').split(';');
+        var parsedCommands = commandsToEncode.replaceAll('\n', '').split(';');
         var i = 0;
         var skip = false;
         parsedCommands.forEach(function (command) {
@@ -1053,8 +1053,8 @@ function EditPictureDialog(props) {
         }
         return decodedCommands;
     };
-    var renderCommands = function () {
-        var encodedBuffer = encodeCommands();
+    var renderCommands = function (commandsToRender) {
+        var encodedBuffer = encodeCommands(commandsToRender);
         var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
         var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
         var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
@@ -1076,7 +1076,7 @@ function EditPictureDialog(props) {
                 setCommands(newCommands);
                 //@ts-ignore
                 window.agistudioPicCommands = newCommands;
-                renderCommands();
+                renderCommands(newCommands);
             };
             setMouseTrapped(true);
             //@ts-ignore
@@ -1084,7 +1084,9 @@ function EditPictureDialog(props) {
             var canvas = previewDocument.getElementById('canvas');
             canvas.addEventListener('click', printMousePosition);
         }
-        renderCommands();
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        renderCommands(existingCommands);
     };
     var getCurrentPictureCommands = function () {
         try {
