@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -1104,33 +1104,32 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
-            React.createElement("br", null),
-            React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                React.createElement(Button, null, "Picture Mode"),
-                React.createElement(Button, null, "Priorty Mode")),
-            React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                React.createElement(Button, null, "Draw Relative"),
-                React.createElement(Button, null, "Draw Absolute"),
-                React.createElement(Button, null, "Draw Fill")),
-            React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                React.createElement(Button, { sx: { "background-color": "black" } }, "0"),
-                React.createElement(Button, { sx: { "background-color": "white", "color": "black" } }, "15"),
-                React.createElement("br", null),
-                React.createElement(Button, { sx: { "background-color": "darkblue" } }, "1"),
-                React.createElement(Button, { sx: { "background-color": "green" } }, "2"),
-                React.createElement(Button, { sx: { "background-color": "crayon" } }, "3"),
-                React.createElement(Button, { sx: { "background-color": "darkred" } }, "4"),
-                React.createElement(Button, { sx: { "background-color": "purple" } }, "5"),
-                React.createElement(Button, { sx: { "background-color": "brown" } }, "6"),
-                React.createElement(Button, { sx: { "background-color": "lightgray" } }, "7"),
-                React.createElement(Button, { sx: { "background-color": "gray" } }, "8"),
-                React.createElement("br", null),
-                React.createElement(Button, { sx: { "background-color": "blue" } }, "9"),
-                React.createElement(Button, { sx: { "background-color": "lightgreen" } }, "10"),
-                React.createElement(Button, { sx: { "background-color": "lightcrayon" } }, "11"),
-                React.createElement(Button, { sx: { "background-color": "red" } }, "12"),
-                React.createElement(Button, { sx: { "background-color": "magenta" } }, "13"),
-                React.createElement(Button, { sx: { "background-color": "yellow", "color": "black" } }, "14")))));
+            React.createElement(Paper, { elevation: 1 },
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, null, "Picture Mode"),
+                    React.createElement(Button, null, "Priorty Mode")),
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, null, "Draw Relative"),
+                    React.createElement(Button, null, "Draw Absolute"),
+                    React.createElement(Button, null, "Draw Fill"))),
+            React.createElement(Paper, { elevation: 1 },
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, { sx: { "background-color": "black" } }, "0"),
+                    React.createElement(Button, { sx: { "background-color": "darkblue" } }, "1"),
+                    React.createElement(Button, { sx: { "background-color": "green" } }, "2"),
+                    React.createElement(Button, { sx: { "background-color": "crayon" } }, "3"),
+                    React.createElement(Button, { sx: { "background-color": "darkred" } }, "4"),
+                    React.createElement(Button, { sx: { "background-color": "purple" } }, "5"),
+                    React.createElement(Button, { sx: { "background-color": "brown" } }, "6"),
+                    React.createElement(Button, { sx: { "background-color": "lightgray" } }, "7"),
+                    React.createElement(Button, { sx: { "background-color": "gray" } }, "8"),
+                    React.createElement(Button, { sx: { "background-color": "blue" } }, "9"),
+                    React.createElement(Button, { sx: { "background-color": "lightgreen" } }, "10"),
+                    React.createElement(Button, { sx: { "background-color": "lightcrayon" } }, "11"),
+                    React.createElement(Button, { sx: { "background-color": "red" } }, "12"),
+                    React.createElement(Button, { sx: { "background-color": "magenta" } }, "13"),
+                    React.createElement(Button, { sx: { "background-color": "yellow", "color": "black" } }, "14"),
+                    React.createElement(Button, { sx: { "background-color": "white", "color": "black" } }, "15"))))));
 }
 
 function OpenPicDialogButton(props) {
