@@ -47,7 +47,7 @@ This project already contains a few plugins for interacting with the game in the
 
 ### Command-based Picture Editing 
 Todo: Add save, improve UI and add painting tools (commands suck)
-![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/92b70bc2-bc0f-43f1-ab9d-75ca0ec8dd02)
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/c9a9cb88-7031-4a84-b7c7-b294b337eb69)
 
 
 # Updates to AGI.js 
