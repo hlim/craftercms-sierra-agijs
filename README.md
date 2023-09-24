@@ -37,6 +37,15 @@ This project already contains a few plugins for interacting with the game in the
 ### Read WORDS.TOK files
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/476a3ebe-ea42-4639-b63f-dea3f520d747)
 
+# Uploading a game into the app
+1. Click the add button in the toolbar
+   ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/b98b1ded-67de-41b5-894a-f34c89c9cbad)
+2. Provide a game ID (a simple lowercase id like kq1, sq1, sp2, ll1 etc) and a game title as follows then click *Upload Game Files & Save*
+  ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/866c2898-d991-4888-9c1f-89bc8d49ca0c)
+3. Drag and drop the game files into the application and allow them to upload. Once complete close the dialog and the game will be added
+   ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/0f53d387-1ed9-4ad7-9a9f-38eff62dff8c)
+
+
 # Updates to AGI.js 
 In support of this project, we've made the following contributions to AGI.js
 * Implemented PC Speaker Sound
