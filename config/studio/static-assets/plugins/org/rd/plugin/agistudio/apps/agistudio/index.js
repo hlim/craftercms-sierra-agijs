@@ -903,8 +903,8 @@ function AddGame(props) {
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
     var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
-    var _c = useState(0), scaleFactor = _c[0]; _c[1];
-    var _d = useState("Abs"), drawMode = _d[0], setDrawMode = _d[1];
+    var _c = useState(10), scaleFactor = _c[0]; _c[1];
+    var _d = useState('Pen'), drawMode = _d[0], setDrawMode = _d[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1081,17 +1081,18 @@ function EditPictureDialog(props) {
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
-                if (drawMode == "Abs") {
+                if (drawMode == 'Abs') {
                     newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
                 }
-                else if (drawMode == "Pen") {
-                    newCommands = newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
+                else if (drawMode == 'Pen') {
+                    newCommands =
+                        newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
                 }
-                else if (drawMode == "Fill") {
+                else if (drawMode == 'Fill') {
                     newCommands = newCommands + "DrawFill(".concat(x, ",").concat(y, ");\nEnd();");
                 }
                 else {
-                    alert("unknown tool");
+                    alert('unknown tool');
                 }
                 setCommands(newCommands);
                 //@ts-ignore
@@ -1139,37 +1140,78 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
-            React.createElement(TextField, { id: "outlined-textarea", value: scaleFactor }),
-            React.createElement(TextField, { id: "outlined-textarea", value: drawMode }),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(TextField, { id: "outlined-textarea", value: scaleFactor }),
+                React.createElement(TextField, { id: "outlined-textarea", value: drawMode })),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, null, "Picture Mode"),
                     React.createElement(Button, null, "Priorty Mode"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () { setDrawMode("Rel"); } }, "Draw Relative"),
-                    React.createElement(Button, { onClick: function () { setDrawMode("Abs"); } }, "Draw Absolute"),
-                    React.createElement(Button, { onClick: function () { setDrawMode("Pen"); } }, "Draw Pen"),
-                    React.createElement(Button, { onClick: function () { setDrawMode("Fill"); } }, "Draw Fill"))),
+                    React.createElement(Button, { onClick: function () {
+                            setDrawMode('Rel');
+                        } }, "Draw Relative"),
+                    React.createElement(Button, { onClick: function () {
+                            setDrawMode('Abs');
+                        } }, "Draw Absolute"),
+                    React.createElement(Button, { onClick: function () {
+                            setDrawMode('Pen');
+                        } }, "Draw Pen"),
+                    React.createElement(Button, { onClick: function () {
+                            setDrawMode('Fill');
+                        } }, "Draw Fill"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () { setColor(0); }, sx: { height: "35px", 'background-color': 'black' } }),
-                    React.createElement(Button, { onClick: function () { setColor(1); }, sx: { height: "35px", 'background-color': 'darkblue' } }),
-                    React.createElement(Button, { onClick: function () { setColor(2); }, sx: { height: "35px", 'background-color': 'green' } }),
-                    React.createElement(Button, { onClick: function () { setColor(3); }, sx: { height: "35px", 'background-color': 'crayon' } }),
-                    React.createElement(Button, { onClick: function () { setColor(4); }, sx: { height: "35px", 'background-color': 'darkred' } }),
-                    React.createElement(Button, { onClick: function () { setColor(5); }, sx: { height: "35px", 'background-color': 'purple' } }),
-                    React.createElement(Button, { onClick: function () { setColor(6); }, sx: { height: "35px", 'background-color': 'brown' } }),
-                    React.createElement(Button, { onClick: function () { setColor(7); }, sx: { height: "35px", 'background-color': 'lightgray' } })),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(0);
+                        }, sx: { height: '35px', 'background-color': 'black' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(1);
+                        }, sx: { height: '35px', 'background-color': 'darkblue' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(2);
+                        }, sx: { height: '35px', 'background-color': 'green' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(3);
+                        }, sx: { height: '35px', 'background-color': 'crayon' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(4);
+                        }, sx: { height: '35px', 'background-color': 'darkred' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(5);
+                        }, sx: { height: '35px', 'background-color': 'purple' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(6);
+                        }, sx: { height: '35px', 'background-color': 'brown' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(7);
+                        }, sx: { height: '35px', 'background-color': 'lightgray' } })),
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () { setColor(8); }, sx: { height: "35px", 'background-color': 'gray' } }),
-                    React.createElement(Button, { onClick: function () { setColor(9); }, sx: { height: "35px", 'background-color': 'blue' } }),
-                    React.createElement(Button, { onClick: function () { setColor(10); }, sx: { height: "35px", 'background-color': 'lightgreen' } }),
-                    React.createElement(Button, { onClick: function () { setColor(11); }, sx: { height: "35px", 'background-color': 'lightcrayon' } }),
-                    React.createElement(Button, { onClick: function () { setColor(12); }, sx: { height: "35px", 'background-color': 'red' } }),
-                    React.createElement(Button, { onClick: function () { setColor(13); }, sx: { height: "35px", 'background-color': 'magenta' } }),
-                    React.createElement(Button, { onClick: function () { setColor(14); }, sx: { height: "35px", 'background-color': 'yellow', color: 'black' } }),
-                    React.createElement(Button, { onClick: function () { setColor(15); }, sx: { height: "35px", 'background-color': 'white', color: 'black' } }))))));
+                    React.createElement(Button, { onClick: function () {
+                            setColor(8);
+                        }, sx: { height: '35px', 'background-color': 'gray' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(9);
+                        }, sx: { height: '35px', 'background-color': 'blue' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(10);
+                        }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(11);
+                        }, sx: { height: '35px', 'background-color': 'lightcrayon' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(12);
+                        }, sx: { height: '35px', 'background-color': 'red' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(13);
+                        }, sx: { height: '35px', 'background-color': 'magenta' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(14);
+                        }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(15);
+                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))))));
 }
 
 function OpenPicDialogButton(props) {
