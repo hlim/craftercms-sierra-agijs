@@ -1064,7 +1064,10 @@ function EditPictureDialog(props) {
         agiInterpreter.agi_show_pic(picNo - 1);
         if (!mouseTrapped) {
             var printMousePosition = function (event) {
-                alert("Click: " + event.clientX + ", " + event.clientY);
+                //alert("Click: "+ event.clientX + ", " + event.clientY)
+                var x = event.clientX;
+                var y = event.clientY;
+                setCommands(commands.replace("End();", "DrawAbs(".concat(x, ",").concat(y, ")")));
             };
             //@ts-ignore
             var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
