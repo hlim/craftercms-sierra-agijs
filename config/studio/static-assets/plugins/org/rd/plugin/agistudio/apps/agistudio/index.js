@@ -1064,8 +1064,7 @@ function EditPictureDialog(props) {
         console.log('Updated :' + updatedCommands);
         setCommands(updatedCommands);
     };
-    useEffect(function () {
-        // Initialize the dialog
+    var getCurrentPictureCommands = function () {
         try {
             var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
             var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
@@ -1074,12 +1073,16 @@ function EditPictureDialog(props) {
         }
         catch (err) {
         }
+    };
+    useEffect(function () {
+        // Initialize the dialog
     }, []);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
+            React.createElement(Button, { onClick: getCurrentPictureCommands, variant: "outlined", sx: { mr: 1 } }, "Get Commands"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: commands, onChange: handleCommandUpdate }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: commands, onChange: handleCommandUpdate }))));
 }
 
 function OpenPicDialogButton(props) {
