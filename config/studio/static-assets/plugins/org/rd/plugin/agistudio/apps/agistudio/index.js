@@ -1067,8 +1067,8 @@ function EditPictureDialog(props) {
         if (!mouseTrapped) {
             var printMousePosition = function (event) {
                 // something is wrong with getting commands from inside this event :-/
-                var x = Math.round(event.clientX / 10);
-                var y = Math.round(event.clientY / 10);
+                var x = Math.round(event.clientX / 5);
+                var y = Math.round(event.clientY / 5);
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
