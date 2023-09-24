@@ -903,6 +903,8 @@ function AddGame(props) {
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
     var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
+    var _c = useState(0), scaleFactor = _c[0]; _c[1];
+    var _d = useState("Abs"), drawMode = _d[0], setDrawMode = _d[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1070,22 +1072,27 @@ function EditPictureDialog(props) {
                 var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
                 var canvas = previewDocument.getElementById('canvas');
                 var rect = canvas.getBoundingClientRect();
-                console.log("C : (" + event.clientX + ", " + event.clientY + ") -> (" + rect.width + ", " + rect.height + ")");
-                // adjust for position in the canvas
-                // let x = Math.round(event.clientX - rect.width)
-                // let y = Math.round(event.clientY - rect.height)
-                // // scale to bitmap
-                // x = canvas.width / rect.width;    
-                // y = canvas.height / rect.height;
                 // the bit map is 160 x 168 so we need to scale the mouse input
                 var ratioOfX = event.clientX / rect.width;
                 var ratioOfY = event.clientY / rect.height;
                 var x = Math.round(160 * ratioOfX);
                 var y = Math.round(200 * ratioOfY);
+                var scale = scaleFactor;
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
-                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
+                if (drawMode == "Abs") {
+                    newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
+                }
+                else if (drawMode == "Pen") {
+                    newCommands = newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
+                }
+                else if (drawMode == "Fill") {
+                    newCommands = newCommands + "DrawFill(".concat(x, ",").concat(y, ");\nEnd();");
+                }
+                else {
+                    alert("unknown tool");
+                }
                 setCommands(newCommands);
                 //@ts-ignore
                 window.agistudioPicCommands = newCommands;
@@ -1132,15 +1139,18 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
+            React.createElement(TextField, { id: "outlined-textarea", value: scaleFactor }),
+            React.createElement(TextField, { id: "outlined-textarea", value: drawMode }),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, null, "Picture Mode"),
                     React.createElement(Button, null, "Priorty Mode"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, null, "Draw Relative"),
-                    React.createElement(Button, null, "Draw Absolute"),
-                    React.createElement(Button, null, "Draw Fill"))),
+                    React.createElement(Button, { onClick: function () { setDrawMode("Rel"); } }, "Draw Relative"),
+                    React.createElement(Button, { onClick: function () { setDrawMode("Abs"); } }, "Draw Absolute"),
+                    React.createElement(Button, { onClick: function () { setDrawMode("Pen"); } }, "Draw Pen"),
+                    React.createElement(Button, { onClick: function () { setDrawMode("Fill"); } }, "Draw Fill"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { onClick: function () { setColor(0); }, sx: { height: "35px", 'background-color': 'black' } }),
