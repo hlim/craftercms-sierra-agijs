@@ -392,6 +392,13 @@
                     		file="index.js"/>                        
                     </widget>
 
+                </widgets>
+
+            </middleSection>
+
+            <rightSection>
+                <widgets>
+
                     <widget id="org.rd.plugin.agistudio.OpenPicDialogButton">
                     	<plugin
                     		id="org.rd.plugin.agistudio"
@@ -400,13 +407,6 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
-
-
-                </widgets>
-
-            </middleSection>
-            <rightSection>
-                <widgets>
 
                     <!--
                     <widget id="craftercms.components.EditModesSwitcher"/>
