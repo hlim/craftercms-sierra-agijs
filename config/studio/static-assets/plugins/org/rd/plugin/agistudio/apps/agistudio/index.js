@@ -926,7 +926,7 @@ function EditPictureDialog(props) {
             else if ((skip = commandName.startsWith('*/')))
                 skip = false;
             if (!skip) {
-                console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
+                //console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
                 switch (commandName) {
                     case 'PicSetColor':
                         opCode = 240;
@@ -965,7 +965,6 @@ function EditPictureDialog(props) {
                         opCode = 255;
                         break;
                 }
-                // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
                 encodedBuffer[i] = opCode;
                 i++;
                 for (var a = 0; a < args.length; a++) {
@@ -1070,7 +1069,8 @@ function EditPictureDialog(props) {
                 //@ts-ignore
                 var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
                 var canvas = previewDocument.getElementById('canvas');
-                canvas.getBoundingClientRect();
+                var rect = canvas.getBoundingClientRect();
+                console.log("C : (" + event.clientX + ", " + event.clientY + ") -> (" + rect.width + ", " + rect.height + ")");
                 // adjust for position in the canvas
                 // let x = Math.round(event.clientX - rect.width)
                 // let y = Math.round(event.clientY - rect.height)
