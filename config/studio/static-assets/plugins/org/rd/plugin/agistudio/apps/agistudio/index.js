@@ -1067,11 +1067,13 @@ function EditPictureDialog(props) {
         console.log('Updated :' + updatedCommands);
         setCommands(updatedCommands);
     };
-    // Initialize the dialog
-    var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-    var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
-    var decodedPictureCommands = decodePictureStream(currentPictureStream);
-    setCommands(prettyPrintCommands(decodedPictureCommands));
+    useEffect(function () {
+        // Initialize the dialog
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
+        var decodedPictureCommands = decodePictureStream(currentPictureStream);
+        setCommands(prettyPrintCommands(decodedPictureCommands));
+    }, []);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
