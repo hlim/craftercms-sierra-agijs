@@ -1080,15 +1080,17 @@ function EditPictureDialog(props) {
                 var scale = scaleFactor;
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+                //@ts-ignore
+                var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
                 var newCommands = existingCommands.replace('End();', '');
-                if (drawMode == 'Abs') {
+                if (existingDrawMode == 'Abs') {
                     newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
                 }
-                else if (drawMode == 'Pen') {
+                else if (existingDrawMode == 'Pen') {
                     newCommands =
                         newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
                 }
-                else if (drawMode == 'Fill') {
+                else if (existingDrawMode == 'Fill') {
                     newCommands = newCommands + "DrawFill(".concat(x, ",").concat(y, ");\nEnd();");
                 }
                 else {
@@ -1097,6 +1099,8 @@ function EditPictureDialog(props) {
                 setCommands(newCommands);
                 //@ts-ignore
                 window.agistudioPicCommands = newCommands;
+                //@ts-ignore
+                window.agistudioDrawMode = existingDrawMode;
                 renderCommands(newCommands);
             };
             setMouseTrapped(true);
@@ -1108,6 +1112,11 @@ function EditPictureDialog(props) {
         //@ts-ignore
         var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
         renderCommands(existingCommands);
+    };
+    var handleDrawModeUpdate = function (mode) {
+        setDrawMode(mode);
+        //@ts-ignore
+        window.agistudioDrawMode = mode;
     };
     var getCurrentPictureCommands = function () {
         try {
@@ -1150,16 +1159,16 @@ function EditPictureDialog(props) {
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { onClick: function () {
-                            setDrawMode('Rel');
+                            handleDrawModeUpdate('Rel');
                         } }, "Draw Relative"),
                     React.createElement(Button, { onClick: function () {
-                            setDrawMode('Abs');
+                            handleDrawModeUpdate('Abs');
                         } }, "Draw Absolute"),
                     React.createElement(Button, { onClick: function () {
-                            setDrawMode('Pen');
+                            handleDrawModeUpdate('Pen');
                         } }, "Draw Pen"),
                     React.createElement(Button, { onClick: function () {
-                            setDrawMode('Fill');
+                            handleDrawModeUpdate('Fill');
                         } }, "Draw Fill"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
