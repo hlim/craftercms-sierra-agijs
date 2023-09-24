@@ -917,7 +917,6 @@ function EditPictureDialog(props) {
         parsedCommands.forEach(function (command) {
             var commandName = command.substring(0, command.indexOf('('));
             var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
-            var terminateArgs = false;
             var opCode = 0; // End
             if (commandName.startsWith("/*"))
                 skip = true;
@@ -942,23 +941,18 @@ function EditPictureDialog(props) {
                         break;
                     case 'DrawYCorner':
                         opCode = 244;
-                        terminateArgs = true;
                         break;
                     case 'DrawXCorner':
                         opCode = 245;
-                        terminateArgs = true;
                         break;
                     case 'DrawAbs':
                         opCode = 246;
-                        terminateArgs = true;
                         break;
                     case 'DrawRel':
                         opCode = 247;
-                        terminateArgs = true;
                         break;
                     case 'DrawFill':
                         opCode = 248;
-                        terminateArgs = true;
                         break;
                     case 'SetPen':
                         opCode = 249;
@@ -976,10 +970,6 @@ function EditPictureDialog(props) {
                 for (var a = 0; a < args.length; a++) {
                     var value = args[a];
                     encodedBuffer[i] = parseInt(value);
-                    i++;
-                }
-                if (terminateArgs) {
-                    encodedBuffer[i] = 255;
                     i++;
                 }
             }
