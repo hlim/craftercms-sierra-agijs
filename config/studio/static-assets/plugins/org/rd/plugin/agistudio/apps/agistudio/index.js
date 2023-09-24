@@ -1067,9 +1067,10 @@ function EditPictureDialog(props) {
         if (!mouseTrapped) {
             var printMousePosition = function (event) {
                 //alert("Click: "+ event.clientX + ", " + event.clientY)
-                var x = event.clientX / 10;
-                var y = event.clientY / 10;
-                setCommands(commands.replace('End();', "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();")));
+                var x = Math.round(event.clientX / 10);
+                var y = Math.round(event.clientY / 10);
+                var newCommands = commands.replace('End();', "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();"));
+                setCommands(newCommands);
                 renderCommands();
             };
             setMouseTrapped(true);
@@ -1079,11 +1080,6 @@ function EditPictureDialog(props) {
             canvas.addEventListener('click', printMousePosition);
         }
         renderCommands();
-    };
-    var handleCommandUpdate = function (event) {
-        var updatedCommands = event.target.value;
-        console.log('Updated :' + updatedCommands);
-        setCommands(updatedCommands);
     };
     var getCurrentPictureCommands = function () {
         try {
@@ -1106,7 +1102,7 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands, onChange: handleCommandUpdate }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }))));
 }
 
 function OpenPicDialogButton(props) {
