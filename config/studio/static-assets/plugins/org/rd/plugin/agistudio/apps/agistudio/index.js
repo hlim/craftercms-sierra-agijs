@@ -990,7 +990,7 @@ function EditPictureDialog(props) {
         console.log('Updated :' + updatedCommands);
         setCommands(updatedCommands);
     };
-    return (React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, "aria-labelledby": "simple-dialog-title", open: true },
+    return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
