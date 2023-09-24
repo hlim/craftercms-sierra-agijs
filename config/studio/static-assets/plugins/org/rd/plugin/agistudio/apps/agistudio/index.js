@@ -357,12 +357,10 @@ function CurrentRoom(props) {
 }
 
 function ShowCode(props) {
-    useDispatch();
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
     var _c = React.useState([]), logics = _c[0], setLogics = _c[1];
-    var _d = React.useState([]); _d[0]; _d[1];
     var testFunctions = [
         'equaln',
         'equalv',
