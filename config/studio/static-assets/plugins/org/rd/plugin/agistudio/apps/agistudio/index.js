@@ -921,8 +921,12 @@ function EditPictureDialog(props) {
             var opCode = 0; // End
             if (commandName.startsWith("/*"))
                 skip = true;
+            else if (commandName.startsWith("//"))
+                skip = true;
             else if (skip = commandName.startsWith("*/"))
                 skip = false;
+            if (commandName === "DrawFill")
+                skip = true;
             if (!skip) {
                 switch (commandName) {
                     case 'PicSetColor':
