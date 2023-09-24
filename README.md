@@ -63,5 +63,10 @@ In support of this project, we've made the following contributions to AGI.js
 - To all the folks at ScumVM, without the AGI specs and documentation none of this would get done
 - Barry Harmsen for his Python extraction examples https://twitter.com/meneerharmsen
 
+### License
+Licensed under the GPL version 3.
 
+This is in no way affiliated with or endorsed by Sierra Entertainment or any other company.
 
+# CrafterCMS
+It's the best Headless CMS out there! Git-based, headless, industrial strength, composable, open source and "Oh the power"! :) Help us make it even better!
