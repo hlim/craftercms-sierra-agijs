@@ -1069,7 +1069,9 @@ function EditPictureDialog(props) {
                 //alert("Click: "+ event.clientX + ", " + event.clientY)
                 var x = Math.round(event.clientX / 10);
                 var y = Math.round(event.clientY / 10);
-                var newCommands = commands.replace('End();', "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();"));
+                var newCommands = commands.replace('End();', '');
+                setCommands(newCommands);
+                newCommands = commands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
                 setCommands(newCommands);
                 renderCommands();
             };
