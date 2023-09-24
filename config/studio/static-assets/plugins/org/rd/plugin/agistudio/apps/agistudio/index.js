@@ -1080,7 +1080,7 @@ function EditPictureDialog(props) {
                 // the bit map is 160 x 168 so we need to scale the mouse input
                 var ratioOfX = event.clientX / rect.width;
                 var ratioOfY = event.clientY / rect.height;
-                var x = Math.round(320 * ratioOfX);
+                var x = Math.round(160 * ratioOfX);
                 var y = Math.round(200 * ratioOfY);
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
