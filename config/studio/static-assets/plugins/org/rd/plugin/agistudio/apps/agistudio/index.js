@@ -736,7 +736,7 @@ function ShowPicture(props) {
         var i = 0;
         parsedCommands.forEach(function (command) {
             var commandName = command.substring(0, command.indexOf('('));
-            var args = command.replace(commandName, '').replace('(', '').replace(')', '').split(',');
+            var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
             var terminateArgs = false;
             var opCode = 0; // End
             switch (commandName) {
@@ -778,7 +778,7 @@ function ShowPicture(props) {
                     opCode = 255;
                     break;
             }
-            //      console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
+            // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
             encodedBuffer[i] = opCode;
             i++;
             for (var a = 0; a < args.length; a++) {
@@ -801,7 +801,7 @@ function ShowPicture(props) {
         var args = [];
         while (true) {
             var arg = stream.readUint8();
-            if (arg >= 0xF0)
+            if (arg >= 0xf0)
                 break;
             args.push(arg);
         }
@@ -820,7 +820,7 @@ function ShowPicture(props) {
                         var picColor = stream.readUint8();
                         decodedCommands.push('PicSetColor(' + picColor + ');');
                         break;
-                    case 241: // PicOpcode.PicDisable
+                    case 241: // PicDisable
                         decodedCommands.push('PicDisable();');
                         break;
                     case 242: // PriSetcolor
@@ -832,23 +832,23 @@ function ShowPicture(props) {
                         break;
                     case 244: // DrawYCorner
                         var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawYCorner(' + args.join(",") + ');');
+                        decodedCommands.push('DrawYCorner(' + args.join(',') + ');');
                         break;
                     case 245: // DrawXCorner
                         var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawXCorner(' + args.join(",") + ');');
+                        decodedCommands.push('DrawXCorner(' + args.join(',') + ');');
                         break;
                     case 246: // DrawAbs
                         var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawAbs(' + args.join(",") + ');');
+                        decodedCommands.push('DrawAbs(' + args.join(',') + ');');
                         break;
                     case 247: // DrawRel
                         var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawRel(' + args.join(",") + ');');
+                        decodedCommands.push('DrawRel(' + args.join(',') + ');');
                         break;
                     case 248: // DrawFill
                         var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawFill(' + args.join(",") + ');');
+                        decodedCommands.push('DrawFill(' + args.join(',') + ');');
                         break;
                     case 249: // SetPen
                         var value = stream.readUint8();
@@ -856,7 +856,7 @@ function ShowPicture(props) {
                         break;
                     case 250: // DrawPen
                         var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawPen(' + args.join(",") + ');');
+                        decodedCommands.push('DrawPen(' + args.join(',') + ');');
                         break;
                     case 255: // End
                         decodedCommands.push('End();');
@@ -885,8 +885,8 @@ function ShowPicture(props) {
         agiInterpreter.agi_draw_pic(picNo - 1);
         agiInterpreter.agi_show_pic(picNo - 1);
         // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
-        // Agi.interpreter.agi_draw_pic(0)  
-        // Agi.interpreter.agi_show_pic(0)  
+        // Agi.interpreter.agi_draw_pic(0)
+        // Agi.interpreter.agi_show_pic(0)
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
