@@ -1069,9 +1069,11 @@ function EditPictureDialog(props) {
                 //alert("Click: "+ event.clientX + ", " + event.clientY)
                 var x = Math.round(event.clientX / 10);
                 var y = Math.round(event.clientY / 10);
+                alert(commands);
                 var newCommands = commands.replace('End();', '');
                 newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
                 setCommands(newCommands);
+                alert(newCommands);
                 renderCommands();
             };
             setMouseTrapped(true);
