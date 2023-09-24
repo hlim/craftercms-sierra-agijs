@@ -1066,7 +1066,9 @@ function EditPictureDialog(props) {
             var printMousePosition = function (event) {
                 alert("Click: " + event.clientX + ", " + event.clientY);
             };
-            var canvas = document.getElementById('crafterCMSPreviewIframe').getElementsByTagName("canvas")[0];
+            //@ts-ignore
+            var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+            var canvas = previewDocument.getElementById("canvas");
             canvas.addEventListener("click", printMousePosition);
         }
     };
