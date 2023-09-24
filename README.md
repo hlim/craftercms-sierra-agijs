@@ -65,7 +65,8 @@ In support of this project, we've made the following contributions to AGI.js
 
 # License
 Licensed under the GPL version 3.
-- This means that if you fork this project and you in any way distribute your fork you need to contribute your source back. Why? That's how it works.
+
+* This means that if you fork this project and you in any way distribute your fork you need to contribute your source back. Why? That's how it works.
 
 This is in no way affiliated with or endorsed by Sierra Entertainment or any other company.
 
