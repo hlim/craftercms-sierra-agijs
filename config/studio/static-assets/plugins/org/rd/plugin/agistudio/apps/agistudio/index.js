@@ -913,61 +913,68 @@ function EditPictureDialog(props) {
         var encodedBuffer = new Uint8Array(1000);
         var parsedCommands = commands.replaceAll('\n', '').split(';');
         var i = 0;
+        var skip = false;
         parsedCommands.forEach(function (command) {
             var commandName = command.substring(0, command.indexOf('('));
             var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
             var terminateArgs = false;
             var opCode = 0; // End
-            switch (commandName) {
-                case 'PicSetColor':
-                    opCode = 240;
-                    break;
-                case 'PicDisable':
-                    opCode = 241;
-                    break;
-                case 'PriSetcolor':
-                    opCode = 242;
-                    break;
-                case 'PriDisable':
-                    opCode = 243;
-                    break;
-                case 'DrawYCorner':
-                    opCode = 244;
-                    break;
-                case 'DrawXCorner':
-                    opCode = 245;
-                    break;
-                case 'DrawAbs':
-                    opCode = 246;
-                    break;
-                case 'DrawRel':
-                    opCode = 247;
-                    break;
-                case 'DrawFill':
-                    opCode = 248;
-                    terminateArgs = true;
-                    break;
-                case 'SetPen':
-                    opCode = 249;
-                    break;
-                case 'DrawPen':
-                    opCode = 250;
-                    break;
-                case 'End':
-                    opCode = 255;
-                    break;
-            }
-            // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
-            encodedBuffer[i] = opCode;
-            i++;
-            for (var a = 0; a < args.length; a++) {
-                var value = args[a];
-                encodedBuffer[i] = parseInt(value);
+            if (commandName.startsWith("/*"))
+                skip = true;
+            else if (skip = commandName.startsWith("*/"))
+                skip = false;
+            if (!skip) {
+                switch (commandName) {
+                    case 'PicSetColor':
+                        opCode = 240;
+                        break;
+                    case 'PicDisable':
+                        opCode = 241;
+                        break;
+                    case 'PriSetcolor':
+                        opCode = 242;
+                        break;
+                    case 'PriDisable':
+                        opCode = 243;
+                        break;
+                    case 'DrawYCorner':
+                        opCode = 244;
+                        break;
+                    case 'DrawXCorner':
+                        opCode = 245;
+                        break;
+                    case 'DrawAbs':
+                        opCode = 246;
+                        break;
+                    case 'DrawRel':
+                        opCode = 247;
+                        break;
+                    case 'DrawFill':
+                        opCode = 248;
+                        terminateArgs = true;
+                        break;
+                    case 'SetPen':
+                        opCode = 249;
+                        break;
+                    case 'DrawPen':
+                        opCode = 250;
+                        break;
+                    case 'End':
+                        opCode = 255;
+                        break;
+                }
+                // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
+                encodedBuffer[i] = opCode;
                 i++;
-            }
-            if (terminateArgs) {
-                encodedBuffer[i] = 255;
-                i++;
+                for (var a = 0; a < args.length; a++) {
+                    var value = args[a];
+                    encodedBuffer[i] = parseInt(value);
+                    i++;
+                }
+                if (terminateArgs) {
+                    encodedBuffer[i] = 255;
+                    i++;
+                }
             }
         });
         var rightsizedBuffer = new Uint8Array(i);
