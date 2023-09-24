@@ -18,6 +18,7 @@ const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-mat
 const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
 const { post } = craftercms.utils.ajax;
+import 'react-dom';
 const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
 
 /*
@@ -908,8 +909,7 @@ function AddGame(props) {
 function EditPictureDialog(props) {
     useDispatch();
     var _a = React.useState(null); _a[0]; _a[1];
-    var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState(''), commands = _c[0], setCommands = _c[1];
+    var _b = React.useState(''), commands = _b[0], setCommands = _b[1];
     var encodeCommands = function () {
         var encodedBuffer = new Uint8Array(1000);
         var parsedCommands = commands.replaceAll('\n', '').split(';');
@@ -995,7 +995,7 @@ function EditPictureDialog(props) {
         console.log('Updated :' + updatedCommands);
         setCommands(updatedCommands);
     };
-    return (React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
+    return (React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, "aria-labelledby": "simple-dialog-title", open: true },
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
