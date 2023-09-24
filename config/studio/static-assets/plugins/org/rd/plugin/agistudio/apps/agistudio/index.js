@@ -1066,10 +1066,14 @@ function EditPictureDialog(props) {
     };
     useEffect(function () {
         // Initialize the dialog
-        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-        var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
-        var decodedPictureCommands = decodePictureStream(currentPictureStream);
-        setCommands(prettyPrintCommands(decodedPictureCommands));
+        try {
+            var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+            var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
+            var decodedPictureCommands = decodePictureStream(currentPictureStream);
+            setCommands(prettyPrintCommands(decodedPictureCommands));
+        }
+        catch (err) {
+        }
     }, []);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
