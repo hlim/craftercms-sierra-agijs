@@ -4,8 +4,10 @@ export class AgiBridge {
     let previewFrameEl = eval(frameElPath);
 
     if (previewFrameEl) {
+
       const agiPath = frameElPath + '.contentWindow.Agi';
       const resourcesPath = frameElPath + '.contentWindow.Resources';
+      const fsPath = frameElPath + '.contentWindow.Fs';
 
       let agiBooted = eval(agiPath);
 
@@ -17,11 +19,13 @@ export class AgiBridge {
             commandToSend = command.replaceAll('Agi', agiPath);
           } else if (command.startsWith('Resources')) {
             commandToSend = commandToSend.replaceAll('Resources', resourcesPath);
+          } else if (command.startsWith('Fs')) {
+            commandToSend = commandToSend.replaceAll('Fs', fsPath);
           }
 
-          console.log('Sending Command :' + intent);
-          console.log('Command :' + command);
-          console.log('Sending Command :' + commandToSend);
+//          console.log('Sending Command :' + intent);
+//          console.log('Command :' + command);
+//          console.log('Sending Command :' + commandToSend);
 
           // Can the rollup message be disabled?
           let result = eval(commandToSend);

@@ -168,6 +168,7 @@ export function AddGame(props) {
 
 
 
+        </DialogContent>
         <DialogActions>
         <Button onClick={cancelClick} variant="outlined" sx={{ mr: 1 }}>
             Cancel
@@ -177,7 +178,7 @@ export function AddGame(props) {
             Upload Game Files & Save
           </Button>
         </DialogActions>
-        </DialogContent>
+
       </Dialog>
 
       <Tooltip title={'Add Game'}>
