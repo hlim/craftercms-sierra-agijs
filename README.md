@@ -7,6 +7,14 @@ Sierra AGI emulator running AGI.JS in CrafterCMS  -- Why? because it's cool.
 Yeah, there is. CrafterCMS supports plugins so we can turn Crafter Studio into an AGI Studio and player with custom plugins.
 This project already contains a few plugins for interacting with the game in the preview area.
 
+# Uploading a game into the app
+1. Click the add button in the toolbar
+   ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/b98b1ded-67de-41b5-894a-f34c89c9cbad)
+2. Provide a game ID (a simple lowercase id like kq1, sq1, sp2, ll1 etc) and a game title as follows then click *Upload Game Files & Save*
+  ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/866c2898-d991-4888-9c1f-89bc8d49ca0c)
+3. Drag and drop the game files into the application and allow them to upload. Once complete close the dialog and the game will be added
+   ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/0f53d387-1ed9-4ad7-9a9f-38eff62dff8c)
+
 ## Studio Customizations
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/44d8244f-bc9f-4a36-9626-a40ed1b5d786)
 
@@ -37,13 +45,9 @@ This project already contains a few plugins for interacting with the game in the
 ### Read WORDS.TOK files
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/476a3ebe-ea42-4639-b63f-dea3f520d747)
 
-# Uploading a game into the app
-1. Click the add button in the toolbar
-   ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/b98b1ded-67de-41b5-894a-f34c89c9cbad)
-2. Provide a game ID (a simple lowercase id like kq1, sq1, sp2, ll1 etc) and a game title as follows then click *Upload Game Files & Save*
-  ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/866c2898-d991-4888-9c1f-89bc8d49ca0c)
-3. Drag and drop the game files into the application and allow them to upload. Once complete close the dialog and the game will be added
-   ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/0f53d387-1ed9-4ad7-9a9f-38eff62dff8c)
+### Command-based Picture Editing 
+Todo: Add save, improve UI and add painting tools (commands suck)
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/92b70bc2-bc0f-43f1-ab9d-75ca0ec8dd02)
 
 
 # Updates to AGI.js 
@@ -58,3 +62,6 @@ In support of this project, we've made the following contributions to AGI.js
 - https://github.com/r1sc for creating AGI JS
 - To all the folks at ScumVM, without the AGI specs and documentation none of this would get done
 - Barry Harmsen for his Python extraction examples https://twitter.com/meneerharmsen
+
+
+
