@@ -1109,6 +1109,8 @@ function EditPictureDialog(props) {
         var newCommands = existingCommands.replace('End();', '');
         newCommands = newCommands + "PicSetColor(".concat(color, ");\nEnd();");
         setCommands(newCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
@@ -1128,23 +1130,23 @@ function EditPictureDialog(props) {
                     React.createElement(Button, null, "Draw Fill"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () { setColor(0); }, sx: { 'background-color': 'black' } }),
-                    React.createElement(Button, { onClick: function () { setColor(1); }, sx: { 'background-color': 'darkblue' } }),
-                    React.createElement(Button, { onClick: function () { setColor(2); }, sx: { 'background-color': 'green' } }),
-                    React.createElement(Button, { onClick: function () { setColor(3); }, sx: { 'background-color': 'crayon' } }),
-                    React.createElement(Button, { onClick: function () { setColor(4); }, sx: { 'background-color': 'darkred' } }),
-                    React.createElement(Button, { onClick: function () { setColor(5); }, sx: { 'background-color': 'purple' } }),
-                    React.createElement(Button, { onClick: function () { setColor(6); }, sx: { 'background-color': 'brown' } }),
-                    React.createElement(Button, { onClick: function () { setColor(7); }, sx: { 'background-color': 'lightgray' } })),
+                    React.createElement(Button, { onClick: function () { setColor(0); }, sx: { height: "35px", 'background-color': 'black' } }),
+                    React.createElement(Button, { onClick: function () { setColor(1); }, sx: { height: "35px", 'background-color': 'darkblue' } }),
+                    React.createElement(Button, { onClick: function () { setColor(2); }, sx: { height: "35px", 'background-color': 'green' } }),
+                    React.createElement(Button, { onClick: function () { setColor(3); }, sx: { height: "35px", 'background-color': 'crayon' } }),
+                    React.createElement(Button, { onClick: function () { setColor(4); }, sx: { height: "35px", 'background-color': 'darkred' } }),
+                    React.createElement(Button, { onClick: function () { setColor(5); }, sx: { height: "35px", 'background-color': 'purple' } }),
+                    React.createElement(Button, { onClick: function () { setColor(6); }, sx: { height: "35px", 'background-color': 'brown' } }),
+                    React.createElement(Button, { onClick: function () { setColor(7); }, sx: { height: "35px", 'background-color': 'lightgray' } })),
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () { setColor(8); }, sx: { 'background-color': 'gray' } }),
-                    React.createElement(Button, { onClick: function () { setColor(9); }, sx: { 'background-color': 'blue' } }),
-                    React.createElement(Button, { onClick: function () { setColor(10); }, sx: { 'background-color': 'lightgreen' } }),
-                    React.createElement(Button, { onClick: function () { setColor(11); }, sx: { 'background-color': 'lightcrayon' } }),
-                    React.createElement(Button, { onClick: function () { setColor(12); }, sx: { 'background-color': 'red' } }),
-                    React.createElement(Button, { onClick: function () { setColor(13); }, sx: { 'background-color': 'magenta' } }),
-                    React.createElement(Button, { onClick: function () { setColor(14); }, sx: { 'background-color': 'yellow', color: 'black' } }),
-                    React.createElement(Button, { onClick: function () { setColor(15); }, sx: { 'background-color': 'white', color: 'black' } }))))));
+                    React.createElement(Button, { onClick: function () { setColor(8); }, sx: { height: "35px", 'background-color': 'gray' } }),
+                    React.createElement(Button, { onClick: function () { setColor(9); }, sx: { height: "35px", 'background-color': 'blue' } }),
+                    React.createElement(Button, { onClick: function () { setColor(10); }, sx: { height: "35px", 'background-color': 'lightgreen' } }),
+                    React.createElement(Button, { onClick: function () { setColor(11); }, sx: { height: "35px", 'background-color': 'lightcrayon' } }),
+                    React.createElement(Button, { onClick: function () { setColor(12); }, sx: { height: "35px", 'background-color': 'red' } }),
+                    React.createElement(Button, { onClick: function () { setColor(13); }, sx: { height: "35px", 'background-color': 'magenta' } }),
+                    React.createElement(Button, { onClick: function () { setColor(14); }, sx: { height: "35px", 'background-color': 'yellow', color: 'black' } }),
+                    React.createElement(Button, { onClick: function () { setColor(15); }, sx: { height: "35px", 'background-color': 'white', color: 'black' } }))))));
 }
 
 function OpenPicDialogButton(props) {
