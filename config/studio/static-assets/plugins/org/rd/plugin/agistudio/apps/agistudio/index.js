@@ -1126,12 +1126,12 @@ function EditPictureDialog(props) {
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { sx: { 'background-color': 'gray' } }, "8"),
                     React.createElement(Button, { sx: { 'background-color': 'blue' } }, "9"),
-                    React.createElement(Button, { sx: { 'background-color': 'lightgreen' } }, "10"),
-                    React.createElement(Button, { sx: { 'background-color': 'lightcrayon' } }, "11"),
-                    React.createElement(Button, { sx: { 'background-color': 'red' } }, "12"),
-                    React.createElement(Button, { sx: { 'background-color': 'magenta' } }, "13"),
-                    React.createElement(Button, { sx: { 'background-color': 'yellow', color: 'black' } }, "14"),
-                    React.createElement(Button, { sx: { 'background-color': 'white', color: 'black' } }, "15"))))));
+                    React.createElement(Button, { sx: { 'background-color': 'lightgreen' } }, "0"),
+                    React.createElement(Button, { sx: { 'background-color': 'lightcrayon' } }, "1"),
+                    React.createElement(Button, { sx: { 'background-color': 'red' } }, "2"),
+                    React.createElement(Button, { sx: { 'background-color': 'magenta' } }, "3"),
+                    React.createElement(Button, { sx: { 'background-color': 'yellow', color: 'black' } }, "4"),
+                    React.createElement(Button, { sx: { 'background-color': 'white', color: 'black' } }, "5"))))));
 }
 
 function OpenPicDialogButton(props) {
