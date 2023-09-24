@@ -326,7 +326,6 @@
                     		file="index.js"/>                        
                     </widget>
 
-
                     <widget id="org.rd.plugin.agistudio.RoomSelector">
                     	<plugin
                     		id="org.rd.plugin.agistudio"
@@ -344,7 +343,6 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
-
 
                     <widget id="org.rd.plugin.agistudio.AllowInput">
                     	<plugin
@@ -382,7 +380,6 @@
                     		file="index.js"/>                        
                     </widget>
 
-                    
                     <widget id="org.rd.plugin.agistudio.ShowCode">
                     	<plugin
                     		id="org.rd.plugin.agistudio"
@@ -392,13 +389,6 @@
                     		file="index.js"/>                        
                     </widget>
 
-                </widgets>
-
-            </middleSection>
-
-            <rightSection>
-                <widgets>
-
                     <widget id="org.rd.plugin.agistudio.OpenPicDialogButton">
                     	<plugin
                     		id="org.rd.plugin.agistudio"
@@ -407,6 +397,14 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
+
+
+                </widgets>
+
+            </middleSection>
+
+            <rightSection>
+                <widgets>
 
                     <!--
                     <widget id="craftercms.components.EditModesSwitcher"/>
