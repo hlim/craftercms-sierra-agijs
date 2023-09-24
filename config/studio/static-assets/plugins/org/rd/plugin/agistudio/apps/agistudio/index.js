@@ -1070,7 +1070,6 @@ function EditPictureDialog(props) {
                 var x = Math.round(event.clientX / 10);
                 var y = Math.round(event.clientY / 10);
                 var newCommands = commands.replace('End();', '');
-                setCommands(newCommands);
                 newCommands = commands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
                 setCommands(newCommands);
                 renderCommands();
@@ -1085,7 +1084,6 @@ function EditPictureDialog(props) {
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
-        console.log('Updated :' + updatedCommands);
         setCommands(updatedCommands);
     };
     var getCurrentPictureCommands = function () {
@@ -1109,7 +1107,7 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands, onChange: handleCommandUpdate }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands, onBlur: handleCommandUpdate }))));
 }
 
 function OpenPicDialogButton(props) {
