@@ -1067,8 +1067,16 @@ function EditPictureDialog(props) {
         if (!mouseTrapped) {
             var printMousePosition = function (event) {
                 // something is wrong with getting commands from inside this event :-/
-                var x = Math.round(event.clientX);
-                var y = Math.round(event.clientY);
+                //@ts-ignore
+                var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+                var canvas = previewDocument.getElementById('canvas');
+                var rect = canvas.getBoundingClientRect();
+                // adjust for position in the canvas
+                var x = Math.round(event.clientX - rect.with);
+                var y = Math.round(event.clientY - rect.height);
+                // scale to bitmap
+                x = canvas.width / rect.width,
+                    y = canvas.height / rect.height;
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
