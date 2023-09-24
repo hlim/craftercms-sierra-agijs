@@ -1081,11 +1081,11 @@ function EditPictureDialog(props) {
                 var ratioOfX = event.clientX / rect.width;
                 var ratioOfY = event.clientY / rect.height;
                 var x = Math.round(160 * ratioOfX);
-                var y = Math.round(160 * ratioOfY);
+                var y = Math.round(168 * ratioOfY);
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
-                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
+                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();");
                 setCommands(newCommands);
                 //@ts-ignore
                 window.agistudioPicCommands = newCommands;
