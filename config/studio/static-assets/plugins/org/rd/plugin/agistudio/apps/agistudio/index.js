@@ -902,7 +902,8 @@ function AddGame(props) {
 
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
-    var _b = React.useState(false), mouseTrapped = _b[0]; _b[1];
+    var _b = React.useState(''), commandsValue = _b[0], setCommandsValue = _b[1];
+    var _c = React.useState(false), mouseTrapped = _c[0], setMouseTrapped = _c[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -919,14 +920,14 @@ function EditPictureDialog(props) {
             var commandName = command.substring(0, command.indexOf('('));
             var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
             var opCode = 0; // End
-            if (commandName.startsWith("/*"))
+            if (commandName.startsWith('/*'))
                 skip = true;
-            else if (commandName.startsWith("//"))
+            else if (commandName.startsWith('//'))
                 skip = true;
-            else if (skip = commandName.startsWith("*/"))
+            else if ((skip = commandName.startsWith('*/')))
                 skip = false;
             if (!skip) {
-                console.log("Executing Command:" + commandName + "(" + args.join(",") + ");");
+                console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
                 switch (commandName) {
                     case 'PicSetColor':
                         opCode = 240;
@@ -1053,7 +1054,7 @@ function EditPictureDialog(props) {
         }
         return decodedCommands;
     };
-    var renderClick = function (event) {
+    var renderCommands = function () {
         var encodedBuffer = encodeCommands();
         var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
         var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
@@ -1062,18 +1063,23 @@ function EditPictureDialog(props) {
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
         agiInterpreter.agi_draw_pic(picNo - 1);
         agiInterpreter.agi_show_pic(picNo - 1);
+    };
+    var renderClick = function (event) {
         if (!mouseTrapped) {
             var printMousePosition = function (event) {
                 //alert("Click: "+ event.clientX + ", " + event.clientY)
-                var x = event.clientX;
-                var y = event.clientY;
-                setCommands(commands.replace("End();", "DrawAbs(".concat(x, ",").concat(y, ")")));
+                var x = event.clientX / 10;
+                var y = event.clientY / 10;
+                setCommandsValue(commandsValue.replace('End();', "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();")));
+                renderCommands();
             };
+            setMouseTrapped(true);
             //@ts-ignore
             var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-            var canvas = previewDocument.getElementById("canvas");
-            canvas.addEventListener("click", printMousePosition);
+            var canvas = previewDocument.getElementById('canvas');
+            canvas.addEventListener('click', printMousePosition);
         }
+        renderCommands();
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
@@ -1087,8 +1093,7 @@ function EditPictureDialog(props) {
             var decodedPictureCommands = decodePictureStream(currentPictureStream);
             setCommands(prettyPrintCommands(decodedPictureCommands));
         }
-        catch (err) {
-        }
+        catch (err) { }
     };
     var handleSwitchBuffer = function () {
         AgiBridge.agiExecute('Get buffer mode', 'Agi.interpreter.gbm = (Agi.interpreter.gbm && Agi.interpreter.gbm==1) ? 0 : 1');
@@ -1102,7 +1107,7 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: commands, onChange: handleCommandUpdate }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: commands, value: commandsValue, onChange: handleCommandUpdate }))));
 }
 
 function OpenPicDialogButton(props) {
