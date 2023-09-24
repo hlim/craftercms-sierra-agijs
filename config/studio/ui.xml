@@ -389,13 +389,6 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
-                    
-
-                </widgets>
-
-            </middleSection>
-            <rightSection>
-                <widgets>
 
                     <widget id="org.rd.plugin.agistudio.OpenPicDialogButton">
                     	<plugin
@@ -405,6 +398,14 @@
                     		name="agistudio"
                     		file="index.js"/>                        
                     </widget>
+                    
+
+                </widgets>
+
+            </middleSection>
+            <rightSection>
+                <widgets>
+
                     
                     
                     <!--
