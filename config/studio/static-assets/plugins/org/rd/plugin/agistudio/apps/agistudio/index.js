@@ -905,9 +905,7 @@ function AddGame(props) {
 }
 
 function EditPictureDialog(props) {
-    useDispatch();
-    var _a = React.useState(null); _a[0]; _a[1];
-    var _b = React.useState(''), commands = _b[0], setCommands = _b[1];
+    var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
     var encodeCommands = function () {
         var encodedBuffer = new Uint8Array(1000);
         var parsedCommands = commands.replaceAll('\n', '').split(';');
