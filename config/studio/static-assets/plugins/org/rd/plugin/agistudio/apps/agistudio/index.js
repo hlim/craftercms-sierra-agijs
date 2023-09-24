@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -11,14 +11,14 @@ const Menu = craftercms.libs.MaterialUI.Menu && Object.prototype.hasOwnProperty.
 const AudiotrackRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AudiotrackRounded');
 const ControlCameraRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ControlCameraRounded');
 const CopyAllRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/CopyAllRounded');
-const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded');
 const SpeakerNotesRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/SpeakerNotesRounded');
-const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
 const RoomRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/RoomRounded');
+const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DataObjectRounded');
 const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AddRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AddRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AddRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AddRounded');
 const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
 const { post } = craftercms.utils.ajax;
+const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -289,6 +289,70 @@ function ShowPriorityBuffer(props) {
         React.createElement(Tooltip, { title: 'Show Priority Buffer' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(CopyAllRoundedIcon, null)))));
+}
+
+function ShowWords(props) {
+    useDispatch();
+    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
+    var open = Boolean(anchorEl);
+    var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
+    var _c = React.useState([]), words = _c[0], setWords = _c[1];
+    var handleClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        var words = AgiBridge.agiExecute('Get Words', 'Resources.words');
+        setWords(words);
+        setDialogOpen(true);
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
+            React.createElement(DialogTitle, null, "Words"),
+            React.createElement(DialogContent, null,
+                React.createElement("table", { style: { width: '100%' } },
+                    React.createElement("th", null, "Word Group"),
+                    React.createElement("th", null, "Words"),
+                    words
+                        .map(function (words, i) { return (React.createElement(React.Fragment, null,
+                        React.createElement("tr", { style: { width: '100%' } },
+                            React.createElement("td", null,
+                                React.createElement("h1", null, i)),
+                            React.createElement("td", { style: { width: '100%' } },
+                                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: words.join("\n") }))))); })))),
+        React.createElement(Tooltip, { title: 'Show Words' },
+            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(SpeakerNotesRoundedIcon, null)))));
+}
+
+function CurrentRoom(props) {
+    useDispatch();
+    useActiveSiteId();
+    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
+    var open = Boolean(anchorEl);
+    var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
+    var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
+    var _d = useState(-1), currentRoom = _d[0], setCurrentRoom = _d[1];
+    var loadRoomData = function () {
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        var roomInt = (parseInt(roomValue)) ? roomValue : -1;
+        setCurrentRoom(roomInt);
+    };
+    useEffect(function () {
+        setInterval(function () {
+            loadRoomData();
+        }, 3 * 1000);
+    }, []);
+    useEffect(function () {
+        currentUrlPath && setInternalUrl(currentUrlPath);
+        loadRoomData();
+    }, [currentUrlPath]);
+    var handleClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        AgiBridge.agiExecute('Reload Current Room', 'Agi.interpreter.newroom = currentRoom');
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(Tooltip, { title: 'Reload Current Room' },
+            React.createElement(Badge, { badgeContent: currentRoom != -1 ? currentRoom : null, color: "success", overlap: "circular", style: { position: 'relative' } },
+                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                    React.createElement(RoomRoundedIcon, null))))));
 }
 
 function ShowCode(props) {
@@ -686,258 +750,6 @@ function ShowCode(props) {
                 React.createElement(DataObjectRoundedIcon, null)))));
 }
 
-function ShowWords(props) {
-    useDispatch();
-    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
-    var open = Boolean(anchorEl);
-    var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState([]), words = _c[0], setWords = _c[1];
-    var handleClick = function (event) {
-        setAnchorEl(event.currentTarget);
-        var words = AgiBridge.agiExecute('Get Words', 'Resources.words');
-        setWords(words);
-        setDialogOpen(true);
-    };
-    return (React.createElement(React.Fragment, null,
-        React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
-            React.createElement(DialogTitle, null, "Words"),
-            React.createElement(DialogContent, null,
-                React.createElement("table", { style: { width: '100%' } },
-                    React.createElement("th", null, "Word Group"),
-                    React.createElement("th", null, "Words"),
-                    words
-                        .map(function (words, i) { return (React.createElement(React.Fragment, null,
-                        React.createElement("tr", { style: { width: '100%' } },
-                            React.createElement("td", null,
-                                React.createElement("h1", null, i)),
-                            React.createElement("td", { style: { width: '100%' } },
-                                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: words.join("\n") }))))); })))),
-        React.createElement(Tooltip, { title: 'Show Words' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
-                React.createElement(SpeakerNotesRoundedIcon, null)))));
-}
-
-function ShowPicture(props) {
-    useDispatch();
-    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
-    var open = Boolean(anchorEl);
-    var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState(''), commands = _c[0], setCommands = _c[1];
-    var prettyPrintCommands = function (commands) {
-        var code = '';
-        commands.forEach(function (command) {
-            code += command + '\n';
-        });
-        return code;
-    };
-    var encodeCommands = function () {
-        var encodedBuffer = new Uint8Array(1000);
-        var parsedCommands = commands.replaceAll('\n', '').split(';');
-        var i = 0;
-        parsedCommands.forEach(function (command) {
-            var commandName = command.substring(0, command.indexOf('('));
-            var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
-            var terminateArgs = false;
-            var opCode = 0; // End
-            switch (commandName) {
-                case 'PicSetColor':
-                    opCode = 240;
-                    break;
-                case 'PicDisable':
-                    opCode = 241;
-                    break;
-                case 'PriSetcolor':
-                    opCode = 242;
-                    break;
-                case 'PriDisable':
-                    opCode = 243;
-                    break;
-                case 'DrawYCorner':
-                    opCode = 244;
-                    break;
-                case 'DrawXCorner':
-                    opCode = 245;
-                    break;
-                case 'DrawAbs':
-                    opCode = 246;
-                    break;
-                case 'DrawRel':
-                    opCode = 247;
-                    break;
-                case 'DrawFill':
-                    opCode = 248;
-                    terminateArgs = true;
-                    break;
-                case 'SetPen':
-                    opCode = 249;
-                    break;
-                case 'DrawPen':
-                    opCode = 250;
-                    break;
-                case 'End':
-                    opCode = 255;
-                    break;
-            }
-            // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
-            encodedBuffer[i] = opCode;
-            i++;
-            for (var a = 0; a < args.length; a++) {
-                var value = args[a];
-                encodedBuffer[i] = parseInt(value);
-                i++;
-            }
-            if (terminateArgs) {
-                encodedBuffer[i] = 255;
-                i++;
-            }
-        });
-        var rightsizedBuffer = new Uint8Array(i);
-        for (var l = 0; l < i; l++) {
-            rightsizedBuffer[l] = encodedBuffer[l];
-        }
-        return rightsizedBuffer;
-    };
-    var getFunctionArgsFromPicStream = function (stream) {
-        var args = [];
-        while (true) {
-            var arg = stream.readUint8();
-            if (arg >= 0xf0)
-                break;
-            args.push(arg);
-        }
-        stream.position--;
-        return args;
-    };
-    var decodePictureStream = function (stream) {
-        var decodedCommands = [];
-        stream.position = 0;
-        var processing = true;
-        while (processing) {
-            var opCode = stream.readUint8();
-            if (opCode >= 0xf0) {
-                switch (opCode) {
-                    case 240: // PicSetColor
-                        var picColor = stream.readUint8();
-                        decodedCommands.push('PicSetColor(' + picColor + ');');
-                        break;
-                    case 241: // PicDisable
-                        decodedCommands.push('PicDisable();');
-                        break;
-                    case 242: // PriSetcolor
-                        var priColor = stream.readUint8();
-                        decodedCommands.push('PriSetColor(' + priColor + ');');
-                        break;
-                    case 243: // PriDisable
-                        decodedCommands.push('PriDisable();');
-                        break;
-                    case 244: // DrawYCorner
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawYCorner(' + args.join(',') + ');');
-                        break;
-                    case 245: // DrawXCorner
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawXCorner(' + args.join(',') + ');');
-                        break;
-                    case 246: // DrawAbs
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawAbs(' + args.join(',') + ');');
-                        break;
-                    case 247: // DrawRel
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawRel(' + args.join(',') + ');');
-                        break;
-                    case 248: // DrawFill
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawFill(' + args.join(',') + ');');
-                        break;
-                    case 249: // SetPen
-                        var value = stream.readUint8();
-                        decodedCommands.push('SetPen(' + value + ');');
-                        break;
-                    case 250: // DrawPen
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawPen(' + args.join(',') + ');');
-                        break;
-                    case 255: // End
-                        decodedCommands.push('End();');
-                        processing = false;
-                        break;
-                }
-            }
-        }
-        return decodedCommands;
-    };
-    var handleClick = function (event) {
-        setAnchorEl(event.currentTarget);
-        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-        var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
-        var decodedPictureCommands = decodePictureStream(currentPictureStream);
-        setCommands(prettyPrintCommands(decodedPictureCommands));
-        setDialogOpen(true);
-    };
-    var renderClick = function (event) {
-        var encodedBuffer = encodeCommands();
-        var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
-        var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
-        var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
-        var picNo = agiInterpreter.variables[0];
-        agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
-        agiInterpreter.agi_draw_pic(picNo - 1);
-        agiInterpreter.agi_show_pic(picNo - 1);
-        // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
-        // Agi.interpreter.agi_draw_pic(0)
-        // Agi.interpreter.agi_show_pic(0)
-    };
-    var handleCommandUpdate = function (event) {
-        var updatedCommands = event.target.value;
-        console.log('Updated :' + updatedCommands);
-        setCommands(updatedCommands);
-    };
-    return (React.createElement(React.Fragment, null,
-        React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
-            React.createElement(DialogTitle, null, "Show Picture"),
-            React.createElement(DialogActions, null,
-                React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
-            React.createElement(DialogContent, null,
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: commands, onChange: handleCommandUpdate }))),
-        React.createElement(Tooltip, { title: 'Show Picture' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
-                React.createElement(ImageAspectRatioRoundedIcon, null)))));
-}
-
-function CurrentRoom(props) {
-    useDispatch();
-    useActiveSiteId();
-    var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
-    var open = Boolean(anchorEl);
-    var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
-    var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
-    var _d = useState(-1), currentRoom = _d[0], setCurrentRoom = _d[1];
-    var loadRoomData = function () {
-        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-        var roomInt = (parseInt(roomValue)) ? roomValue : -1;
-        setCurrentRoom(roomInt);
-    };
-    useEffect(function () {
-        setInterval(function () {
-            loadRoomData();
-        }, 3 * 1000);
-    }, []);
-    useEffect(function () {
-        currentUrlPath && setInternalUrl(currentUrlPath);
-        loadRoomData();
-    }, [currentUrlPath]);
-    var handleClick = function (event) {
-        setAnchorEl(event.currentTarget);
-        AgiBridge.agiExecute('Reload Current Room', 'Agi.interpreter.newroom = currentRoom');
-    };
-    return (React.createElement(React.Fragment, null,
-        React.createElement(Tooltip, { title: 'Reload Current Room' },
-            React.createElement(Badge, { badgeContent: currentRoom != -1 ? currentRoom : null, color: "success", overlap: "circular", style: { position: 'relative' } },
-                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
-                    React.createElement(RoomRoundedIcon, null))))));
-}
-
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
@@ -981,6 +793,9 @@ const dispatchDOMEvent = /*#__PURE__*/ createAction('DISPATCH_DOM_EVENT');
 // region Upload Dialog
 const showUploadDialog = /*#__PURE__*/ createAction('SHOW_UPLOAD_DIALOG');
 const closeUploadDialog = /*#__PURE__*/ createAction('CLOSE_UPLOAD_DIALOG');
+// endregion
+// region Widget Dialog
+const showWidgetDialog = /*#__PURE__*/ createAction('SHOW_WIDGET_DIALOG');
 // endregion
 
 function AddGame(props) {
@@ -1090,6 +905,119 @@ function AddGame(props) {
                 React.createElement(AddRoundedIcon, null)))));
 }
 
+function EditPictureDialog(props) {
+    useDispatch();
+    var _a = React.useState(null); _a[0]; _a[1];
+    var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
+    var _c = React.useState(''), commands = _c[0], setCommands = _c[1];
+    var encodeCommands = function () {
+        var encodedBuffer = new Uint8Array(1000);
+        var parsedCommands = commands.replaceAll('\n', '').split(';');
+        var i = 0;
+        parsedCommands.forEach(function (command) {
+            var commandName = command.substring(0, command.indexOf('('));
+            var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
+            var terminateArgs = false;
+            var opCode = 0; // End
+            switch (commandName) {
+                case 'PicSetColor':
+                    opCode = 240;
+                    break;
+                case 'PicDisable':
+                    opCode = 241;
+                    break;
+                case 'PriSetcolor':
+                    opCode = 242;
+                    break;
+                case 'PriDisable':
+                    opCode = 243;
+                    break;
+                case 'DrawYCorner':
+                    opCode = 244;
+                    break;
+                case 'DrawXCorner':
+                    opCode = 245;
+                    break;
+                case 'DrawAbs':
+                    opCode = 246;
+                    break;
+                case 'DrawRel':
+                    opCode = 247;
+                    break;
+                case 'DrawFill':
+                    opCode = 248;
+                    terminateArgs = true;
+                    break;
+                case 'SetPen':
+                    opCode = 249;
+                    break;
+                case 'DrawPen':
+                    opCode = 250;
+                    break;
+                case 'End':
+                    opCode = 255;
+                    break;
+            }
+            // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
+            encodedBuffer[i] = opCode;
+            i++;
+            for (var a = 0; a < args.length; a++) {
+                var value = args[a];
+                encodedBuffer[i] = parseInt(value);
+                i++;
+            }
+            if (terminateArgs) {
+                encodedBuffer[i] = 255;
+                i++;
+            }
+        });
+        var rightsizedBuffer = new Uint8Array(i);
+        for (var l = 0; l < i; l++) {
+            rightsizedBuffer[l] = encodedBuffer[l];
+        }
+        return rightsizedBuffer;
+    };
+    var renderClick = function (event) {
+        var encodedBuffer = encodeCommands();
+        var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
+        var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
+        var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
+        var picNo = agiInterpreter.variables[0];
+        agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
+        agiInterpreter.agi_draw_pic(picNo - 1);
+        agiInterpreter.agi_show_pic(picNo - 1);
+        // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
+        // Agi.interpreter.agi_draw_pic(0)
+        // Agi.interpreter.agi_show_pic(0)
+    };
+    var handleCommandUpdate = function (event) {
+        var updatedCommands = event.target.value;
+        console.log('Updated :' + updatedCommands);
+        setCommands(updatedCommands);
+    };
+    return (React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
+        React.createElement(DialogActions, null,
+            React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
+        React.createElement(DialogContent, null,
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: commands, onChange: handleCommandUpdate }))));
+}
+
+function OpenPicDialogButton(props) {
+    var dispatch = useDispatch();
+    var handleClick = function () {
+        dispatch(showWidgetDialog({
+            title: "Edit Current Room Picture",
+            extraProps: props,
+            widget: {
+                id: 'org.rd.plugin.agistudio.EditPictureDialog'
+            }
+        }));
+    };
+    return (React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
+        React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(ImageAspectRatioRoundedIcon, null))));
+}
+
 var plugin = {
     locales: undefined,
     scripts: undefined,
@@ -1103,10 +1031,11 @@ var plugin = {
         'org.rd.plugin.agistudio.ShowPriorityBuffer': ShowPriorityBuffer,
         'org.rd.plugin.agistudio.ShowWords': ShowWords,
         'org.rd.plugin.agistudio.ShowCode': ShowCode,
-        'org.rd.plugin.agistudio.ShowPicture': ShowPicture,
         'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom,
-        'org.rd.plugin.agistudio.AddGame': AddGame
+        'org.rd.plugin.agistudio.AddGame': AddGame,
+        'org.rd.plugin.agistudio.EditPictureDialog': EditPictureDialog,
+        'org.rd.plugin.agistudio.OpenPicDialogButton': OpenPicDialogButton
     }
 };
 
-export { AddGame, AllowInput, CurrentRoom, RoomSelector, SetEgoPosition, ShowCode, ShowPicture, ShowWords, SoundSelector, plugin as default };
+export { AddGame, AllowInput, CurrentRoom, EditPictureDialog, OpenPicDialogButton, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
