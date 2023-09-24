@@ -917,7 +917,6 @@ function EditPictureDialog(props) {
         parsedCommands.forEach(function (command) {
             var commandName = command.substring(0, command.indexOf('('));
             var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
-            var terminateArgs = false;
             var opCode = 0; // End
             if (commandName.startsWith("/*"))
                 skip = true;
@@ -954,7 +953,6 @@ function EditPictureDialog(props) {
                         break;
                     case 'DrawFill':
                         opCode = 248;
-                        terminateArgs = true;
                         break;
                     case 'SetPen':
                         opCode = 249;
@@ -974,16 +972,14 @@ function EditPictureDialog(props) {
                     encodedBuffer[i] = parseInt(value);
                     i++;
                 }
-                if (terminateArgs) {
-                    encodedBuffer[i] = 255;
-                    i++;
-                }
             }
         });
         var rightsizedBuffer = new Uint8Array(i);
         for (var l = 0; l < i; l++) {
             rightsizedBuffer[l] = encodedBuffer[l];
         }
+        // for the picture to terminate
+        rightsizedBuffer[rightsizedBuffer.length - 1] = 255;
         return rightsizedBuffer;
     };
     var getFunctionArgsFromPicStream = function (stream) {
