@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -792,9 +792,6 @@ const dispatchDOMEvent = /*#__PURE__*/ createAction('DISPATCH_DOM_EVENT');
 const showUploadDialog = /*#__PURE__*/ createAction('SHOW_UPLOAD_DIALOG');
 const closeUploadDialog = /*#__PURE__*/ createAction('CLOSE_UPLOAD_DIALOG');
 // endregion
-// region Widget Dialog
-const showWidgetDialog = /*#__PURE__*/ createAction('SHOW_WIDGET_DIALOG');
-// endregion
 
 function AddGame(props) {
     var dispatch = useDispatch();
@@ -1082,19 +1079,31 @@ function EditPictureDialog(props) {
 }
 
 function OpenPicDialogButton(props) {
-    var dispatch = useDispatch();
+    useDispatch();
+    var _a = React.useState(false), drawerOpen = _a[0], setDrawerOpen = _a[1];
     var handleClick = function () {
-        dispatch(showWidgetDialog({
-            title: "Edit Current Room Picture",
-            extraProps: props,
-            widget: {
-                id: 'org.rd.plugin.agistudio.EditPictureDialog'
-            }
-        }));
+        var drawerState = drawerOpen ? false : true;
+        setDrawerOpen(drawerState);
     };
-    return (React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
-        React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
-            React.createElement(ImageAspectRatioRoundedIcon, null))));
+    // const handleClick = () => {
+    //   dispatch(
+    //     showWidgetDialog({
+    //       title: "Edit Current Room Picture",
+    //       extraProps: props,
+    //       widget: {
+    //         id: 'org.rd.plugin.agistudio.EditPictureDialog'
+    //       }
+    //     })
+    //   );
+    // };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(SwipeableDrawer, { anchor: "bottom", open: drawerOpen, onClose: function (event) {
+            }, onOpen: function (event) {
+            } },
+            React.createElement(EditPictureDialog, { props: true })),
+        React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
+            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
+                React.createElement(ImageAspectRatioRoundedIcon, null)))));
 }
 
 var plugin = {
