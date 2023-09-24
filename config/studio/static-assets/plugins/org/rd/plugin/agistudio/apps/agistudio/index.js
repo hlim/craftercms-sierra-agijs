@@ -1085,7 +1085,7 @@ function EditPictureDialog(props) {
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
-                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ");\nEnd();");
+                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
                 setCommands(newCommands);
                 //@ts-ignore
                 window.agistudioPicCommands = newCommands;
