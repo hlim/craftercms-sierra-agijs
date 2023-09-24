@@ -1081,6 +1081,11 @@ function EditPictureDialog(props) {
         }
         renderCommands();
     };
+    var handleCommandUpdate = function (event) {
+        var updatedCommands = event.target.value;
+        console.log('Updated :' + updatedCommands);
+        setCommands(updatedCommands);
+    };
     var getCurrentPictureCommands = function () {
         try {
             var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
@@ -1102,7 +1107,7 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands, onChange: handleCommandUpdate }))));
 }
 
 function OpenPicDialogButton(props) {
