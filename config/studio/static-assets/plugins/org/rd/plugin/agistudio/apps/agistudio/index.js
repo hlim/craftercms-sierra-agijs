@@ -1004,7 +1004,7 @@ function EditPictureDialog(props) {
                         break;
                     case 242: // PriSetcolor
                         var priColor = stream.readUint8();
-                        decodedCommands.push('PriSetColor(' + priColor + ');');
+                        decodedCommands.push('PriSetcolor(' + priColor + ');');
                         break;
                     case 243: // PriDisable
                         decodedCommands.push('PriDisable();');
