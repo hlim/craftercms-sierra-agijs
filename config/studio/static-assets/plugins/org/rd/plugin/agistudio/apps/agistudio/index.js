@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, SwipeableDrawer } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -902,7 +902,7 @@ function AddGame(props) {
 
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
-    var _b = React.useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
+    var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1070,7 +1070,7 @@ function EditPictureDialog(props) {
                 var x = Math.round(event.clientX / 10);
                 var y = Math.round(event.clientY / 10);
                 var newCommands = commands.replace('End();', '');
-                newCommands = newCommands + "\nDrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
+                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
                 setCommands(newCommands);
                 renderCommands();
             };
@@ -1081,10 +1081,6 @@ function EditPictureDialog(props) {
             canvas.addEventListener('click', printMousePosition);
         }
         renderCommands();
-    };
-    var handleCommandUpdate = function (event) {
-        var updatedCommands = event.target.value;
-        setCommands(updatedCommands);
     };
     var getCurrentPictureCommands = function () {
         try {
@@ -1104,10 +1100,27 @@ function EditPictureDialog(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: getCurrentPictureCommands, variant: "outlined", sx: { mr: 1 } }, "Get Commands"),
+            React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                React.createElement(Button, { sx: { "background-color": "black" } }, "0"),
+                React.createElement(Button, { sx: { "background-color": "darkblue" } }, "1"),
+                React.createElement(Button, { sx: { "background-color": "green" } }, "2"),
+                React.createElement(Button, { sx: { "background-color": "crayon" } }, "3"),
+                React.createElement(Button, { sx: { "background-color": "darkred" } }, "4"),
+                React.createElement(Button, { sx: { "background-color": "purple" } }, "5"),
+                React.createElement(Button, { sx: { "background-color": "brown" } }, "6"),
+                React.createElement(Button, { sx: { "background-color": "lightgray" } }, "7"),
+                React.createElement(Button, { sx: { "background-color": "gray" } }, "8"),
+                React.createElement(Button, { sx: { "background-color": "blue" } }, "9"),
+                React.createElement(Button, { sx: { "background-color": "lightgreen" } }, "10"),
+                React.createElement(Button, { sx: { "background-color": "lightcrayon" } }, "11"),
+                React.createElement(Button, { sx: { "background-color": "red" } }, "12"),
+                React.createElement(Button, { sx: { "background-color": "magenta" } }, "13"),
+                React.createElement(Button, { sx: { "background-color": "yellow", "color": "black" } }, "14"),
+                React.createElement(Button, { sx: { "background-color": "white", "color": "black" } }, "15")),
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands, onChange: handleCommandUpdate }))));
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }))));
 }
 
 function OpenPicDialogButton(props) {
