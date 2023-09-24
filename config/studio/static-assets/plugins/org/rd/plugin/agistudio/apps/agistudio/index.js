@@ -902,6 +902,7 @@ function AddGame(props) {
 
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
+    var _b = React.useState(false), mouseTrapped = _b[0]; _b[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1061,9 +1062,12 @@ function EditPictureDialog(props) {
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
         agiInterpreter.agi_draw_pic(picNo - 1);
         agiInterpreter.agi_show_pic(picNo - 1);
-        // Agi.interpreter.loadedPics[1] = new Agi.Pic(new Fs.ByteStream( (new Uint8Array([240, 12    ,248, 49,119,255,           255])), 0));
-        // Agi.interpreter.agi_draw_pic(0)
-        // Agi.interpreter.agi_show_pic(0)
+        if (!mouseTrapped) {
+            var printMousePosition = function (event) {
+                alert("Click: " + event.clientX + ", " + event.clientY);
+            };
+            document.getElementById('crafterCMSPreviewIframe').addEventListener("click", printMousePosition);
+        }
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
@@ -1080,9 +1084,6 @@ function EditPictureDialog(props) {
         catch (err) {
         }
     };
-    useEffect(function () {
-        // Initialize the dialog
-    }, []);
     var handleSwitchBuffer = function () {
         AgiBridge.agiExecute('Get buffer mode', 'Agi.interpreter.gbm = (Agi.interpreter.gbm && Agi.interpreter.gbm==1) ? 0 : 1');
         AgiBridge.agiExecute('Keep Orig Visual Buffer', 'Agi.interpreter.gvb = (!Agi.interpreter.gvb) ? Agi.interpreter.visualBuffer : Agi.interpreter.gvb');
@@ -1105,23 +1106,10 @@ function OpenPicDialogButton(props) {
         var drawerState = drawerOpen ? false : true;
         setDrawerOpen(drawerState);
     };
-    // const handleClick = () => {
-    //   dispatch(
-    //     showWidgetDialog({
-    //       title: "Edit Current Room Picture",
-    //       extraProps: props,
-    //       widget: {
-    //         id: 'org.rd.plugin.agistudio.EditPictureDialog'
-    //       }
-    //     })
-    //   );
-    // };
     return (React.createElement(React.Fragment, null,
-        React.createElement(SwipeableDrawer, { anchor: "left", variant: "persistent", ModalProps: {
-                keepMounted: false,
-            }, open: drawerOpen, onClose: function (event) {
-            }, onOpen: function (event) {
-            } },
+        React.createElement(SwipeableDrawer, { anchor: 'left', variant: "persistent", ModalProps: {
+                keepMounted: false
+            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } },
             React.createElement(EditPictureDialog, { props: true })),
         React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
