@@ -1070,15 +1070,15 @@ function EditPictureDialog(props) {
                 //@ts-ignore
                 var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
                 var canvas = previewDocument.getElementById('canvas');
-                var rect = canvas.getBoundingClientRect();
+                canvas.getBoundingClientRect();
                 // adjust for position in the canvas
                 // let x = Math.round(event.clientX - rect.width)
                 // let y = Math.round(event.clientY - rect.height)
                 // // scale to bitmap
                 // x = canvas.width / rect.width;    
                 // y = canvas.height / rect.height;
-                var x = Math.round(event.clientX / rect.width);
-                var y = Math.round(event.clientY / rect.height);
+                var x = Math.round(event.clientX - 100); // rect.width)
+                var y = Math.round(event.clientY - 100); // rect.height)
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
