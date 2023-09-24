@@ -70,6 +70,7 @@ This is in no way affiliated with or endorsed by Sierra Entertainment or any oth
 
 # CrafterCMS
 This project wouldn't be here if it were not for CrafterCMS. 
-It's the best Headless CMS out there! Spread the word. Git-based, headless, industrial strength, composable, open source and "Oh the power"! :) Help us make it even better!
-Website: https://craftercms.com/ 
-Git repo: http://github.com/craftercms
+It's the best Headless CMS out there! Spread the word. Git-based, headless, industrial strength, composable, open source, and "Oh the power"! No seriously. It's super easy to build awesome digital experiences and the tools to manage them in this platform. Try it. :) 
+Help us make it even better!
+- Website: https://craftercms.com/ 
+- Git repo: http://github.com/craftercms
