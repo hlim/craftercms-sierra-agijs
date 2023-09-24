@@ -1117,6 +1117,14 @@ function EditPictureDialog(props) {
         setDrawMode(mode);
         //@ts-ignore
         window.agistudioDrawMode = mode;
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        var newCommands = existingCommands.replace('End();', '');
+        var value = 1 & 0x10 & 0x07;
+        newCommands = newCommands + "PicSetPen(".concat(value, ");\nEnd();");
+        setCommands(newCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
     };
     var getCurrentPictureCommands = function () {
         try {
