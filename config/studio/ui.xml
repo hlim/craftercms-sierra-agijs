@@ -312,11 +312,18 @@
             </leftSection>
             <middleSection>
 
+                <widgets>
 <!--
                     <widget id="craftercms.components.PreviewAddressBar"/>
 -->
-                <widgets>
-
+                    <widget id="org.rd.plugin.agistudio.CurrentRoom">
+                    	<plugin
+                    		id="org.rd.plugin.agistudio"
+                    		site="{site}"
+                    		type="apps"
+                    		name="agistudio"
+                    		file="index.js"/>                        
+                    </widget>
 
 
                 </widgets>
