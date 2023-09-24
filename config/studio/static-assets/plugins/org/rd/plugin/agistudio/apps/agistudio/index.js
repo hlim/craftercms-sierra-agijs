@@ -1072,11 +1072,13 @@ function EditPictureDialog(props) {
                 var canvas = previewDocument.getElementById('canvas');
                 var rect = canvas.getBoundingClientRect();
                 // adjust for position in the canvas
-                var x = Math.round(event.clientX - rect.width);
-                var y = Math.round(event.clientY - rect.height);
-                // scale to bitmap
-                x = canvas.width / rect.width;
-                y = canvas.height / rect.height;
+                // let x = Math.round(event.clientX - rect.width)
+                // let y = Math.round(event.clientY - rect.height)
+                // // scale to bitmap
+                // x = canvas.width / rect.width;    
+                // y = canvas.height / rect.height;
+                var x = Math.round(event.clientX / rect.width);
+                var y = Math.round(event.clientY / rect.height);
                 //@ts-ignore
                 var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
                 var newCommands = existingCommands.replace('End();', '');
