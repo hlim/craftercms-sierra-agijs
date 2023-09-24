@@ -397,7 +397,7 @@
             <rightSection>
                 <widgets>
 
-                    <widget id="org.rd.plugin.agistudio.ShowPicture">
+                    <widget id="org.rd.plugin.agistudio.OpenPicDialogButton">
                     	<plugin
                     		id="org.rd.plugin.agistudio"
                     		site="{site}"
