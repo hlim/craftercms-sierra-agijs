@@ -1117,7 +1117,9 @@ function OpenPicDialogButton(props) {
     //   );
     // };
     return (React.createElement(React.Fragment, null,
-        React.createElement(SwipeableDrawer, { anchor: "bottom", open: drawerOpen, onClose: function (event) {
+        React.createElement(SwipeableDrawer, { anchor: "left", variant: "persistent", ModalProps: {
+                keepMounted: false,
+            }, open: drawerOpen, onClose: function (event) {
             }, onOpen: function (event) {
             } },
             React.createElement(EditPictureDialog, { props: true })),
