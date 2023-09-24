@@ -905,6 +905,13 @@ function AddGame(props) {
 
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
+    var prettyPrintCommands = function (commands) {
+        var code = '';
+        commands.forEach(function (command) {
+            code += command + '\n';
+        });
+        return code;
+    };
     var encodeCommands = function () {
         var encodedBuffer = new Uint8Array(1000);
         var parsedCommands = commands.replaceAll('\n', '').split(';');
@@ -972,6 +979,76 @@ function EditPictureDialog(props) {
         }
         return rightsizedBuffer;
     };
+    var getFunctionArgsFromPicStream = function (stream) {
+        var args = [];
+        while (true) {
+            var arg = stream.readUint8();
+            if (arg >= 0xf0)
+                break;
+            args.push(arg);
+        }
+        stream.position--;
+        return args;
+    };
+    var decodePictureStream = function (stream) {
+        var decodedCommands = [];
+        stream.position = 0;
+        var processing = true;
+        while (processing) {
+            var opCode = stream.readUint8();
+            if (opCode >= 0xf0) {
+                switch (opCode) {
+                    case 240: // PicSetColor
+                        var picColor = stream.readUint8();
+                        decodedCommands.push('PicSetColor(' + picColor + ');');
+                        break;
+                    case 241: // PicDisable
+                        decodedCommands.push('PicDisable();');
+                        break;
+                    case 242: // PriSetcolor
+                        var priColor = stream.readUint8();
+                        decodedCommands.push('PriSetColor(' + priColor + ');');
+                        break;
+                    case 243: // PriDisable
+                        decodedCommands.push('PriDisable();');
+                        break;
+                    case 244: // DrawYCorner
+                        var args = getFunctionArgsFromPicStream(stream);
+                        decodedCommands.push('DrawYCorner(' + args.join(',') + ');');
+                        break;
+                    case 245: // DrawXCorner
+                        var args = getFunctionArgsFromPicStream(stream);
+                        decodedCommands.push('DrawXCorner(' + args.join(',') + ');');
+                        break;
+                    case 246: // DrawAbs
+                        var args = getFunctionArgsFromPicStream(stream);
+                        decodedCommands.push('DrawAbs(' + args.join(',') + ');');
+                        break;
+                    case 247: // DrawRel
+                        var args = getFunctionArgsFromPicStream(stream);
+                        decodedCommands.push('DrawRel(' + args.join(',') + ');');
+                        break;
+                    case 248: // DrawFill
+                        var args = getFunctionArgsFromPicStream(stream);
+                        decodedCommands.push('DrawFill(' + args.join(',') + ');');
+                        break;
+                    case 249: // SetPen
+                        var value = stream.readUint8();
+                        decodedCommands.push('SetPen(' + value + ');');
+                        break;
+                    case 250: // DrawPen
+                        var args = getFunctionArgsFromPicStream(stream);
+                        decodedCommands.push('DrawPen(' + args.join(',') + ');');
+                        break;
+                    case 255: // End
+                        decodedCommands.push('End();');
+                        processing = false;
+                        break;
+                }
+            }
+        }
+        return decodedCommands;
+    };
     var renderClick = function (event) {
         var encodedBuffer = encodeCommands();
         var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
@@ -990,6 +1067,11 @@ function EditPictureDialog(props) {
         console.log('Updated :' + updatedCommands);
         setCommands(updatedCommands);
     };
+    // Initialize the dialog
+    var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+    var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
+    var decodedPictureCommands = decodePictureStream(currentPictureStream);
+    setCommands(prettyPrintCommands(decodedPictureCommands));
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
