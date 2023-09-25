@@ -1061,8 +1061,8 @@ function EditPictureDialog(props) {
         var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
         var picNo = agiInterpreter.variables[0];
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
-        agiInterpreter.agi_draw_pic(picNo - 1);
-        agiInterpreter.agi_show_pic(picNo - 1);
+        agiInterpreter.agi_draw_pic(picNo);
+        agiInterpreter.agi_show_pic(picNo);
     };
     var mouseDraw = function (clientX, clientY) {
         // something is wrong with getting commands from inside this event :-/
