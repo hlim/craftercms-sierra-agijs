@@ -1139,6 +1139,7 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = newCommands;
     };
     useEffect(function () {
+        alert("Now");
         if (!mouseTrapped) {
             var handleMouseDown = function (event) {
                 //@ts-ignore
