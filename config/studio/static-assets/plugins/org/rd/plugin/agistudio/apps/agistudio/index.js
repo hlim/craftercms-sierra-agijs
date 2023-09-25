@@ -1101,39 +1101,6 @@ function EditPictureDialog(props) {
         window.agistudioDrawMode = existingDrawMode;
         renderCommands(newCommands);
     };
-    var renderClick = function (event) {
-        if (!mouseTrapped) {
-            var handleMouseDown = function (event) {
-                //@ts-ignore
-                window.agistudioMouseDraw = true;
-            };
-            var handleMouseUp = function (event) {
-                //@ts-ignore
-                window.agistudioMouseDraw = false;
-                mouseDraw(event.clientX, event.clientY);
-            };
-            var handleMouseMove = function (event) {
-                //@ts-ignore
-                if (window.agistudioMouseDraw === true) {
-                    mouseDraw(event.clientX, event.clientY);
-                }
-            };
-            var handleMouseClick = function (event) {
-                mouseDraw(event.clientX, event.clientY);
-            };
-            //@ts-ignore
-            var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-            var canvas = previewDocument.getElementById('canvas');
-            canvas.addEventListener('click', handleMouseClick);
-            canvas.addEventListener('mousedown', handleMouseDown);
-            canvas.addEventListener('mouseup', handleMouseUp);
-            canvas.addEventListener('mousemove', handleMouseMove);
-            setMouseTrapped(true);
-        }
-        //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        renderCommands(existingCommands);
-    };
     var handleDrawModeUpdate = function (mode) {
         setDrawMode(mode);
         //@ts-ignore
@@ -1172,7 +1139,37 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = newCommands;
     };
     useEffect(function () {
-        alert("DRAW PIC LOADED");
+        if (!mouseTrapped) {
+            var handleMouseDown = function (event) {
+                //@ts-ignore
+                window.agistudioMouseDraw = true;
+            };
+            var handleMouseUp = function (event) {
+                //@ts-ignore
+                window.agistudioMouseDraw = false;
+                mouseDraw(event.clientX, event.clientY);
+            };
+            var handleMouseMove = function (event) {
+                //@ts-ignore
+                if (window.agistudioMouseDraw === true) {
+                    mouseDraw(event.clientX, event.clientY);
+                }
+            };
+            var handleMouseClick = function (event) {
+                mouseDraw(event.clientX, event.clientY);
+            };
+            //@ts-ignore
+            var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+            var canvas = previewDocument.getElementById('canvas');
+            canvas.addEventListener('click', handleMouseClick);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            setMouseTrapped(true);
+        }
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        renderCommands(existingCommands);
     }, []);
     // useEffect(() => {
     //   currentUrlPath && setInternalUrl(currentUrlPath);
@@ -1181,8 +1178,7 @@ function EditPictureDialog(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: getCurrentPictureCommands, variant: "outlined", sx: { mr: 1 } }, "Get Commands"),
-            React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
-            React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
+            React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
         React.createElement(DialogContent, null,
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
