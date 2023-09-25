@@ -1139,7 +1139,8 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = newCommands;
     };
     useEffect(function () {
-        alert("Now");
+        // load the current picture into the commands listing
+        getCurrentPictureCommands();
         if (!mouseTrapped) {
             var handleMouseDown = function (event) {
                 //@ts-ignore
@@ -1178,7 +1179,6 @@ function EditPictureDialog(props) {
     // }, [currentUrlPath]);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
-            React.createElement(Button, { onClick: getCurrentPictureCommands, variant: "outlined", sx: { mr: 1 } }, "Get Commands"),
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
         React.createElement(DialogContent, null,
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
