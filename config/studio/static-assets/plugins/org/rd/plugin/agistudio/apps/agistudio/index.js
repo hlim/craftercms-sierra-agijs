@@ -1113,7 +1113,10 @@ function EditPictureDialog(props) {
                 mouseDraw(event.clientX, event.clientY);
             };
             var handleMouseMove = function (event) {
-                mouseDraw(event.clientX, event.clientY);
+                //@ts-ignore
+                if (window.agistudioMouseDraw === true) {
+                    mouseDraw(event.clientX, event.clientY);
+                }
             };
             var handleMouseClick = function (event) {
                 mouseDraw(event.clientX, event.clientY);
