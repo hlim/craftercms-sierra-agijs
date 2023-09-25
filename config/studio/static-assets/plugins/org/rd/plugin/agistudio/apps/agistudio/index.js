@@ -1269,8 +1269,7 @@ function OpenPicDialogButton(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(SwipeableDrawer, { anchor: 'left', variant: "persistent", ModalProps: {
                 keepMounted: false
-            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } },
-            React.createElement(EditPictureDialog, { props: true })),
+            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } }, drawerOpen ? (React.createElement(EditPictureDialog, { props: true })) : ""),
         React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
