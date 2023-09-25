@@ -9,12 +9,12 @@
 	<internal-name>Contest 2</internal-name>
 	<navLabel>Contest 2</navLabel>
 	<game_s>contest2</game_s>
-	<placeInNav>false</placeInNav>
-	<orderDefault_f>-1</orderDefault_f>
+	<placeInNav>true</placeInNav>
+	<orderDefault_f>2000</orderDefault_f>
 	<file-name>index.xml</file-name>
 	<folder-name>contest2</folder-name>
 	<createdDate>2023-09-18T03:53:01.184Z</createdDate>
 	<createdDate_dt>2023-09-18T03:53:01.184Z</createdDate_dt>
-	<lastModifiedDate>2023-09-22T04:43:58.678Z</lastModifiedDate>
-	<lastModifiedDate_dt>2023-09-22T04:43:58.678Z</lastModifiedDate_dt>
+	<lastModifiedDate>2023-09-25T23:28:43.718Z</lastModifiedDate>
+	<lastModifiedDate_dt>2023-09-25T23:28:43.718Z</lastModifiedDate_dt>
 </page>
