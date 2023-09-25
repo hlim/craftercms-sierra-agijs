@@ -1122,9 +1122,9 @@ function EditPictureDialog(props) {
             var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
             var canvas = previewDocument.getElementById('canvas');
             canvas.addEventListener('click', handleMouseClick);
-            canvas.addEventListener('mouseDown', handleMouseDown);
-            canvas.addEventListener('mouseUp', handleMouseUp);
-            canvas.addEventListener('mouseMove', handleMouseMove);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mousemove', handleMouseMove);
             setMouseTrapped(true);
         }
         //@ts-ignore
