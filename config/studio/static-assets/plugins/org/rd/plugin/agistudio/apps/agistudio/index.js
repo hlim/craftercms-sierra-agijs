@@ -1171,6 +1171,13 @@ function EditPictureDialog(props) {
         //@ts-ignore
         window.agistudioPicCommands = newCommands;
     };
+    useEffect(function () {
+        alert("DRAW PIC LOADED");
+    }, []);
+    // useEffect(() => {
+    //   currentUrlPath && setInternalUrl(currentUrlPath);
+    //   loadRoomData();
+    // }, [currentUrlPath]);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: getCurrentPictureCommands, variant: "outlined", sx: { mr: 1 } }, "Get Commands"),
