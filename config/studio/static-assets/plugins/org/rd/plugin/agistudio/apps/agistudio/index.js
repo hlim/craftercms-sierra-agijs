@@ -1119,7 +1119,7 @@ function EditPictureDialog(props) {
             var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
             var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
             var decodedPictureCommands = decodePictureStream(currentPictureStream);
-            setCommands(prettyPrintCommands(decodedPictureCommands));
+            return prettyPrintCommands(decodedPictureCommands);
         }
         catch (err) { }
     };
@@ -1140,7 +1140,6 @@ function EditPictureDialog(props) {
     };
     useEffect(function () {
         // load the current picture into the commands listing
-        getCurrentPictureCommands();
         if (!mouseTrapped) {
             var handleMouseDown = function (event) {
                 //@ts-ignore
@@ -1169,9 +1168,10 @@ function EditPictureDialog(props) {
             canvas.addEventListener('mousemove', handleMouseMove);
             setMouseTrapped(true);
         }
+        var currentPictureCommands = getCurrentPictureCommands();
+        setCommands(currentPictureCommands);
         //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        renderCommands(existingCommands);
+        window.agistudioPicCommands = currentPictureCommands;
     }, []);
     // useEffect(() => {
     //   currentUrlPath && setInternalUrl(currentUrlPath);
