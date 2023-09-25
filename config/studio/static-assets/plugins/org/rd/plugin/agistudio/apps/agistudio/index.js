@@ -1061,7 +1061,7 @@ function EditPictureDialog(props) {
         var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
         var picNo = agiInterpreter.variables[0];
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
-        agiInterpreter.agi_draw_pic(picNo);
+        agiInterpreter.agi_draw_pic(0);
         agiInterpreter.agi_show_pic(0);
     };
     var mouseDraw = function (clientX, clientY) {
