@@ -1064,50 +1064,68 @@ function EditPictureDialog(props) {
         agiInterpreter.agi_draw_pic(picNo - 1);
         agiInterpreter.agi_show_pic(picNo - 1);
     };
+    var mouseDraw = function (clientX, clientY) {
+        // something is wrong with getting commands from inside this event :-/
+        //@ts-ignore
+        var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+        var canvas = previewDocument.getElementById('canvas');
+        var rect = canvas.getBoundingClientRect();
+        // the bit map is 160 x 200 so we need to scale the mouse input
+        var ratioOfX = clientX / rect.width;
+        var ratioOfY = clientY / rect.height;
+        var x = Math.round(160 * ratioOfX);
+        var y = Math.round(200 * ratioOfY);
+        var scale = scaleFactor;
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        //@ts-ignore
+        var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
+        var newCommands = existingCommands.replace('End();', '');
+        if (existingDrawMode == 'Abs') {
+            newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
+        }
+        else if (existingDrawMode == 'Pen') {
+            newCommands =
+                newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
+        }
+        else if (existingDrawMode == 'Fill') {
+            newCommands = newCommands + "DrawFill(".concat(x, ",").concat(y, ");\nEnd();");
+        }
+        else {
+            alert('unknown tool');
+        }
+        setCommands(newCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
+        //@ts-ignore
+        window.agistudioDrawMode = existingDrawMode;
+        renderCommands(newCommands);
+    };
     var renderClick = function (event) {
         if (!mouseTrapped) {
-            var printMousePosition = function (event) {
-                // something is wrong with getting commands from inside this event :-/
+            var handleMouseDown = function (event) {
                 //@ts-ignore
-                var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-                var canvas = previewDocument.getElementById('canvas');
-                var rect = canvas.getBoundingClientRect();
-                // the bit map is 160 x 168 so we need to scale the mouse input
-                var ratioOfX = event.clientX / rect.width;
-                var ratioOfY = event.clientY / rect.height;
-                var x = Math.round(160 * ratioOfX);
-                var y = Math.round(200 * ratioOfY);
-                var scale = scaleFactor;
-                //@ts-ignore
-                var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-                //@ts-ignore
-                var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
-                var newCommands = existingCommands.replace('End();', '');
-                if (existingDrawMode == 'Abs') {
-                    newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
-                }
-                else if (existingDrawMode == 'Pen') {
-                    newCommands =
-                        newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
-                }
-                else if (existingDrawMode == 'Fill') {
-                    newCommands = newCommands + "DrawFill(".concat(x, ",").concat(y, ");\nEnd();");
-                }
-                else {
-                    alert('unknown tool');
-                }
-                setCommands(newCommands);
-                //@ts-ignore
-                window.agistudioPicCommands = newCommands;
-                //@ts-ignore
-                window.agistudioDrawMode = existingDrawMode;
-                renderCommands(newCommands);
+                window.agistudioMouseDraw = true;
             };
-            setMouseTrapped(true);
+            var handleMouseUp = function (event) {
+                //@ts-ignore
+                window.agistudioMouseDraw = false;
+                mouseDraw(event.clientX, event.clientY);
+            };
+            var handleMouseMove = function (event) {
+                mouseDraw(event.clientX, event.clientY);
+            };
+            var handleMouseClick = function (event) {
+                mouseDraw(event.clientX, event.clientY);
+            };
             //@ts-ignore
             var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
             var canvas = previewDocument.getElementById('canvas');
-            canvas.addEventListener('click', printMousePosition);
+            canvas.addEventListener('click', handleMouseClick);
+            canvas.addEventListener('mouseDown', handleMouseDown);
+            canvas.addEventListener('mouseUp', handleMouseUp);
+            canvas.addEventListener('mouseMove', handleMouseMove);
+            setMouseTrapped(true);
         }
         //@ts-ignore
         var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
