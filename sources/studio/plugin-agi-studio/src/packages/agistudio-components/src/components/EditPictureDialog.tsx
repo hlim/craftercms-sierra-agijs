@@ -2,11 +2,14 @@ import * as React from 'react';
 import { Button, ButtonGroup, DialogActions, Paper } from '@mui/material';
 import { DialogContent, TextField } from '@mui/material';
 import { AgiBridge } from './AgiBridge';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function EditPictureDialog(props) {
   const [commands, setCommands] = React.useState('');
+
   const [mouseTrapped, setMouseTrapped] = useState(false);
+  const [scaleFactor, setScaleFactor] = useState(10);
+  const [drawMode, setDrawMode] = useState('Pen');
 
   const prettyPrintCommands = (commands: any) => {
     let code = '';
@@ -34,7 +37,7 @@ export function EditPictureDialog(props) {
       else if ((skip = true && commandName.startsWith('*/'))) skip = false;
 
       if (!skip) {
-        console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
+        //console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
         switch (commandName) {
           case 'PicSetColor':
             opCode = 240;
@@ -73,8 +76,6 @@ export function EditPictureDialog(props) {
             opCode = 255;
             break;
         }
-
-        // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
 
         encodedBuffer[i] = opCode;
         i++;
@@ -184,42 +185,51 @@ export function EditPictureDialog(props) {
 
     let picNo = agiInterpreter.variables[0];
     agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
-    agiInterpreter.agi_draw_pic(picNo - 1);
-    agiInterpreter.agi_show_pic(picNo - 1);
+    agiInterpreter.agi_draw_pic(0);
+    agiInterpreter.agi_show_pic(0);
   };
 
-  const renderClick = (event: React.MouseEvent<HTMLElement>) => {
-    if (!mouseTrapped) {
-      var printMousePosition = function (event) {
-        // something is wrong with getting commands from inside this event :-/
+  const mouseDraw = (clientX, clientY) => {
+    // something is wrong with getting commands from inside this event :-/
 
-        let x = Math.round(event.clientX/2);
-        let y = Math.round(event.clientY);
+    //@ts-ignore
+    let previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+    let canvas = previewDocument.getElementById('canvas');
+    let rect = canvas.getBoundingClientRect();
 
-        //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+    // the bit map is 160 x 200 so we need to scale the mouse input
+    let ratioOfX = clientX / rect.width;
+    let ratioOfY = clientY / rect.height;
+    let x = Math.round(160 * ratioOfX);
+    let y = Math.round(200 * ratioOfY);
+    let scale = scaleFactor;
 
-        var newCommands = existingCommands.replace('End();', '');
-        newCommands = newCommands + `DrawAbs(${x},${y},${x + 5},${y + 5});\nEnd();`;
-        setCommands(newCommands);
-
-        //@ts-ignore
-        window.agistudioPicCommands = newCommands;
-
-        renderCommands(newCommands);
-      };
-
-      setMouseTrapped(true);
-
-      //@ts-ignore
-      let previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-      let canvas = previewDocument.getElementById('canvas');
-      canvas.addEventListener('click', printMousePosition);
-    }
     //@ts-ignore
     var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+    //@ts-ignore
+    var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
 
-    renderCommands(existingCommands);
+    var newCommands = existingCommands.replace('End();', '');
+
+    if (existingDrawMode == 'Abs') {
+      newCommands = newCommands + `DrawAbs(${x},${y},${x + 1},${y},${x},${y + 1},${x + 1},${y + 1});\nEnd();`;
+    } else if (existingDrawMode == 'Pen') {
+      newCommands =
+        newCommands + `DrawPen(${x},${y},${x + scale},${y},${x},${y + scale},${x + scale},${y + scale});\nEnd();`;
+    } else if (existingDrawMode == 'Fill') {
+      newCommands = newCommands + `DrawFill(${x},${y});\nEnd();`;
+    } else {
+      alert('unknown tool');
+    }
+
+    setCommands(newCommands);
+
+    //@ts-ignore
+    window.agistudioPicCommands = newCommands;
+    //@ts-ignore
+    window.agistudioDrawMode = existingDrawMode;
+
+    renderCommands(newCommands);
   };
 
   const handleCommandUpdate = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -228,6 +238,23 @@ export function EditPictureDialog(props) {
     window.agistudioPicCommands = updatedCommands;
 
     setCommands(updatedCommands);
+  };
+
+  const handleDrawModeUpdate = (mode) => {
+    setDrawMode(mode);
+    //@ts-ignore
+    window.agistudioDrawMode = mode;
+
+    //@ts-ignore
+    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+    var newCommands = existingCommands.replace('End();', '');
+
+    var value = 1 & 0x10 & 0x07;
+    newCommands = newCommands + `PicSetPen(${value});\nEnd();`;
+    setCommands(newCommands);
+
+    //@ts-ignore
+    window.agistudioPicCommands = newCommands;
   };
 
   const getCurrentPictureCommands = () => {
@@ -240,7 +267,7 @@ export function EditPictureDialog(props) {
 
       let decodedPictureCommands = decodePictureStream(currentPictureStream);
 
-      setCommands(prettyPrintCommands(decodedPictureCommands));
+      return prettyPrintCommands(decodedPictureCommands);
     } catch (err) {}
   };
 
@@ -266,30 +293,76 @@ export function EditPictureDialog(props) {
     var newCommands = existingCommands.replace('End();', '');
     newCommands = newCommands + `PicSetColor(${color});\nEnd();`;
     setCommands(newCommands);
-    
+
     //@ts-ignore
-    window.agistudioPicCommands = newCommands
+    window.agistudioPicCommands = newCommands;
   };
+
+  useEffect(() => {
+  
+    // load the current picture into the commands listing
+
+    if (!mouseTrapped) {
+      var handleMouseDown = function (event) {
+        //@ts-ignore
+        window.agistudioMouseDraw = true;
+      };
+      var handleMouseUp = function (event) {
+        //@ts-ignore
+        window.agistudioMouseDraw = false;
+        mouseDraw(event.clientX, event.clientY);
+      };
+      var handleMouseMove = function (event) {
+        //@ts-ignore
+        if (window.agistudioMouseDraw === true) {
+          mouseDraw(event.clientX, event.clientY);
+        }
+      };
+      var handleMouseClick = function (event) {
+        mouseDraw(event.clientX, event.clientY);
+      };
+
+      //@ts-ignore
+      let previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+      let canvas = previewDocument.getElementById('canvas');
+      canvas.addEventListener('click', handleMouseClick);
+      canvas.addEventListener('mousedown', handleMouseDown);
+      canvas.addEventListener('mouseup', handleMouseUp);
+      canvas.addEventListener('mousemove', handleMouseMove);
+
+      setMouseTrapped(true);
+    }
+    let currentPictureCommands = getCurrentPictureCommands()
+
+    setCommands(currentPictureCommands)
+
+    //@ts-ignore
+     window.agistudioPicCommands = currentPictureCommands;
+
+  }, []);
+
+  // useEffect(() => {
+  //   currentUrlPath && setInternalUrl(currentUrlPath);
+  //   loadRoomData();
+  // }, [currentUrlPath]);
 
   return (
     <>
       <DialogActions>
-        <Button onClick={getCurrentPictureCommands} variant="outlined" sx={{ mr: 1 }}>
-          Get Commands
-        </Button>
+
 
         <Button onClick={handleSwitchBuffer} variant="outlined" sx={{ mr: 1 }}>
           Switch Buffer
-        </Button>
-
-        <Button onClick={renderClick} variant="outlined" sx={{ mr: 1 }}>
-          Render
         </Button>
       </DialogActions>
 
       <DialogContent>
         <TextField id="outlined-textarea" sx={{ width: '100%' }} multiline rows={10} value={commands} />
 
+        <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
+          <TextField id="outlined-textarea" value={scaleFactor} />
+          <TextField id="outlined-textarea" value={drawMode} />
+        </Paper>
         <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
           <ButtonGroup variant="contained" aria-label="outlined primary button group">
             <Button>Picture Mode</Button>
@@ -298,33 +371,138 @@ export function EditPictureDialog(props) {
         </Paper>
         <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
           <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <Button>Draw Relative</Button>
-            <Button>Draw Absolute</Button>
-            <Button>Draw Fill</Button>
+            <Button
+              onClick={() => {
+                handleDrawModeUpdate('Rel');
+              }}
+            >
+              Draw Relative
+            </Button>
+            <Button
+              onClick={() => {
+                handleDrawModeUpdate('Abs');
+              }}
+            >
+              Draw Absolute
+            </Button>
+            <Button
+              onClick={() => {
+                handleDrawModeUpdate('Pen');
+              }}
+            >
+              Draw Pen
+            </Button>
+            <Button
+              onClick={() => {
+                handleDrawModeUpdate('Fill');
+              }}
+            >
+              Draw Fill
+            </Button>
           </ButtonGroup>
         </Paper>
 
         <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
           <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <Button onClick={()=>{setColor(0)}} sx={{ height: "35px",  'background-color': 'black' }}></Button>
-            <Button onClick={()=>{setColor(1)}} sx={{ height: "35px", 'background-color': 'darkblue' }}></Button>
-            <Button onClick={()=>{setColor(2)}} sx={{ height: "35px", 'background-color': 'green' }}></Button>
-            <Button onClick={()=>{setColor(3)}} sx={{ height: "35px", 'background-color': 'crayon' }}></Button>
-            <Button onClick={()=>{setColor(4)}} sx={{ height: "35px", 'background-color': 'darkred' }}></Button>
-            <Button onClick={()=>{setColor(5)}} sx={{ height: "35px", 'background-color': 'purple' }}></Button>
-            <Button onClick={()=>{setColor(6)}} sx={{ height: "35px", 'background-color': 'brown' }}></Button>
-            <Button onClick={()=>{setColor(7)}} sx={{ height: "35px", 'background-color': 'lightgray' }}></Button>
+            <Button
+              onClick={() => {
+                setColor(0);
+              }}
+              sx={{ height: '35px', 'background-color': 'black' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(1);
+              }}
+              sx={{ height: '35px', 'background-color': 'darkblue' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(2);
+              }}
+              sx={{ height: '35px', 'background-color': 'green' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(3);
+              }}
+              sx={{ height: '35px', 'background-color': 'crayon' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(4);
+              }}
+              sx={{ height: '35px', 'background-color': 'darkred' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(5);
+              }}
+              sx={{ height: '35px', 'background-color': 'purple' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(6);
+              }}
+              sx={{ height: '35px', 'background-color': 'brown' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(7);
+              }}
+              sx={{ height: '35px', 'background-color': 'lightgray' }}
+            ></Button>
           </ButtonGroup>
 
           <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <Button onClick={()=>{setColor(8)}}  sx={{ height: "35px", 'background-color': 'gray' }}></Button>
-            <Button onClick={()=>{setColor(9)}}  sx={{ height: "35px", 'background-color': 'blue' }}></Button>
-            <Button onClick={()=>{setColor(10)}} sx={{ height: "35px", 'background-color': 'lightgreen' }}></Button>
-            <Button onClick={()=>{setColor(11)}} sx={{ height: "35px", 'background-color': 'lightcrayon' }}></Button>
-            <Button onClick={()=>{setColor(12)}} sx={{ height: "35px", 'background-color': 'red' }}></Button>
-            <Button onClick={()=>{setColor(13)}} sx={{ height: "35px", 'background-color': 'magenta' }}></Button>
-            <Button onClick={()=>{setColor(14)}} sx={{ height: "35px", 'background-color': 'yellow', color: 'black' }}></Button>
-            <Button onClick={()=>{setColor(15)}} sx={{ height: "35px", 'background-color': 'white', color: 'black' }}></Button>
+            <Button
+              onClick={() => {
+                setColor(8);
+              }}
+              sx={{ height: '35px', 'background-color': 'gray' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(9);
+              }}
+              sx={{ height: '35px', 'background-color': 'blue' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(10);
+              }}
+              sx={{ height: '35px', 'background-color': 'lightgreen' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(11);
+              }}
+              sx={{ height: '35px', 'background-color': 'lightcrayon' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(12);
+              }}
+              sx={{ height: '35px', 'background-color': 'red' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(13);
+              }}
+              sx={{ height: '35px', 'background-color': 'magenta' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(14);
+              }}
+              sx={{ height: '35px', 'background-color': 'yellow', color: 'black' }}
+            ></Button>
+            <Button
+              onClick={() => {
+                setColor(15);
+              }}
+              sx={{ height: '35px', 'background-color': 'white', color: 'black' }}
+            ></Button>
           </ButtonGroup>
         </Paper>
       </DialogContent>

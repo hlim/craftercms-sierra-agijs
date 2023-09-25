@@ -2,17 +2,13 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Tooltip } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, TextField, Box,Button,  DialogActions,
-  DialogContentText,
-  FormControlLabel,
-  FormControl,
-  FormLabel } from '@mui/material';
+  FormControl} from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { dispatchDOMEvent, batchActions } from '@craftercms/studio-ui/state/actions/misc';
 import { createCustomDocumentEventListener } from '@craftercms/studio-ui/utils/dom';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { post } from '@craftercms/studio-ui/utils/ajax';
-import { ApiResponse, ApiResponseErrorState } from '@craftercms/studio-ui';
 
 import {
   showUploadDialog,

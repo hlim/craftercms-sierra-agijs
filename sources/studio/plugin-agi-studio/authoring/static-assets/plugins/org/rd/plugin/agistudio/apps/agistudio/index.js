@@ -903,6 +903,8 @@ function AddGame(props) {
 function EditPictureDialog(props) {
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
     var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
+    var _c = useState(10), scaleFactor = _c[0]; _c[1];
+    var _d = useState('Pen'), drawMode = _d[0], setDrawMode = _d[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -926,7 +928,7 @@ function EditPictureDialog(props) {
             else if ((skip = commandName.startsWith('*/')))
                 skip = false;
             if (!skip) {
-                console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
+                //console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
                 switch (commandName) {
                     case 'PicSetColor':
                         opCode = 240;
@@ -965,7 +967,6 @@ function EditPictureDialog(props) {
                         opCode = 255;
                         break;
                 }
-                // console.log('decoding ' + i + ' :' + commandName + ' => ' + opCode);
                 encodedBuffer[i] = opCode;
                 i++;
                 for (var a = 0; a < args.length; a++) {
@@ -1060,40 +1061,65 @@ function EditPictureDialog(props) {
         var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
         var picNo = agiInterpreter.variables[0];
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
-        agiInterpreter.agi_draw_pic(picNo - 1);
-        agiInterpreter.agi_show_pic(picNo - 1);
+        agiInterpreter.agi_draw_pic(0);
+        agiInterpreter.agi_show_pic(0);
     };
-    var renderClick = function (event) {
-        if (!mouseTrapped) {
-            var printMousePosition = function (event) {
-                // something is wrong with getting commands from inside this event :-/
-                var x = Math.round(event.clientX);
-                var y = Math.round(event.clientY);
-                //@ts-ignore
-                var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-                var newCommands = existingCommands.replace('End();', '');
-                newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 5, ",").concat(y + 5, ");\nEnd();");
-                setCommands(newCommands);
-                //@ts-ignore
-                window.agistudioPicCommands = newCommands;
-                renderCommands(newCommands);
-            };
-            setMouseTrapped(true);
-            //@ts-ignore
-            var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-            var canvas = previewDocument.getElementById('canvas');
-            canvas.addEventListener('click', printMousePosition);
-        }
+    var mouseDraw = function (clientX, clientY) {
+        // something is wrong with getting commands from inside this event :-/
+        //@ts-ignore
+        var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+        var canvas = previewDocument.getElementById('canvas');
+        var rect = canvas.getBoundingClientRect();
+        // the bit map is 160 x 200 so we need to scale the mouse input
+        var ratioOfX = clientX / rect.width;
+        var ratioOfY = clientY / rect.height;
+        var x = Math.round(160 * ratioOfX);
+        var y = Math.round(200 * ratioOfY);
+        var scale = scaleFactor;
         //@ts-ignore
         var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        renderCommands(existingCommands);
+        //@ts-ignore
+        var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
+        var newCommands = existingCommands.replace('End();', '');
+        if (existingDrawMode == 'Abs') {
+            newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
+        }
+        else if (existingDrawMode == 'Pen') {
+            newCommands =
+                newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
+        }
+        else if (existingDrawMode == 'Fill') {
+            newCommands = newCommands + "DrawFill(".concat(x, ",").concat(y, ");\nEnd();");
+        }
+        else {
+            alert('unknown tool');
+        }
+        setCommands(newCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
+        //@ts-ignore
+        window.agistudioDrawMode = existingDrawMode;
+        renderCommands(newCommands);
+    };
+    var handleDrawModeUpdate = function (mode) {
+        setDrawMode(mode);
+        //@ts-ignore
+        window.agistudioDrawMode = mode;
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        var newCommands = existingCommands.replace('End();', '');
+        var value = 1 & 0x10 & 0x07;
+        newCommands = newCommands + "PicSetPen(".concat(value, ");\nEnd();");
+        setCommands(newCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
     };
     var getCurrentPictureCommands = function () {
         try {
             var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
             var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
             var decodedPictureCommands = decodePictureStream(currentPictureStream);
-            setCommands(prettyPrintCommands(decodedPictureCommands));
+            return prettyPrintCommands(decodedPictureCommands);
         }
         catch (err) { }
     };
@@ -1112,41 +1138,122 @@ function EditPictureDialog(props) {
         //@ts-ignore
         window.agistudioPicCommands = newCommands;
     };
+    useEffect(function () {
+        // load the current picture into the commands listing
+        if (!mouseTrapped) {
+            var handleMouseDown = function (event) {
+                //@ts-ignore
+                window.agistudioMouseDraw = true;
+            };
+            var handleMouseUp = function (event) {
+                //@ts-ignore
+                window.agistudioMouseDraw = false;
+                mouseDraw(event.clientX, event.clientY);
+            };
+            var handleMouseMove = function (event) {
+                //@ts-ignore
+                if (window.agistudioMouseDraw === true) {
+                    mouseDraw(event.clientX, event.clientY);
+                }
+            };
+            var handleMouseClick = function (event) {
+                mouseDraw(event.clientX, event.clientY);
+            };
+            //@ts-ignore
+            var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+            var canvas = previewDocument.getElementById('canvas');
+            canvas.addEventListener('click', handleMouseClick);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            setMouseTrapped(true);
+        }
+        var currentPictureCommands = getCurrentPictureCommands();
+        setCommands(currentPictureCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = currentPictureCommands;
+    }, []);
+    // useEffect(() => {
+    //   currentUrlPath && setInternalUrl(currentUrlPath);
+    //   loadRoomData();
+    // }, [currentUrlPath]);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
-            React.createElement(Button, { onClick: getCurrentPictureCommands, variant: "outlined", sx: { mr: 1 } }, "Get Commands"),
-            React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer"),
-            React.createElement(Button, { onClick: renderClick, variant: "outlined", sx: { mr: 1 } }, "Render")),
+            React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
         React.createElement(DialogContent, null,
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(TextField, { id: "outlined-textarea", value: scaleFactor }),
+                React.createElement(TextField, { id: "outlined-textarea", value: drawMode })),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, null, "Picture Mode"),
                     React.createElement(Button, null, "Priorty Mode"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, null, "Draw Relative"),
-                    React.createElement(Button, null, "Draw Absolute"),
-                    React.createElement(Button, null, "Draw Fill"))),
+                    React.createElement(Button, { onClick: function () {
+                            handleDrawModeUpdate('Rel');
+                        } }, "Draw Relative"),
+                    React.createElement(Button, { onClick: function () {
+                            handleDrawModeUpdate('Abs');
+                        } }, "Draw Absolute"),
+                    React.createElement(Button, { onClick: function () {
+                            handleDrawModeUpdate('Pen');
+                        } }, "Draw Pen"),
+                    React.createElement(Button, { onClick: function () {
+                            handleDrawModeUpdate('Fill');
+                        } }, "Draw Fill"))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () { setColor(0); }, sx: { height: "35px", 'background-color': 'black' } }),
-                    React.createElement(Button, { onClick: function () { setColor(1); }, sx: { height: "35px", 'background-color': 'darkblue' } }),
-                    React.createElement(Button, { onClick: function () { setColor(2); }, sx: { height: "35px", 'background-color': 'green' } }),
-                    React.createElement(Button, { onClick: function () { setColor(3); }, sx: { height: "35px", 'background-color': 'crayon' } }),
-                    React.createElement(Button, { onClick: function () { setColor(4); }, sx: { height: "35px", 'background-color': 'darkred' } }),
-                    React.createElement(Button, { onClick: function () { setColor(5); }, sx: { height: "35px", 'background-color': 'purple' } }),
-                    React.createElement(Button, { onClick: function () { setColor(6); }, sx: { height: "35px", 'background-color': 'brown' } }),
-                    React.createElement(Button, { onClick: function () { setColor(7); }, sx: { height: "35px", 'background-color': 'lightgray' } })),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(0);
+                        }, sx: { height: '35px', 'background-color': 'black' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(1);
+                        }, sx: { height: '35px', 'background-color': 'darkblue' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(2);
+                        }, sx: { height: '35px', 'background-color': 'green' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(3);
+                        }, sx: { height: '35px', 'background-color': 'crayon' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(4);
+                        }, sx: { height: '35px', 'background-color': 'darkred' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(5);
+                        }, sx: { height: '35px', 'background-color': 'purple' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(6);
+                        }, sx: { height: '35px', 'background-color': 'brown' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(7);
+                        }, sx: { height: '35px', 'background-color': 'lightgray' } })),
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () { setColor(8); }, sx: { height: "35px", 'background-color': 'gray' } }),
-                    React.createElement(Button, { onClick: function () { setColor(9); }, sx: { height: "35px", 'background-color': 'blue' } }),
-                    React.createElement(Button, { onClick: function () { setColor(10); }, sx: { height: "35px", 'background-color': 'lightgreen' } }),
-                    React.createElement(Button, { onClick: function () { setColor(11); }, sx: { height: "35px", 'background-color': 'lightcrayon' } }),
-                    React.createElement(Button, { onClick: function () { setColor(12); }, sx: { height: "35px", 'background-color': 'red' } }),
-                    React.createElement(Button, { onClick: function () { setColor(13); }, sx: { height: "35px", 'background-color': 'magenta' } }),
-                    React.createElement(Button, { onClick: function () { setColor(14); }, sx: { height: "35px", 'background-color': 'yellow', color: 'black' } }),
-                    React.createElement(Button, { onClick: function () { setColor(15); }, sx: { height: "35px", 'background-color': 'white', color: 'black' } }))))));
+                    React.createElement(Button, { onClick: function () {
+                            setColor(8);
+                        }, sx: { height: '35px', 'background-color': 'gray' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(9);
+                        }, sx: { height: '35px', 'background-color': 'blue' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(10);
+                        }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(11);
+                        }, sx: { height: '35px', 'background-color': 'lightcrayon' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(12);
+                        }, sx: { height: '35px', 'background-color': 'red' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(13);
+                        }, sx: { height: '35px', 'background-color': 'magenta' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(14);
+                        }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
+                    React.createElement(Button, { onClick: function () {
+                            setColor(15);
+                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))))));
 }
 
 function OpenPicDialogButton(props) {
@@ -1159,8 +1266,7 @@ function OpenPicDialogButton(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(SwipeableDrawer, { anchor: 'left', variant: "persistent", ModalProps: {
                 keepMounted: false
-            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } },
-            React.createElement(EditPictureDialog, { props: true })),
+            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } }, drawerOpen ? (React.createElement(EditPictureDialog, { props: true })) : ""),
         React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
             React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));

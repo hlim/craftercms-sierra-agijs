@@ -28,8 +28,7 @@ export function OpenPicDialogButton(props) {
         open={drawerOpen}
         onClose={function (event: React.SyntheticEvent<{}, Event>): void {}}
         onOpen={function (event: React.SyntheticEvent<{}, Event>): void {}}
-      >
-        <EditPictureDialog props />
+      >{ drawerOpen ? (<EditPictureDialog props />) : "" }
       </SwipeableDrawer>
 
       <Tooltip title={'Edit Current Room Picture'}>
