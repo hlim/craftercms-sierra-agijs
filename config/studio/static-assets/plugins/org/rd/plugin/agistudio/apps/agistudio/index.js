@@ -1062,7 +1062,7 @@ function EditPictureDialog(props) {
         var picNo = agiInterpreter.variables[0];
         agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
         agiInterpreter.agi_draw_pic(picNo);
-        agiInterpreter.agi_show_pic(picNo);
+        agiInterpreter.agi_show_pic(0);
     };
     var mouseDraw = function (clientX, clientY) {
         // something is wrong with getting commands from inside this event :-/
