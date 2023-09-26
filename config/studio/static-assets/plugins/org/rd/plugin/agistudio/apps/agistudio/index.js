@@ -901,6 +901,7 @@ function AddGame(props) {
 }
 
 function EditPictureDialog(props) {
+    var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
     var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
     var _c = useState(10), scaleFactor = _c[0]; _c[1];
@@ -1173,6 +1174,30 @@ function EditPictureDialog(props) {
         //@ts-ignore
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
+    var handleSavePicture = function () {
+        var data = new FormData();
+        //var imagedata = document.querySelector('input[type="file"]').files[0];
+        data.append("picResource", new Blob([encodeCommands(commands)]));
+        fetch("/studio/api/2/plugin/script/plugins/org/rd/plugin/agistudio/agistudio/save-pic.json?site=".concat(siteId), {
+            mode: 'no-cors',
+            method: "POST",
+            headers: {
+                "Content-Type": "multipart/form-data",
+                "Accept": "application/json",
+                "type": "formData"
+            },
+            body: data
+        }).then(function (res) {
+            if (res.ok) {
+                alert("Perfect! ");
+            }
+            else if (res.status == 401) {
+                alert("Oops! ");
+            }
+        }, function (e) {
+            alert("Error submitting form!");
+        });
+    };
     // useEffect(() => {
     //   currentUrlPath && setInternalUrl(currentUrlPath);
     //   loadRoomData();
@@ -1253,7 +1278,9 @@ function EditPictureDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(15);
-                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))))));
+                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture")))));
 }
 
 function OpenPicDialogButton(props) {

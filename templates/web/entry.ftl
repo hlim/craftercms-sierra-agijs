@@ -23,6 +23,12 @@
                 color: lightblue;
                 text-decoration: none;
             }
+
+            li a {
+                color: lightgreen;
+                text-decoration: none;
+            }
+            
             
 			html, body {
 				color: white; 
