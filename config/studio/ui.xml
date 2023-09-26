@@ -26,7 +26,7 @@
                         <label>Game Titles</label>
                         <icon id="@mui/icons-material/VideogameAssetRounded"/>
                         <showRootFolder>true</showRootFolder>
-                        <rootPath>/site/website/index.xml</rootPath>
+                        <rootPath>/site/website</rootPath>
                         <locale>en</locale>
                     </configuration>
                 </widget>
