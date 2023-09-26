@@ -6,7 +6,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.apache.commons.fileupload.servlet.ServletFileUpload
 import org.apache.commons.io.FilenameUtils
 
-System.out.println("UPLOAD PIC 1")
+System.out.println("UPLOAD PIC 111")
 def factory = new DiskFileItemFactory()
 def upload = new ServletFileUpload(factory)
 System.out.println("A")
