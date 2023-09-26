@@ -1185,7 +1185,7 @@ function EditPictureDialog(props) {
             "type": "formData"
         }).subscribe({
             next: function (response) {
-                alert("sent");
+                alert("Picture Saved");
             },
             error: function (e) {
                 alert("failed");
