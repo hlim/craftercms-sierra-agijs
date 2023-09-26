@@ -1178,24 +1178,18 @@ function EditPictureDialog(props) {
         var data = new FormData();
         //var imagedata = document.querySelector('input[type="file"]').files[0];
         data.append("picResource", new Blob([encodeCommands(commands)]));
-        fetch("/studio/api/2/plugin/script/plugins/org/rd/plugin/agistudio/agistudio/save-pic.json?site=".concat(siteId), {
-            mode: 'no-cors',
-            method: "POST",
-            headers: {
-                "Content-Type": "multipart/form-data",
-                "Accept": "application/json",
-                "type": "formData"
+        var apiUrl = "/studio/api/2/plugin/script/plugins/org/rd/plugin/agistudio/agistudio/save-pic.json?site=".concat(siteId);
+        post(apiUrl, data, {
+            "Content-Type": "multipart/form-data",
+            "Accept": "application/json",
+            "type": "formData"
+        }).subscribe({
+            next: function (response) {
+                alert("sent");
             },
-            body: data
-        }).then(function (res) {
-            if (res.ok) {
-                alert("Perfect! ");
+            error: function (e) {
+                alert("failed");
             }
-            else if (res.status == 401) {
-                alert("Oops! ");
-            }
-        }, function (e) {
-            alert("Error submitting form!");
         });
     };
     // useEffect(() => {
