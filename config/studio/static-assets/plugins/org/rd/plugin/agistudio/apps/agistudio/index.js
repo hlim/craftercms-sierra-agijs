@@ -900,111 +900,6 @@ function AddGame(props) {
                 React.createElement(AddRoundedIcon, null)))));
 }
 
-var ByteStream = /** @class */ (function () {
-    function ByteStream(buffer, startPosition, end) {
-        if (startPosition === void 0) { startPosition = 0; }
-        if (end === void 0) { end = 0; }
-        this.buffer = buffer;
-        this.startPosition = startPosition;
-        this.end = end;
-        this.position = 0;
-        this.length = 0;
-        if (end == 0)
-            this.end = this.buffer.byteLength;
-        this.length = this.end - this.startPosition;
-    }
-    ByteStream.prototype.readUint8 = function () {
-        return this.buffer[this.startPosition + this.position++];
-    };
-    ByteStream.prototype.readUint16 = function (littleEndian) {
-        if (littleEndian === void 0) { littleEndian = true; }
-        var b1 = this.buffer[this.startPosition + this.position++];
-        var b2 = this.buffer[this.startPosition + this.position++];
-        if (littleEndian) {
-            return (b2 << 8) + b1;
-        }
-        return (b1 << 8) + b2;
-    };
-    ByteStream.prototype.readInt16 = function (littleEndian) {
-        if (littleEndian === void 0) { littleEndian = true; }
-        var b1 = this.buffer[this.startPosition + this.position++];
-        var b2 = this.buffer[this.startPosition + this.position++];
-        if (littleEndian) {
-            return (((b2 << 8) | b1) << 16) >> 16;
-        }
-        return (((b1 << 8) | b2) << 16) >> 16;
-    };
-    return ByteStream;
-}());
-function downloadAllFiles(path, files, done) {
-    var buffers = {};
-    var leftToDownload = files.length;
-    function getBinary(url, success) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'arraybuffer';
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.response === null) {
-                    throw "Fatal error downloading '" + url + "'";
-                }
-                else {
-                    console.log("Successfully downloaded '" + url + "'");
-                    success(xhr.response);
-                }
-            }
-        };
-        xhr.send();
-    }
-    function handleFile(num) {
-        getBinary(path + files[num], function (buffer) {
-            buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
-            leftToDownload--;
-            if (leftToDownload === 0) {
-                done(buffers);
-            }
-        });
-    }
-    for (var i = 0; i < files.length; i++) {
-        handleFile(i);
-    }
-}
-
-var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
-var availableVols = [];
-function parseDirfile(buffer, records) {
-    var length = buffer.length / 3;
-    for (var i = 0; i < length; i++) {
-        var val = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
-        var volNo = val >>> 20;
-        var volOffset = val & 0xfffff;
-        if (val >>> 16 == 0xff)
-            continue;
-        records[i] = { volNo: volNo, volOffset: volOffset };
-        if (availableVols[volNo] === undefined)
-            availableVols[volNo] = true;
-    }
-}
-var AgiResource;
-(function (AgiResource) {
-    AgiResource[AgiResource["Logic"] = 0] = "Logic";
-    AgiResource[AgiResource["Pic"] = 1] = "Pic";
-    AgiResource[AgiResource["View"] = 2] = "View";
-    AgiResource[AgiResource["Sound"] = 3] = "Sound";
-})(AgiResource || (AgiResource = {}));
-function load(path, done) {
-    downloadAllFiles(path, ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
-        console.log('Directory files downloaded.');
-        parseDirfile(buffers['LOGDIR'], logdirRecords);
-        parseDirfile(buffers['PICDIR'], picdirRecords);
-        parseDirfile(buffers['VIEWDIR'], viewdirRecords);
-        parseDirfile(buffers['SNDDIR'], snddirRecords);
-        for (var i = 0; i < availableVols.length; i++) {
-            if (availableVols[i] === true) ;
-        }
-    });
-}
-
 function EditPictureDialog(props) {
     useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
@@ -1302,10 +1197,109 @@ function EditPictureDialog(props) {
         // });
         load('/static-asset/games/sq2');
     };
-    // useEffect(() => {
-    //   currentUrlPath && setInternalUrl(currentUrlPath);
-    //   loadRoomData();
-    // }, [currentUrlPath]);
+    var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
+    var availableVols = [];
+    function parseDirfile(buffer, records) {
+        var length = buffer.length / 3;
+        for (var i = 0; i < length; i++) {
+            var val = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
+            var volNo = val >>> 20;
+            var volOffset = val & 0xfffff;
+            if (val >>> 16 == 0xff)
+                continue;
+            records[i] = { volNo: volNo, volOffset: volOffset };
+            if (availableVols[volNo] === undefined)
+                availableVols[volNo] = true;
+        }
+    }
+    var AgiResource;
+    (function (AgiResource) {
+        AgiResource[AgiResource["Logic"] = 0] = "Logic";
+        AgiResource[AgiResource["Pic"] = 1] = "Pic";
+        AgiResource[AgiResource["View"] = 2] = "View";
+        AgiResource[AgiResource["Sound"] = 3] = "Sound";
+    })(AgiResource || (AgiResource = {}));
+    function load(path, done) {
+        downloadAllFiles(path, ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+            console.log('Directory files downloaded.');
+            parseDirfile(buffers['LOGDIR'], logdirRecords);
+            parseDirfile(buffers['PICDIR'], picdirRecords);
+            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+            parseDirfile(buffers['SNDDIR'], snddirRecords);
+            for (var i = 0; i < availableVols.length; i++) {
+                if (availableVols[i] === true) ;
+            }
+        });
+    }
+    var ByteStream = /** @class */ (function () {
+        function ByteStream(buffer, startPosition, end) {
+            if (startPosition === void 0) { startPosition = 0; }
+            if (end === void 0) { end = 0; }
+            this.buffer = buffer;
+            this.startPosition = startPosition;
+            this.end = end;
+            this.position = 0;
+            this.length = 0;
+            if (end == 0)
+                this.end = this.buffer.byteLength;
+            this.length = this.end - this.startPosition;
+        }
+        ByteStream.prototype.readUint8 = function () {
+            return this.buffer[this.startPosition + this.position++];
+        };
+        ByteStream.prototype.readUint16 = function (littleEndian) {
+            if (littleEndian === void 0) { littleEndian = true; }
+            var b1 = this.buffer[this.startPosition + this.position++];
+            var b2 = this.buffer[this.startPosition + this.position++];
+            if (littleEndian) {
+                return (b2 << 8) + b1;
+            }
+            return (b1 << 8) + b2;
+        };
+        ByteStream.prototype.readInt16 = function (littleEndian) {
+            if (littleEndian === void 0) { littleEndian = true; }
+            var b1 = this.buffer[this.startPosition + this.position++];
+            var b2 = this.buffer[this.startPosition + this.position++];
+            if (littleEndian) {
+                return (((b2 << 8) | b1) << 16) >> 16;
+            }
+            return (((b1 << 8) | b2) << 16) >> 16;
+        };
+        return ByteStream;
+    }());
+    function downloadAllFiles(path, files, done) {
+        var buffers = {};
+        var leftToDownload = files.length;
+        function getBinary(url, success) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'arraybuffer';
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.response === null) {
+                        throw "Fatal error downloading '" + url + "'";
+                    }
+                    else {
+                        console.log("Successfully downloaded '" + url + "'");
+                        success(xhr.response);
+                    }
+                }
+            };
+            xhr.send();
+        }
+        function handleFile(num) {
+            getBinary(path + files[num], function (buffer) {
+                buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
+                leftToDownload--;
+                if (leftToDownload === 0) {
+                    done(buffers);
+                }
+            });
+        }
+        for (var i = 0; i < files.length; i++) {
+            handleFile(i);
+        }
+    }
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
