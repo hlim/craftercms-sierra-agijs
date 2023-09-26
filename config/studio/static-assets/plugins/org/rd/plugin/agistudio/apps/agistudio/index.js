@@ -903,9 +903,10 @@ function AddGame(props) {
 function EditPictureDialog(props) {
     var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
-    var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
-    var _c = useState(10), scaleFactor = _c[0]; _c[1];
-    var _d = useState('Pen'), drawMode = _d[0], setDrawMode = _d[1];
+    var _b = React.useState(''); _b[0]; _b[1];
+    var _c = useState(false), mouseTrapped = _c[0], setMouseTrapped = _c[1];
+    var _d = useState(10), scaleFactor = _d[0]; _d[1];
+    var _e = useState('Pen'), drawMode = _e[0], setDrawMode = _e[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1102,6 +1103,12 @@ function EditPictureDialog(props) {
         window.agistudioDrawMode = existingDrawMode;
         renderCommands(newCommands);
     };
+    var handleCommandUpdate = function (event) {
+        var updatedCommands = event.target.value;
+        //@ts-ignore
+        window.agistudioPicCommands = updatedCommands;
+        setCommands(updatedCommands);
+    };
     var handleDrawModeUpdate = function (mode) {
         setDrawMode(mode);
         //@ts-ignore
@@ -1201,6 +1208,7 @@ function EditPictureDialog(props) {
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
         React.createElement(DialogContent, null,
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleCommandUpdate }),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(TextField, { id: "outlined-textarea", value: scaleFactor }),
                 React.createElement(TextField, { id: "outlined-textarea", value: drawMode })),
