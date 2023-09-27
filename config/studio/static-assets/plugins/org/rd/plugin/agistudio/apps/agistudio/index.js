@@ -1221,6 +1221,8 @@ function EditPictureDialog(props) {
                         newStream[n] = picsStream[n];
                     }
                 }
+                // replace old byte stream with new one
+                volBuffers[picRecord.volNo].buffer = newStream.buffer;
                 // now modify the directory
                 for (var d = 0; d < picdirRecords.length; d++) {
                     if (d <= roomValue) {
