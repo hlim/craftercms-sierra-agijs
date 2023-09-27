@@ -1203,10 +1203,10 @@ function EditPictureDialog(props) {
                 var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
                 var picRecord = picdirRecords[roomValue];
                 var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
-                var picsStream = volBuffers[picRecord.volNo];
+                var picsStream = volBuffers[picRecord.volNo].buffer;
                 var newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
                 var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
-                var newStream = new ByteStream(new Uint8Array(newStreamLength));
+                var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
                     if (n < picRecord.volOffset) {
                         // copy the original buffer to the new buffer
@@ -1221,6 +1221,8 @@ function EditPictureDialog(props) {
                         newStream[n] = picsStream[n];
                     }
                 }
+                // replace old byte stream with new one
+                volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
                 for (var d = 0; d < picdirRecords.length; d++) {
                     if (d <= roomValue) {

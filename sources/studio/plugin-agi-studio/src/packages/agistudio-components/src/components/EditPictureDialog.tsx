@@ -374,11 +374,11 @@ export function EditPictureDialog(props) {
         let nextPicRecord = picdirRecords[roomValue+1];  // assuption: not the last picture
 
 
-        let picsStream = volBuffers[picRecord.volNo]
+        let picsStream = volBuffers[picRecord.volNo].buffer
         let newPicSizeDiff =  newPicData.length - nextPicRecord.volOffset
         let newStreamLength = picsStream.length + newPicSizeDiff // assumption: it always grows
 
-        let newStream = new ByteStream(new Uint8Array(newStreamLength))
+        let newStream = new Uint8Array(newStreamLength)
         for(var n=0;n<newStream.length; n++) {
           if(n<picRecord.volOffset) {
             // copy the original buffer to the new buffer
@@ -394,6 +394,10 @@ export function EditPictureDialog(props) {
           }
         }
 
+        // replace old byte stream with new one
+        volBuffers[picRecord.volNo].buffer = newStream
+
+
         // now modify the directory
         for(var d=0; d<picdirRecords.length; d++) {
           if(d<=roomValue){
@@ -404,6 +408,8 @@ export function EditPictureDialog(props) {
             picdirRecords[d+1].volOffset = picdirRecords[d+1].volOffset+newPicSizeDiff; 
           }
         }
+
+        
     
     
       });
