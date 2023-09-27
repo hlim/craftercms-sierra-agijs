@@ -1191,10 +1191,10 @@ function EditPictureDialog(props) {
             for (var i = 0; i < availableVols.length; i++) {
                 if (availableVols[i] === true) ;
             }
-            // alert("Current resources loaded");
-            // console.log(picdirRecords)
-            // console.log(volBuffers)
-            // alert("loaded");
+            alert("Current resources loaded");
+            console.log(picdirRecords);
+            console.log(volBuffers);
+            alert("loaded");
         });
         // var data = new FormData();
         // data.append("picResource", new Blob([encodeCommands(commands)]));
@@ -1211,6 +1211,7 @@ function EditPictureDialog(props) {
         // });
     };
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
+    var volBuffers = [];
     var availableVols = [];
     function parseDirfile(buffer, records) {
         var length = buffer.length / 3;
