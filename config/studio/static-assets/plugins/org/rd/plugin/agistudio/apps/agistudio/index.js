@@ -1224,11 +1224,11 @@ function EditPictureDialog(props) {
                 // now modify the directory
                 for (var d = 0; d < picdirRecords.length; d++) {
                     if (d <= roomValue) {
-                        picdirRecords[d].volOffset = picdirRecords[d].volOffset; // optimize as no op
+                        picdirRecords[d + 1].volOffset = picdirRecords[d + 1].volOffset; // optimize as no op
                     }
                     else {
                         // update the offset by the new size
-                        picdirRecords[d].volOffset = picdirRecords[d].volOffset + newPicSizeDiff;
+                        picdirRecords[d + 1].volOffset = picdirRecords[d + 1].volOffset + newPicSizeDiff;
                     }
                 }
             });
