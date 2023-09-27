@@ -1194,7 +1194,7 @@ function EditPictureDialog(props) {
         //   error(e) {
         //     alert("failed")
         //   }
-        // });
+        // });RD
         load('/static-assets/games/sq2/');
     };
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
