@@ -1188,27 +1188,51 @@ function EditPictureDialog(props) {
             parseDirfile(buffers['PICDIR'], picdirRecords);
             parseDirfile(buffers['VIEWDIR'], viewdirRecords);
             parseDirfile(buffers['SNDDIR'], snddirRecords);
+            var volNames = [];
             for (var i = 0; i < availableVols.length; i++) {
-                if (availableVols[i] === true) ;
+                if (availableVols[i] === true) {
+                    volNames.push('VOL.' + i);
+                }
             }
-            alert("Current resources loaded");
-            console.log(picdirRecords);
-            console.log(volBuffers);
-            alert("loaded");
+            downloadAllFiles('/static-assets/games/sq2/', volNames, function (buffers) {
+                console.log("Resource volumes downloaded.");
+                for (var j = 0; j < volNames.length; j++) {
+                    volBuffers[j] = buffers[volNames[j]];
+                }
+                var newPicData = encodeCommands(commands);
+                var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+                var picRecord = picdirRecords[roomValue];
+                picdirRecords[roomValue + 1]; // assuption: not the last picture
+                var picsStream = volBuffers[picRecord.volNo];
+                var newPicSizeDiff = newPicData.length - picRecord.volOffset;
+                var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
+                var newStream = new ByteStream[newStreamLength];
+                for (var n = 0; n < newStream.length; n++) {
+                    if (n < picRecord.volOffset) {
+                        // copy the original buffer to the new buffer
+                        newStream[n] = picsStream[n];
+                    }
+                    else if (n >= picRecord.volOffset && n < (picRecord.volOffset + newPicData.length)) {
+                        // copy the new picture into the new stream
+                        newStream[n] = newPicData[n - picRecord.volOffset];
+                    }
+                    else {
+                        // copy the rest of the stream
+                        newStream[n] = picsStream[n];
+                    }
+                }
+                // now modify the directory
+                for (var d = 0; d < picdirRecords.length; d++) {
+                    if (d <= roomValue) {
+                        picdirRecords[d].volOffset = picdirRecords[d].volOffset; // optimize as no op
+                    }
+                    else {
+                        // update the offset by the new size
+                        picdirRecords[d].volOffset = picdirRecords[d].volOffset + newPicSizeDiff;
+                    }
+                }
+            });
         });
-        // var data = new FormData();
-        // data.append("picResource", new Blob([encodeCommands(commands)]));
-        // let apiUrl = `/studio/api/2/plugin/script/plugins/org/rd/plugin/agistudio/agistudio/save-pic.json?siteId=${siteId}`
-        // post(apiUrl, data, {
-        //   "type": "formData"
-        // }).subscribe({
-        //   next: (response) => {
-        //     alert("Picture Saved")
-        //   },
-        //   error(e) {
-        //     alert("failed")
-        //   }
-        // });
     };
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
     var volBuffers = [];
