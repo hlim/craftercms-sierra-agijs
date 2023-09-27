@@ -1195,7 +1195,7 @@ function EditPictureDialog(props) {
         //     alert("failed")
         //   }
         // });
-        load('/static-assets/games/sq2?crafterSite=agi-crafter');
+        load('/static-assets/games/sq2/');
     };
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
     var availableVols = [];
@@ -1272,7 +1272,7 @@ function EditPictureDialog(props) {
         var leftToDownload = files.length;
         function getBinary(url, success) {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
+            xhr.open('GET', url + "?crafterSite=agi-crafter", true);
             xhr.responseType = 'arraybuffer';
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
