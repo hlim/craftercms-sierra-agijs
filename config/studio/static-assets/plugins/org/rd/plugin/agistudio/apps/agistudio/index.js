@@ -1195,7 +1195,7 @@ function EditPictureDialog(props) {
         //     alert("failed")
         //   }
         // });
-        load('/static-asset/games/sq2');
+        load('/static-assets/games/sq2?crafterSite=agi-crafter');
     };
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
     var availableVols = [];
