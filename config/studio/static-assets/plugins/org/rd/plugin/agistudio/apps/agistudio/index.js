@@ -1182,7 +1182,9 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var handleSavePicture = function () {
+        //RD
         load('/static-assets/games/sq2/');
+        //RD
     };
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
     var availableVols = [];
