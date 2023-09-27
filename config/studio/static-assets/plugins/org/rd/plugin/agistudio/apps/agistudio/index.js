@@ -1182,11 +1182,36 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var handleSavePicture = function () {
-        //RD
-        load('/static-assets/games/sq2/');
-        //RD
+        downloadAllFiles('/static-assets/games/sq2/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+            console.log('Directory files downloaded.');
+            parseDirfile(buffers['LOGDIR'], logdirRecords);
+            parseDirfile(buffers['PICDIR'], picdirRecords);
+            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+            parseDirfile(buffers['SNDDIR'], snddirRecords);
+            for (var i = 0; i < availableVols.length; i++) {
+                if (availableVols[i] === true) ;
+            }
+            alert("Current resources loaded");
+            console.log(picdirRecords);
+            console.log(volBuffers);
+            alert("loaded");
+        });
+        // var data = new FormData();
+        // data.append("picResource", new Blob([encodeCommands(commands)]));
+        // let apiUrl = `/studio/api/2/plugin/script/plugins/org/rd/plugin/agistudio/agistudio/save-pic.json?siteId=${siteId}`
+        // post(apiUrl, data, {
+        //   "type": "formData"
+        // }).subscribe({
+        //   next: (response) => {
+        //     alert("Picture Saved")
+        //   },
+        //   error(e) {
+        //     alert("failed")
+        //   }
+        // });
     };
     var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
+    var volBuffers = [];
     var availableVols = [];
     function parseDirfile(buffer, records) {
         var length = buffer.length / 3;
@@ -1208,18 +1233,6 @@ function EditPictureDialog(props) {
         AgiResource[AgiResource["View"] = 2] = "View";
         AgiResource[AgiResource["Sound"] = 3] = "Sound";
     })(AgiResource || (AgiResource = {}));
-    function load(path, done) {
-        downloadAllFiles(path, ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
-            console.log('Directory files downloaded.');
-            parseDirfile(buffers['LOGDIR'], logdirRecords);
-            parseDirfile(buffers['PICDIR'], picdirRecords);
-            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
-            parseDirfile(buffers['SNDDIR'], snddirRecords);
-            for (var i = 0; i < availableVols.length; i++) {
-                if (availableVols[i] === true) ;
-            }
-        });
-    }
     var ByteStream = /** @class */ (function () {
         function ByteStream(buffer, startPosition, end) {
             if (startPosition === void 0) { startPosition = 0; }
