@@ -1182,7 +1182,7 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var handleSavePicture = function () {
-        var game = "contest2";
+        var game = 'contest2';
         downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
@@ -1196,7 +1196,7 @@ function EditPictureDialog(props) {
                 }
             }
             downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
-                console.log("Resource volumes downloaded.");
+                console.log('Resource volumes downloaded.');
                 for (var j = 0; j < volNames.length; j++) {
                     volBuffers[j] = buffers[volNames[j]];
                 }
@@ -1209,18 +1209,18 @@ function EditPictureDialog(props) {
                 var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
-                    if (n < picRecord.volOffset) {
-                        // copy the original buffer to the new buffer
-                        newStream[n] = picsStream[n];
-                    }
-                    else if (n >= picRecord.volOffset && n < (picRecord.volOffset + newPicData.length)) {
-                        // copy the new picture into the new stream
-                        newStream[n] = newPicData[n - picRecord.volOffset];
-                    }
-                    else {
-                        // copy the rest of the stream
-                        newStream[n] = picsStream[n];
-                    }
+                    //          if(n<picRecord.volOffset) {
+                    // copy the original buffer to the new buffer
+                    newStream[n] = picsStream[n];
+                    // }
+                    // else if(n>=picRecord.volOffset && n < (picRecord.volOffset+newPicData.length)) {
+                    //   // copy the new picture into the new stream
+                    //   newStream[n] = newPicData[n-picRecord.volOffset]
+                    // }
+                    // else {
+                    //   // copy the rest of the stream
+                    //   newStream[n] = picsStream[n]
+                    // }
                 }
                 // replace old byte stream with new one
                 volBuffers[picRecord.volNo].buffer = newStream;
@@ -1242,32 +1242,34 @@ function EditPictureDialog(props) {
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
                 var gameContentPath = '/static-assets/games/' + game + '/';
-                var filename = "VOL." + picRecord.volNo;
-                var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
-                post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
-                    "type": "formData"
+                var filename = 'VOL.' + picRecord.volNo;
+                var serviceUrl = API_WRITE_CONTENT +
+                    "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
+                //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
+                post(serviceUrl, newStream, {
+                    type: 'formData'
                 }).subscribe({
                     next: function (response) {
-                        alert("Volume Saved");
+                        alert('Volume Saved');
                     },
                     error: function (e) {
-                        alert("failed");
+                        alert('failed');
                     }
                 });
-                // write the dir file
-                gameContentPath = '/static-assets/games/' + game + '/';
-                filename = "PICDIR";
-                serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
-                post(serviceUrl, newDirEncoded.buffer, {
-                    "type": "formData"
-                }).subscribe({
-                    next: function (response) {
-                        alert("Picture Saved");
-                    },
-                    error: function (e) {
-                        alert("failed");
-                    }
-                });
+                // // write the dir file
+                // gameContentPath = '/static-assets/games/'+game+'/'
+                // filename = "PICDIR"
+                // serviceUrl = API_WRITE_CONTENT + `?site=${siteId}&path=${gameContentPath}&fileName=${filename}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`
+                // post(serviceUrl, newDirEncoded.buffer, {
+                //   "type": "formData"
+                // }).subscribe({
+                //   next: (response) => {
+                //     alert("Picture Saved")
+                //   },
+                //   error(e) {
+                //     alert("failed")
+                //   }
+                // });
             });
         });
     };
@@ -1335,7 +1337,7 @@ function EditPictureDialog(props) {
         var leftToDownload = files.length;
         function getBinary(url, success) {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', url + "?crafterSite=agi-crafter", true);
+            xhr.open('GET', url + '?crafterSite=agi-crafter', true);
             xhr.responseType = 'arraybuffer';
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
