@@ -1243,7 +1243,7 @@ function EditPictureDialog(props) {
                 // write the volume file
                 var gameContentPath = '/site/website/games/' + game + '/';
                 var filename = "VOL." + picRecord.volNo;
-                var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true");
+                var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                     "type": "formData"
                 }).subscribe({
@@ -1257,7 +1257,7 @@ function EditPictureDialog(props) {
                 // write the dir file
                 gameContentPath = '/site/website/games/' + game + '/';
                 filename = "PICDIR";
-                serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true");
+                serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 post(serviceUrl, newDirEncoded.buffer, {
                     "type": "formData"
                 }).subscribe({
