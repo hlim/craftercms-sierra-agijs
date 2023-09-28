@@ -901,7 +901,7 @@ function AddGame(props) {
 }
 
 function EditPictureDialog(props) {
-    useActiveSiteId();
+    var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
     var _b = React.useState(''); _b[0]; _b[1];
     var _c = useState(false), mouseTrapped = _c[0], setMouseTrapped = _c[1];
@@ -1182,7 +1182,8 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var handleSavePicture = function () {
-        downloadAllFiles('/static-assets/games/sq2/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+        var game = "contest2";
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
             parseDirfile(buffers['PICDIR'], picdirRecords);
@@ -1194,7 +1195,7 @@ function EditPictureDialog(props) {
                     volNames.push('VOL.' + i);
                 }
             }
-            downloadAllFiles('/static-assets/games/sq2/', volNames, function (buffers) {
+            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
                 console.log("Resource volumes downloaded.");
                 for (var j = 0; j < volNames.length; j++) {
                     volBuffers[j] = buffers[volNames[j]];
@@ -1224,15 +1225,49 @@ function EditPictureDialog(props) {
                 // replace old byte stream with new one
                 volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
-                for (var d = 0; d < picdirRecords.length; d++) {
+                var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
+                for (var d = 1; d < picdirRecords.length - 1; d++) {
                     if (d <= roomValue) {
-                        picdirRecords[d + 1].volOffset = picdirRecords[d + 1].volOffset; // optimize as no op
+                        var val = picdirRecords[d].volOffset;
+                        picdirRecords[d + 1].volOffset = val; // optimize as no op
+                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
                     }
                     else {
                         // update the offset by the new size
-                        picdirRecords[d + 1].volOffset = picdirRecords[d + 1].volOffset + newPicSizeDiff;
+                        var val = picdirRecords[d].volOffset + newPicSizeDiff;
+                        picdirRecords[d + 1].volOffset = val;
+                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
                     }
                 }
+                var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
+                // write the volume file
+                var gameContentPath = '/static-assets/games/' + game + '/';
+                var filename = "VOL." + picRecord.volNo;
+                var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
+                post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
+                    "type": "formData"
+                }).subscribe({
+                    next: function (response) {
+                        alert("Volume Saved");
+                    },
+                    error: function (e) {
+                        alert("failed");
+                    }
+                });
+                // write the dir file
+                gameContentPath = '/static-assets/games/' + game + '/';
+                filename = "PICDIR";
+                serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
+                post(serviceUrl, newDirEncoded.buffer, {
+                    "type": "formData"
+                }).subscribe({
+                    next: function (response) {
+                        alert("Picture Saved");
+                    },
+                    error: function (e) {
+                        alert("failed");
+                    }
+                });
             });
         });
     };

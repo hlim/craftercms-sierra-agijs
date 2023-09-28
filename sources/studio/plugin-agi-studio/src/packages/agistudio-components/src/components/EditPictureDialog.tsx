@@ -349,7 +349,8 @@ export function EditPictureDialog(props) {
   
   const handleSavePicture = () => {
 
-    downloadAllFiles('/static-assets/games/sq2/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], (buffers: IByteStreamDict) => {
+    var game = "contest2"
+    downloadAllFiles('/static-assets/games/'+game+'/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], (buffers: IByteStreamDict) => {
       console.log('Directory files downloaded.');
       parseDirfile(buffers['LOGDIR'], logdirRecords);
       parseDirfile(buffers['PICDIR'], picdirRecords);
@@ -362,7 +363,7 @@ export function EditPictureDialog(props) {
         }
       }
 
-      downloadAllFiles('/static-assets/games/sq2/', volNames, (buffers: IByteStreamDict) => {
+      downloadAllFiles('/static-assets/games/'+game+'/', volNames, (buffers: IByteStreamDict) => {
         console.log("Resource volumes downloaded.");
         for (var j: number = 0; j < volNames.length; j++) {
             volBuffers[j] = buffers[volNames[j]];
@@ -399,18 +400,61 @@ export function EditPictureDialog(props) {
 
 
         // now modify the directory
-        for(var d=0; d<picdirRecords.length; d++) {
+        let newDirEncoded = new Uint8Array(picdirRecords.length*3)
+        for(var d=1; d<picdirRecords.length-1; d++) {
           if(d<=roomValue){
-            picdirRecords[d+1].volOffset = picdirRecords[d+1].volOffset; // optimize as no op
+            var val = picdirRecords[d].volOffset
+            picdirRecords[d+1].volOffset = val; // optimize as no op
+            newDirEncoded[d] = (val << 16) + (val << 8) + val;
           }
           else {
             // update the offset by the new size
-            picdirRecords[d+1].volOffset = picdirRecords[d+1].volOffset+newPicSizeDiff; 
+            var val = picdirRecords[d].volOffset+newPicSizeDiff;
+            picdirRecords[d+1].volOffset = val 
+            newDirEncoded[d] = (val << 16) + (val << 8) + val;
           }
         }
 
+
+        const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
+
+        // write the volume file
+        let gameContentPath = '/static-assets/games/'+game+'/'
+        let filename = "VOL."+picRecord.volNo
+        let serviceUrl = API_WRITE_CONTENT + `?site=${siteId}&path=${gameContentPath}&fileName=${filename}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`
+          
+        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
+          "type": "formData"
+        }).subscribe({
+          next: (response) => {
+            alert("Volume Saved")
+          },
+          error(e) {
+            alert("failed")
+          }
+        });
         
+        // write the dir file
+        gameContentPath = '/static-assets/games/'+game+'/'
+        filename = "PICDIR"
+        serviceUrl = API_WRITE_CONTENT + `?site=${siteId}&path=${gameContentPath}&fileName=${filename}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`
+  
+        post(serviceUrl, newDirEncoded.buffer, {
+          "type": "formData"
+        }).subscribe({
+          next: (response) => {
+
+            alert("Picture Saved")
+          },
+          error(e) {
+            alert("failed")
+          }
+        });
     
+
+
+
+
     
       });
 
@@ -421,17 +465,6 @@ export function EditPictureDialog(props) {
       // var data = new FormData();
     // data.append("picResource", new Blob([encodeCommands(commands)]));
     // let apiUrl = `/studio/api/2/plugin/script/plugins/org/rd/plugin/agistudio/agistudio/save-pic.json?siteId=${siteId}`
-    // post(apiUrl, data, {
-    //   "type": "formData"
-    // }).subscribe({
-    //   next: (response) => {
-
-    //     alert("Picture Saved")
-    //   },
-    //   error(e) {
-    //     alert("failed")
-    //   }
-    // });
 
 
   // useEffect(() => {
