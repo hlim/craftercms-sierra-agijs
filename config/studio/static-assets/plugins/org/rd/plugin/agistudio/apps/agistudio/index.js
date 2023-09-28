@@ -1241,7 +1241,7 @@ function EditPictureDialog(props) {
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
-                var gameContentPath = '/site/website/games/' + game + '/';
+                var gameContentPath = '/static-assets/games/' + game + '/';
                 var filename = "VOL." + picRecord.volNo;
                 var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
@@ -1255,7 +1255,7 @@ function EditPictureDialog(props) {
                     }
                 });
                 // write the dir file
-                gameContentPath = '/site/website/games/' + game + '/';
+                gameContentPath = '/static-assets/games/' + game + '/';
                 filename = "PICDIR";
                 serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 post(serviceUrl, newDirEncoded.buffer, {
