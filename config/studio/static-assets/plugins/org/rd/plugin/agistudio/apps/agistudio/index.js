@@ -1182,7 +1182,8 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var handleSavePicture = function () {
-        downloadAllFiles('/static-assets/games/sq2/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+        var game = "contest2";
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
             parseDirfile(buffers['PICDIR'], picdirRecords);
@@ -1194,7 +1195,7 @@ function EditPictureDialog(props) {
                     volNames.push('VOL.' + i);
                 }
             }
-            downloadAllFiles('/static-assets/games/sq2/', volNames, function (buffers) {
+            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
                 console.log("Resource volumes downloaded.");
                 for (var j = 0; j < volNames.length; j++) {
                     volBuffers[j] = buffers[volNames[j]];
@@ -1240,7 +1241,7 @@ function EditPictureDialog(props) {
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
-                var gameContentPath = "/site/website/games/sq2/";
+                var gameContentPath = '/site/website/games/' + game + '/';
                 var filename = "VOL." + picRecord.volNo;
                 var serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true");
                 post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
@@ -1254,7 +1255,7 @@ function EditPictureDialog(props) {
                     }
                 });
                 // write the dir file
-                gameContentPath = "/site/website/games/sq2/";
+                gameContentPath = '/site/website/games/' + game + '/';
                 filename = "PICDIR";
                 serviceUrl = API_WRITE_CONTENT + "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=gametitle&createFolders=true&draft=false&duplicate=false&unlock=true");
                 post(serviceUrl, newDirEncoded.buffer, {
