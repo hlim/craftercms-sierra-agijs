@@ -1200,10 +1200,10 @@ function EditPictureDialog(props) {
                 for (var j = 0; j < volNames.length; j++) {
                     volBuffers[j] = buffers[volNames[j]];
                 }
-                encodeCommands(commands);
+                // let newPicData = encodeCommands(commands);
                 var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
                 var picRecord = picdirRecords[roomValue];
-                picdirRecords[roomValue + 1]; // assuption: not the last picture
+                // let nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
                 var picsStream = volBuffers[picRecord.volNo].buffer;
                 // let newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
                 // let newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
@@ -1246,7 +1246,7 @@ function EditPictureDialog(props) {
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                 post(serviceUrl, picsStream, {
-                    type: 'formData'
+                    type: 'multipart/form-data; boundary=----WebKitFormBoundaryn6wpZtKXiv6hONnF'
                 }).subscribe({
                     next: function (response) {
                         alert('Volume Saved');
