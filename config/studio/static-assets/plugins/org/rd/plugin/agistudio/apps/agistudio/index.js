@@ -1228,7 +1228,7 @@ function EditPictureDialog(props) {
                 // now modify the directory
                 var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
                 for (var d = 0; d < picdirRecords.length; d++) {
-                    if (d <= roomValue) {
+                    if (d + 1 <= roomValue) {
                         var val = picdirRecords[d + 1].volOffset;
                         picdirRecords[d + 1].volOffset = val; // optimize as no op
                         newDirEncoded[d] = (val << 16) + (val << 8) + val;
