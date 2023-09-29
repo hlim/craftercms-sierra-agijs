@@ -1226,19 +1226,20 @@ function EditPictureDialog(props) {
                 // replace old byte stream with new one
                 //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
-                // let newDirEncoded = new Uint8Array(picdirRecords.length * 3);
-                // for (var d = 1; d < picdirRecords.length - 1; d++) {
-                //   if (d <= roomValue) {
-                //     var val = picdirRecords[d].volOffset;
-                //     picdirRecords[d + 1].volOffset = val; // optimize as no op
-                //     newDirEncoded[d] = (val << 16) + (val << 8) + val;
-                //   } else {
-                //     // update the offset by the new size
-                //     var val = picdirRecords[d].volOffset + newPicSizeDiff;
-                //     picdirRecords[d + 1].volOffset = val;
-                //     newDirEncoded[d] = (val << 16) + (val << 8) + val;
-                //   }
-                // }
+                var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
+                for (var d = 1; d < picdirRecords.length - 1; d++) {
+                    if (d <= roomValue) {
+                        var val = picdirRecords[d].volOffset;
+                        picdirRecords[d + 1].volOffset = val; // optimize as no op
+                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
+                    }
+                    else {
+                        // update the offset by the new size
+                        var val = picdirRecords[d].volOffset + newPicSizeDiff;
+                        picdirRecords[d + 1].volOffset = val;
+                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
+                    }
+                }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
                 var gameContentPath = '/static-assets/games/' + game + '/';
@@ -1262,20 +1263,28 @@ function EditPictureDialog(props) {
                         alert('failed');
                     }
                 });
-                // // write the dir file
-                // gameContentPath = '/static-assets/games/'+game+'/'
-                // filename = "PICDIR"
-                // serviceUrl = API_WRITE_CONTENT + `?site=${siteId}&path=${gameContentPath}&fileName=${filename}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`
-                // post(serviceUrl, newDirEncoded.buffer, {
-                //   "type": "formData"
-                // }).subscribe({
-                //   next: (response) => {
-                //     alert("Picture Saved")
-                //   },
-                //   error(e) {
-                //     alert("failed")
-                //   }
-                // });
+                gameContentPath = '/static-assets/games/' + game + '/';
+                uploadFilename = 'PICDIR';
+                serviceUrl =
+                    API_WRITE_CONTENT +
+                        "?site=".concat(siteId, "&path=").concat(gameContentPath, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
+                body = new FormData();
+                body.append('site', siteId);
+                body.append('relativePath', 'null');
+                body.append('validating', 'false');
+                body.append('path', gameContentPath);
+                body.append('name', uploadFilename);
+                body.append('type', 'application/octet-stream');
+                body.append('allowed', 'true');
+                body.append('file', new Blob([newStream]), uploadFilename);
+                post(serviceUrl, body).subscribe({
+                    next: function (response) {
+                        alert('DIR Saved');
+                    },
+                    error: function (e) {
+                        alert('failed');
+                    }
+                });
             });
         });
     };
