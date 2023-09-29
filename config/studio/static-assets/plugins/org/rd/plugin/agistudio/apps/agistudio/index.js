@@ -1245,9 +1245,9 @@ function EditPictureDialog(props) {
                 var serviceUrl = API_WRITE_CONTENT +
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
-                post(serviceUrl, picsStream, {
+                post(serviceUrl, [picsStream], {
                     "type": 'multipart/form-data;',
-                    "Content-Type": "multipart/form-data; boundary=AaB03x--AaB03x",
+                    "Content-Type": "multipart/form-data;",
                     "Content-Disposition": "file",
                     "Content-Transfer-Encoding": "binary"
                 }).subscribe({
