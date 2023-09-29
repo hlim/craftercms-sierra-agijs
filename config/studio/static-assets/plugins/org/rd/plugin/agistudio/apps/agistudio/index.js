@@ -1246,7 +1246,6 @@ function EditPictureDialog(props) {
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                 post(serviceUrl, [picsStream], {
-                    "type": 'multipart/form-data;',
                     "Content-Type": "multipart/form-data;",
                     "Content-Disposition": "file",
                     "Content-Transfer-Encoding": "binary"
