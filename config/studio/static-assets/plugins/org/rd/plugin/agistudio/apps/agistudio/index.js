@@ -1223,22 +1223,21 @@ function EditPictureDialog(props) {
                     // }
                 }
                 // replace old byte stream with new one
-                volBuffers[picRecord.volNo].buffer = newStream;
+                //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
-                var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
-                for (var d = 1; d < picdirRecords.length - 1; d++) {
-                    if (d <= roomValue) {
-                        var val = picdirRecords[d].volOffset;
-                        picdirRecords[d + 1].volOffset = val; // optimize as no op
-                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
-                    }
-                    else {
-                        // update the offset by the new size
-                        var val = picdirRecords[d].volOffset + newPicSizeDiff;
-                        picdirRecords[d + 1].volOffset = val;
-                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
-                    }
-                }
+                // let newDirEncoded = new Uint8Array(picdirRecords.length * 3);
+                // for (var d = 1; d < picdirRecords.length - 1; d++) {
+                //   if (d <= roomValue) {
+                //     var val = picdirRecords[d].volOffset;
+                //     picdirRecords[d + 1].volOffset = val; // optimize as no op
+                //     newDirEncoded[d] = (val << 16) + (val << 8) + val;
+                //   } else {
+                //     // update the offset by the new size
+                //     var val = picdirRecords[d].volOffset + newPicSizeDiff;
+                //     picdirRecords[d + 1].volOffset = val;
+                //     newDirEncoded[d] = (val << 16) + (val << 8) + val;
+                //   }
+                // }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
                 var gameContentPath = '/static-assets/games/' + game + '/';
