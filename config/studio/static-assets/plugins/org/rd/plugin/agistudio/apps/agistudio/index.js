@@ -900,6 +900,7 @@ function AddGame(props) {
                 React.createElement(AddRoundedIcon, null)))));
 }
 
+//import { ajax, AjaxError, AjaxResponse, AjaxConfig } from 'rxjs/ajax';
 function EditPictureDialog(props) {
     var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
@@ -1245,7 +1246,10 @@ function EditPictureDialog(props) {
                 var serviceUrl = API_WRITE_CONTENT +
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
-                post(serviceUrl, [picsStream], {
+                var body = new FormData();
+                body.append("some-field", "fome-field-value");
+                body.append("file", new Blob([picsStream]));
+                post(serviceUrl, body, {
                     "Content-Type": "multipart/form-data;",
                     "Content-Disposition": "file",
                     "Content-Transfer-Encoding": "binary"
