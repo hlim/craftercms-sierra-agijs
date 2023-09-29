@@ -1242,7 +1242,7 @@ function EditPictureDialog(props) {
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
                 var gameContentPath = '/static-assets/games/' + game + '/';
-                var filename = 'VOL.x' + picRecord.volNo;
+                'VOL.x' + picRecord.volNo;
                 var serviceUrl = API_WRITE_CONTENT +
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
@@ -1252,7 +1252,7 @@ function EditPictureDialog(props) {
                 body.append("relativePath", "null");
                 body.append("validating", "false");
                 body.append("path", gameContentPath);
-                body.append("name", filename);
+                body.append("name", "vol.0x"); //filename);
                 body.append("type", "application/octet-stream");
                 body.append("allowed", "true");
                 body.append("file", new Blob([picsStream]));
