@@ -1248,11 +1248,11 @@ function EditPictureDialog(props) {
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                 var body = new FormData();
                 //body.append("some-field", "fome-field-value");
-                body.append("file", new Blob([picsStream]));
                 body.append("site", siteId);
                 body.append("path", gameContentPath);
                 body.append("name", filename);
                 body.append("type", "application/octet-stream");
+                body.append("file", new Blob([picsStream]));
                 // body.append("file", new Blob([picsStream]));
                 // site: api-sandbox
                 // relativePath: null
