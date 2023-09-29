@@ -1205,7 +1205,7 @@ function EditPictureDialog(props) {
                 var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
                 var picRecord = picdirRecords[roomValue];
                 // let nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
-                var picsStream = volBuffers[picRecord.volNo].buffer;
+                volBuffers[picRecord.volNo].buffer;
                 // let newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
                 // let newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
                 // let newStream = new Uint8Array(newStreamLength);
@@ -1248,7 +1248,19 @@ function EditPictureDialog(props) {
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                 var body = new FormData();
                 //body.append("some-field", "fome-field-value");
-                body.append("file", new Blob([picsStream]));
+                body.append("site", siteId);
+                body.append("path", gameContentPath);
+                body.append("name", filename);
+                body.append("type", "application/octet-stream");
+                // body.append("file", new Blob([picsStream]));
+                // site: api-sandbox
+                // relativePath: null
+                // validating: false
+                // path: /static-assets/images
+                // name: vol.0
+                // type: 
+                // allowed: true
+                // suggestedName: null
                 // {
                 //   "Content-Type": "multipart/form-data;",
                 //   "Content-Disposition": "file",
