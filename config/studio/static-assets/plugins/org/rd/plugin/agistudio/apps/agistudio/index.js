@@ -1246,7 +1246,10 @@ function EditPictureDialog(props) {
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                 post(serviceUrl, picsStream, {
-                    type: 'multipart/form-data;'
+                    "type": 'multipart/form-data;',
+                    "Content-Type": "multipart/form-data; boundary=AaB03x--AaB03x",
+                    "Content-Disposition": "file",
+                    "Content-Transfer-Encoding": "binary"
                 }).subscribe({
                     next: function (response) {
                         alert('Volume Saved');
