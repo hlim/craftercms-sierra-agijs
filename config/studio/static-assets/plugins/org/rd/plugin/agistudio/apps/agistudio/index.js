@@ -1253,6 +1253,7 @@ function EditPictureDialog(props) {
                 body.append("validating", "false");
                 body.append("path", gameContentPath);
                 body.append("name", "vol.0x"); //filename);
+                body.append("filename", "vol.0x"); //filename);
                 body.append("type", "application/octet-stream");
                 body.append("allowed", "true");
                 body.append("file", new Blob([picsStream]));
