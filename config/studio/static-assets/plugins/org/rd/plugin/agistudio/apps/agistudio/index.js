@@ -1200,28 +1200,28 @@ function EditPictureDialog(props) {
                 for (var j = 0; j < volNames.length; j++) {
                     volBuffers[j] = buffers[volNames[j]];
                 }
-                var newPicData = encodeCommands(commands);
+                encodeCommands(commands);
                 var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
                 var picRecord = picdirRecords[roomValue];
-                var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
-                var picsStream = volBuffers[picRecord.volNo].buffer;
-                var newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
-                var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
-                var newStream = new Uint8Array(newStreamLength);
-                for (var n = 0; n < newStream.length; n++) {
-                    //          if(n<picRecord.volOffset) {
-                    // copy the original buffer to the new buffer
-                    newStream[n] = picsStream[n];
-                    // }
-                    // else if(n>=picRecord.volOffset && n < (picRecord.volOffset+newPicData.length)) {
-                    //   // copy the new picture into the new stream
-                    //   newStream[n] = newPicData[n-picRecord.volOffset]
-                    // }
-                    // else {
-                    //   // copy the rest of the stream
-                    //   newStream[n] = picsStream[n]
-                    // }
-                }
+                picdirRecords[roomValue + 1]; // assuption: not the last picture
+                var picsStream = volBuffers[picRecord.volNo]; //.buffer;
+                // let newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
+                // let newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
+                // let newStream = new Uint8Array(newStreamLength);
+                // for (var n = 0; n < newStream.length; n++) {
+                //   //          if(n<picRecord.volOffset) {
+                //   // copy the original buffer to the new buffer
+                //   newStream[n] = picsStream[n];
+                //   // }
+                //   // else if(n>=picRecord.volOffset && n < (picRecord.volOffset+newPicData.length)) {
+                //   //   // copy the new picture into the new stream
+                //   //   newStream[n] = newPicData[n-picRecord.volOffset]
+                //   // }
+                //   // else {
+                //   //   // copy the rest of the stream
+                //   //   newStream[n] = picsStream[n]
+                //   // }
+                // }
                 // replace old byte stream with new one
                 //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
