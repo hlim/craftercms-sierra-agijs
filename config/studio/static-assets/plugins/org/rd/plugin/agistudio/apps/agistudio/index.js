@@ -1201,28 +1201,28 @@ function EditPictureDialog(props) {
                 for (var j = 0; j < volNames.length; j++) {
                     volBuffers[j] = buffers[volNames[j]];
                 }
-                // let newPicData = encodeCommands(commands);
+                var newPicData = encodeCommands(commands);
                 var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
                 var picRecord = picdirRecords[roomValue];
-                // let nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
+                var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
                 var picsStream = volBuffers[picRecord.volNo].buffer;
-                // let newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
-                // let newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
-                // let newStream = new Uint8Array(newStreamLength);
-                // for (var n = 0; n < newStream.length; n++) {
-                //   //          if(n<picRecord.volOffset) {
-                //   // copy the original buffer to the new buffer
-                //   newStream[n] = picsStream[n];
-                //   // }
-                //   // else if(n>=picRecord.volOffset && n < (picRecord.volOffset+newPicData.length)) {
-                //   //   // copy the new picture into the new stream
-                //   //   newStream[n] = newPicData[n-picRecord.volOffset]
-                //   // }
-                //   // else {
-                //   //   // copy the rest of the stream
-                //   //   newStream[n] = picsStream[n]
-                //   // }
-                // }
+                var newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
+                var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
+                var newStream = new Uint8Array(newStreamLength);
+                for (var n = 0; n < newStream.length; n++) {
+                    if (n < picRecord.volOffset) {
+                        // copy the original buffer to the new buffer
+                        newStream[n] = picsStream[n];
+                    }
+                    else if (n >= picRecord.volOffset && n < (picRecord.volOffset + newPicData.length)) {
+                        // copy the new picture into the new stream
+                        newStream[n] = newPicData[n - picRecord.volOffset];
+                    }
+                    else {
+                        // copy the rest of the stream
+                        newStream[n] = picsStream[n];
+                    }
+                }
                 // replace old byte stream with new one
                 //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
@@ -1242,20 +1242,18 @@ function EditPictureDialog(props) {
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
                 var gameContentPath = '/static-assets/games/' + game + '/';
-                var uploadFilename = 'VOL.x' + picRecord.volNo;
+                var uploadFilename = 'VOL.' + picRecord.volNo;
                 var serviceUrl = API_WRITE_CONTENT +
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
-                //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                 var body = new FormData();
-                //body.append("some-field", "fome-field-value");
-                body.append("site", siteId);
-                body.append("relativePath", "null");
-                body.append("validating", "false");
-                body.append("path", gameContentPath);
-                body.append("name", uploadFilename);
-                body.append("type", "application/octet-stream");
-                body.append("allowed", "true");
-                body.append("file", new Blob([picsStream]), uploadFilename);
+                body.append('site', siteId);
+                body.append('relativePath', 'null');
+                body.append('validating', 'false');
+                body.append('path', gameContentPath);
+                body.append('name', uploadFilename);
+                body.append('type', 'application/octet-stream');
+                body.append('allowed', 'true');
+                body.append('file', new Blob([newStream]), uploadFilename);
                 post(serviceUrl, body).subscribe({
                     next: function (response) {
                         alert('Volume Saved');
