@@ -1229,13 +1229,13 @@ function EditPictureDialog(props) {
                 var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
                 for (var d = 0; d < picdirRecords.length; d++) {
                     if (d <= roomValue) {
-                        var val = picdirRecords[d].volOffset;
+                        var val = picdirRecords[d + 1].volOffset;
                         picdirRecords[d + 1].volOffset = val; // optimize as no op
                         newDirEncoded[d] = (val << 16) + (val << 8) + val;
                     }
                     else {
                         // update the offset by the new size
-                        var val = picdirRecords[d].volOffset + newPicSizeDiff;
+                        var val = picdirRecords[d + 1].volOffset + newPicSizeDiff;
                         picdirRecords[d + 1].volOffset = val;
                         newDirEncoded[d] = (val << 16) + (val << 8) + val;
                     }
