@@ -1247,13 +1247,14 @@ function EditPictureDialog(props) {
                     "?site=".concat(siteId, "&path=").concat(gameContentPath, "&fileName=").concat(filename, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
                 //        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
                 var body = new FormData();
-                body.append("some-field", "fome-field-value");
+                //body.append("some-field", "fome-field-value");
                 body.append("file", new Blob([picsStream]));
-                post(serviceUrl, body, {
-                    "Content-Type": "multipart/form-data;",
-                    "Content-Disposition": "file",
-                    "Content-Transfer-Encoding": "binary"
-                }).subscribe({
+                // {
+                //   "Content-Type": "multipart/form-data;",
+                //   "Content-Disposition": "file",
+                //   "Content-Transfer-Encoding": "binary"
+                // }
+                post(serviceUrl, body).subscribe({
                     next: function (response) {
                         alert('Volume Saved');
                     },
