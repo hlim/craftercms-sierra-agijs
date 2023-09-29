@@ -1276,7 +1276,7 @@ function EditPictureDialog(props) {
                 body.append('name', uploadFilename);
                 body.append('type', 'application/octet-stream');
                 body.append('allowed', 'true');
-                body.append('file', new Blob([newStream]), uploadFilename);
+                body.append('file', new Blob([newDirEncoded]), uploadFilename);
                 post(serviceUrl, body).subscribe({
                     next: function (response) {
                         alert('DIR Saved');
