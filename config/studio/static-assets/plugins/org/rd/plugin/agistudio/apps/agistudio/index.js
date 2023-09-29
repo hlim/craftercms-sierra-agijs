@@ -1204,7 +1204,7 @@ function EditPictureDialog(props) {
                 var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
                 var picRecord = picdirRecords[roomValue];
                 picdirRecords[roomValue + 1]; // assuption: not the last picture
-                var picsStream = volBuffers[picRecord.volNo]; //.buffer;
+                var picsStream = volBuffers[picRecord.volNo].buffer;
                 // let newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
                 // let newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
                 // let newStream = new Uint8Array(newStreamLength);
