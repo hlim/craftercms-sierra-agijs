@@ -5,7 +5,7 @@ import { AgiBridge } from './AgiBridge';
 import { useState, useEffect } from 'react';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { get, post } from '@craftercms/studio-ui/utils/ajax';
-
+//import { ajax, AjaxError, AjaxResponse, AjaxConfig } from 'rxjs/ajax';
 
 export function EditPictureDialog(props) {
   const siteId = useActiveSiteId();
@@ -345,162 +345,155 @@ export function EditPictureDialog(props) {
     window.agistudioPicCommands = currentPictureCommands;
   }, []);
 
+  const handleSavePicture = () => {
+    var game = 'contest2';
+    downloadAllFiles(
+      '/static-assets/games/' + game + '/',
+      ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
+      (buffers: IByteStreamDict) => {
+        console.log('Directory files downloaded.');
+        parseDirfile(buffers['LOGDIR'], logdirRecords);
+        parseDirfile(buffers['PICDIR'], picdirRecords);
+        parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+        parseDirfile(buffers['SNDDIR'], snddirRecords);
+        var volNames: string[] = [];
+        for (var i = 0; i < availableVols.length; i++) {
+          if (availableVols[i] === true) {
+            volNames.push('VOL.' + i);
+          }
+        }
+
+        downloadAllFiles('/static-assets/games/' + game + '/', volNames, (buffers: IByteStreamDict) => {
+          console.log('Resource volumes downloaded.');
+          for (var j: number = 0; j < volNames.length; j++) {
+            volBuffers[j] = buffers[volNames[j]];
+          }
+
+          let newPicData = encodeCommands(commands);
+          let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+          let picRecord = picdirRecords[roomValue];
+          let nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
+
+          let picsStream = volBuffers[picRecord.volNo].buffer;
+
+          let newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
+          let newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
+
+          let newStream = new Uint8Array(newStreamLength);
+          for (var n = 0; n < newStream.length; n++) {
+            if(n<picRecord.volOffset) {
+              // copy the original buffer to the new buffer
+              newStream[n] = picsStream[n];
+            }
+            else if(n>=picRecord.volOffset && n < (picRecord.volOffset+newPicData.length)) {
+              // copy the new picture into the new stream
+              newStream[n] = newPicData[n-picRecord.volOffset]
+            }
+            else {
+              // copy the rest of the stream
+              newStream[n] = picsStream[n]
+            }
+          }
+
+          // replace old byte stream with new one
+          //volBuffers[picRecord.volNo].buffer = newStream;
+
+          // now modify the directory
+          let newDirEncoded = new Uint8Array(picdirRecords.length * 3);
+          for (var d = 0; d < picdirRecords.length-1; d++) {
+            if (d+1 <= roomValue) {
+              var val = picdirRecords[d+1].volOffset;
+              picdirRecords[d + 1].volOffset = val; // optimize as no op
+              newDirEncoded[d] = (val << 16) + (val << 8) + val;
+            } else {
+              // update the offset by the new size
+              var val = picdirRecords[d+1].volOffset + newPicSizeDiff;
+              picdirRecords[d + 1].volOffset = val;
+              newDirEncoded[d] = (val << 16) + (val << 8) + val;
+            }
+          }
+
+          const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
+
+          // write the volume file
+          let gameContentPath = '/static-assets/games/' + game + '/';
+          let uploadFilename = 'VOL.' + picRecord.volNo;
+          let serviceUrl =
+            API_WRITE_CONTENT +
+            `?site=${siteId}&path=${gameContentPath}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`;
+
+          let body = new FormData();
+          body.append('site', siteId);
+          body.append('relativePath', 'null');
+          body.append('validating', 'false');
+          body.append('path', gameContentPath);
+          body.append('name', uploadFilename);
+
+          body.append('type', 'application/octet-stream');
+          body.append('allowed', 'true');
+          body.append('file', new Blob([newStream]), uploadFilename);
+
+          post(serviceUrl, body).subscribe({
+            next: (response) => {
+              alert('Volume Saved');
+            },
+            error(e) {
+              alert('failed');
+            }
+          });
+
+          gameContentPath = '/static-assets/games/' + game + '/';
+          uploadFilename = 'PICDIR';
+          serviceUrl =
+            API_WRITE_CONTENT +
+            `?site=${siteId}&path=${gameContentPath}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`;
+
+          body = new FormData();
+          body.append('site', siteId);
+          body.append('relativePath', 'null');
+          body.append('validating', 'false');
+          body.append('path', gameContentPath);
+          body.append('name', uploadFilename);
+
+          body.append('type', 'application/octet-stream');
+          body.append('allowed', 'true');
+          body.append('file', new Blob([newDirEncoded]), uploadFilename);
+
+          post(serviceUrl, body).subscribe({
+            next: (response) => {
+              alert('DIR Saved');
+            },
+            error(e) {
+              alert('failed');
+            }
+          });
+
+
+
+
+        });
+      }
+    );
+  };
  
   
-  const handleSavePicture = () => {
-
-    var game = "contest2"
-    downloadAllFiles('/static-assets/games/'+game+'/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], (buffers: IByteStreamDict) => {
-      console.log('Directory files downloaded.');
-      parseDirfile(buffers['LOGDIR'], logdirRecords);
-      parseDirfile(buffers['PICDIR'], picdirRecords);
-      parseDirfile(buffers['VIEWDIR'], viewdirRecords);
-      parseDirfile(buffers['SNDDIR'], snddirRecords);
-      var volNames: string[] = [];
-      for (var i = 0; i < availableVols.length; i++) {
-        if (availableVols[i] === true) {
-          volNames.push('VOL.' + i);
-        }
-      }
-
-      downloadAllFiles('/static-assets/games/'+game+'/', volNames, (buffers: IByteStreamDict) => {
-        console.log("Resource volumes downloaded.");
-        for (var j: number = 0; j < volNames.length; j++) {
-            volBuffers[j] = buffers[volNames[j]];
-        }
-
-        let newPicData = encodeCommands(commands);
-        let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-        let picRecord = picdirRecords[roomValue];  
-        let nextPicRecord = picdirRecords[roomValue+1];  // assuption: not the last picture
-
-
-        let picsStream = volBuffers[picRecord.volNo].buffer
-        let newPicSizeDiff =  newPicData.length - nextPicRecord.volOffset
-        let newStreamLength = picsStream.length + newPicSizeDiff // assumption: it always grows
-
-        let newStream = new Uint8Array(newStreamLength)
-        for(var n=0;n<newStream.length; n++) {
-          if(n<picRecord.volOffset) {
-            // copy the original buffer to the new buffer
-            newStream[n] = picsStream[n]
-          }
-          else if(n>=picRecord.volOffset && n < (picRecord.volOffset+newPicData.length)) {
-            // copy the new picture into the new stream
-            newStream[n] = newPicData[n-picRecord.volOffset]
-          }
-          else {
-            // copy the rest of the stream
-            newStream[n] = picsStream[n]
-          }
-        }
-
-        // replace old byte stream with new one
-        volBuffers[picRecord.volNo].buffer = newStream
-
-
-        // now modify the directory
-        let newDirEncoded = new Uint8Array(picdirRecords.length*3)
-        for(var d=1; d<picdirRecords.length-1; d++) {
-          if(d<=roomValue){
-            var val = picdirRecords[d].volOffset
-            picdirRecords[d+1].volOffset = val; // optimize as no op
-            newDirEncoded[d] = (val << 16) + (val << 8) + val;
-          }
-          else {
-            // update the offset by the new size
-            var val = picdirRecords[d].volOffset+newPicSizeDiff;
-            picdirRecords[d+1].volOffset = val 
-            newDirEncoded[d] = (val << 16) + (val << 8) + val;
-          }
-        }
-
-
-        const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
-
-        // write the volume file
-        let gameContentPath = '/static-assets/games/'+game+'/'
-        let filename = "VOL."+picRecord.volNo
-        let serviceUrl = API_WRITE_CONTENT + `?site=${siteId}&path=${gameContentPath}&fileName=${filename}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`
-          
-        post(serviceUrl, volBuffers[picRecord.volNo].buffer, {
-          "type": "formData"
-        }).subscribe({
-          next: (response) => {
-            alert("Volume Saved")
-          },
-          error(e) {
-            alert("failed")
-          }
-        });
-        
-        // write the dir file
-        gameContentPath = '/static-assets/games/'+game+'/'
-        filename = "PICDIR"
-        serviceUrl = API_WRITE_CONTENT + `?site=${siteId}&path=${gameContentPath}&fileName=${filename}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`
-  
-        post(serviceUrl, newDirEncoded.buffer, {
-          "type": "formData"
-        }).subscribe({
-          next: (response) => {
-
-            alert("Picture Saved")
-          },
-          error(e) {
-            alert("failed")
-          }
-        });
-    
-
-
-
-
-    
-      });
-
-
-
-    })  
-}
-      // var data = new FormData();
-    // data.append("picResource", new Blob([encodeCommands(commands)]));
-    // let apiUrl = `/studio/api/2/plugin/script/plugins/org/rd/plugin/agistudio/agistudio/save-pic.json?siteId=${siteId}`
-
-
   // useEffect(() => {
   //   currentUrlPath && setInternalUrl(currentUrlPath);
   //   loadRoomData();
   // }, [currentUrlPath]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
   interface IDirectoryEntry {
     volNo: number;
     volOffset: number;
   }
-  
+
   var logdirRecords: IDirectoryEntry[] = [],
     picdirRecords: IDirectoryEntry[] = [],
     viewdirRecords: IDirectoryEntry[] = [],
     snddirRecords: IDirectoryEntry[] = [];
-     var volBuffers: ByteStream[] = [];
+  var volBuffers: ByteStream[] = [];
   var availableVols: boolean[] = [];
-  
+
   function parseDirfile(buffer: ByteStream, records: IDirectoryEntry[]): void {
     var length: number = buffer.length / 3;
     for (var i: number = 0; i < length; i++) {
@@ -512,15 +505,15 @@ export function EditPictureDialog(props) {
       if (availableVols[volNo] === undefined) availableVols[volNo] = true;
     }
   }
-  
+
   enum AgiResource {
     Logic,
     Pic,
     View,
     Sound
   }
-  
-   function readAgiResource(type: AgiResource, num: number): ByteStream {
+
+  function readAgiResource(type: AgiResource, num: number): ByteStream {
     var record = null;
     switch (type) {
       case AgiResource.Logic:
@@ -538,28 +531,30 @@ export function EditPictureDialog(props) {
       default:
         throw 'Undefined resource type: ' + type;
     }
+
     var volstream = new ByteStream(volBuffers[record.volNo].buffer, record.volOffset);
+
     var sig: number = volstream.readUint16();
     var volNo: number = volstream.readUint8();
     var resLength = volstream.readUint16();
+
     var volPart = new ByteStream(volstream.buffer, record.volOffset + 5, record.volOffset + 5 + resLength);
+
     return volPart;
   }
-  
 
-  
-   class ByteStream {
+  class ByteStream {
     position: number = 0;
     length: number = 0;
     constructor(public buffer: Uint8Array, private startPosition: number = 0, private end: number = 0) {
       if (end == 0) this.end = this.buffer.byteLength;
       this.length = this.end - this.startPosition;
     }
-  
+
     readUint8(): number {
       return this.buffer[this.startPosition + this.position++];
     }
-  
+
     readUint16(littleEndian: boolean = true): number {
       var b1: number = this.buffer[this.startPosition + this.position++];
       var b2: number = this.buffer[this.startPosition + this.position++];
@@ -568,7 +563,7 @@ export function EditPictureDialog(props) {
       }
       return (b1 << 8) + b2;
     }
-  
+
     readInt16(littleEndian: boolean = true): number {
       var b1: number = this.buffer[this.startPosition + this.position++];
       var b2: number = this.buffer[this.startPosition + this.position++];
@@ -578,19 +573,22 @@ export function EditPictureDialog(props) {
       return (((b1 << 8) | b2) << 16) >> 16;
     }
   }
-  
-   interface IByteStreamDict {
+
+  interface IByteStreamDict {
     [index: string]: ByteStream;
   }
-  
-   function downloadAllFiles(path: string, files: string[], done: (buffers: IByteStreamDict) => void) {
+
+  function downloadAllFiles(path: string, files: string[], done: (buffers: IByteStreamDict) => void) {
     var buffers: IByteStreamDict = {};
     var leftToDownload: number = files.length;
-  
+
     function getBinary(url: string, success: (data: ArrayBuffer) => void): void {
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', url+"?crafterSite=agi-crafter", true);
+
+      xhr.open('GET', url + '?crafterSite=agi-crafter', true);
+
       xhr.responseType = 'arraybuffer';
+
       xhr.onreadystatechange = () => {
         if (xhr.readyState == 4) {
           if (xhr.response === null) {
@@ -603,25 +601,22 @@ export function EditPictureDialog(props) {
       };
       xhr.send();
     }
-  
+
     function handleFile(num: number) {
       getBinary(path + files[num], (buffer: ArrayBuffer) => {
         buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
         leftToDownload--;
+
         if (leftToDownload === 0) {
           done(buffers);
         }
       });
     }
-  
+
     for (var i = 0; i < files.length; i++) {
       handleFile(i);
     }
   }
-
-
-
-
 
   return (
     <>
