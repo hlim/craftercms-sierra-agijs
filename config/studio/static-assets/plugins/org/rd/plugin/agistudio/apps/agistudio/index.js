@@ -1191,8 +1191,8 @@ function EditPictureDialog(props) {
         dataWithHeader[4] = picData.length >> 8; // resource len HI
         // dataWithHeader[5] = 0    // compressed resource len LO
         // dataWithHeader[6] = 0    // compressed resource len HI
-        for (var i = 5; i < picData.length; i++) {
-            dataWithHeader[i] = picData[i];
+        for (var i = 0; i < picData.length; i++) {
+            dataWithHeader[i + 5] = picData[i];
         }
         return dataWithHeader;
     };
