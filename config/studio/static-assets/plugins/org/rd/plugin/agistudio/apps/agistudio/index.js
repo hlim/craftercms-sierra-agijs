@@ -1183,12 +1183,14 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var addVolumeHeader = function (picData, volume) {
-        var dataWithHeader = new Uint8Array(picData.length + 5);
+        var endMarkerPosition = picData.inexOf(255);
+        var sizeOfNewData = endMarkerPosition + 5;
+        var dataWithHeader = new Uint8Array(sizeOfNewData);
         dataWithHeader[0] = 0x12; // signature
         dataWithHeader[1] = 0x34; // signature
         dataWithHeader[2] = volume; // volume
-        dataWithHeader[3] = picData.length & (0xffff >> 8); // resource len LO
-        dataWithHeader[4] = picData.length >> 8; // resource len HI
+        dataWithHeader[3] = endMarkerPosition & (0xffff >> 8); // resource len LO
+        dataWithHeader[4] = endMarkerPosition >> 8; // resource len HI
         // dataWithHeader[5] = 0    // compressed resource len LO
         // dataWithHeader[6] = 0    // compressed resource len HI
         for (var i = 0; i < picData.length; i++) {
