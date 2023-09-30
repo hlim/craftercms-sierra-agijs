@@ -1226,9 +1226,12 @@ function EditPictureDialog(props) {
                 // replace old byte stream with new one
                 //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
-                var position = 0;
-                var recordCount = picdirRecords.length - 1; // first element is empty
+                var position = 3;
+                var recordCount = picdirRecords.length;
                 var newDirEncoded = new Uint8Array(recordCount * 3);
+                newDirEncoded[0] = 0xFF;
+                newDirEncoded[0] = 0xFF;
+                newDirEncoded[0] = 0xFF;
                 for (var d = 1; d <= recordCount; d++) {
                     var volume = picRecord.volNo;
                     var offset = picdirRecords[d].volOffset;
