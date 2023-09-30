@@ -1232,7 +1232,7 @@ function EditPictureDialog(props) {
                 newDirEncoded[0] = 0xFF;
                 newDirEncoded[0] = 0xFF;
                 newDirEncoded[0] = 0xFF;
-                for (var d = 1; d <= recordCount; d++) {
+                for (var d = 1; d < recordCount; d++) {
                     var volume = picRecord.volNo;
                     var offset = picdirRecords[d].volOffset;
                     if (d > roomValue) {
