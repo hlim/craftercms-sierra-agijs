@@ -1230,7 +1230,7 @@ function EditPictureDialog(props) {
                 var newStreamLength = picsStream.length + newPicSizeDiff;
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
-                    if (n < picRecord.volOffset || n > picRecord.volOffset + newPicData.length) {
+                    if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
                         // copy the original buffer to the new buffer
                         newStream[n] = picsStream[n];
                     }
