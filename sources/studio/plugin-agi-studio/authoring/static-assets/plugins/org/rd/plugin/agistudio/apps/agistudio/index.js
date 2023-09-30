@@ -1183,12 +1183,14 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var addVolumeHeader = function (picData, volume) {
-        var dataWithHeader = new Uint8Array(picData.length + 5);
+        var endMarkerPosition = picData.length; //indexOf(255) + 1
+        var sizeOfNewData = endMarkerPosition + 5;
+        var dataWithHeader = new Uint8Array(sizeOfNewData);
         dataWithHeader[0] = 0x12; // signature
         dataWithHeader[1] = 0x34; // signature
         dataWithHeader[2] = volume; // volume
-        dataWithHeader[3] = picData.length & (0xffff >> 8); // resource len LO
-        dataWithHeader[4] = picData.length >> 8; // resource len HI
+        dataWithHeader[3] = endMarkerPosition & (0xffff >> 8); // resource len LO
+        dataWithHeader[4] = endMarkerPosition >> 8; // resource len HI
         // dataWithHeader[5] = 0    // compressed resource len LO
         // dataWithHeader[6] = 0    // compressed resource len HI
         for (var i = 0; i < picData.length; i++) {
@@ -1228,7 +1230,7 @@ function EditPictureDialog(props) {
                 var newStreamLength = picsStream.length + newPicSizeDiff;
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
-                    if (n < picRecord.volOffset || n > picRecord.volOffset + newPicData.length) {
+                    if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
                         // copy the original buffer to the new buffer
                         newStream[n] = picsStream[n];
                     }
