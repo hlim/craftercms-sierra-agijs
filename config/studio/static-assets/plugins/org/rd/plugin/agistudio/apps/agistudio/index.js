@@ -1236,7 +1236,7 @@ function EditPictureDialog(props) {
                     var volume = picRecord.volNo;
                     var offset = picdirRecords[d].volOffset;
                     if (d > roomValue) {
-                        picdirRecords[d].volOffset + newPicSizeDiff;
+                        offset = picdirRecords[d].volOffset + newPicSizeDiff;
                     }
                     newDirEncoded[position] = volume;
                     newDirEncoded[position + 1] = parseInt((offset << 8).toString(2).substring(0, 8), 2);
