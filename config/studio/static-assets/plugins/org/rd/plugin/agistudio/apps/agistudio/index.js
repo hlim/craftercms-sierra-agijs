@@ -1229,9 +1229,9 @@ function EditPictureDialog(props) {
                 var position = 3;
                 var recordCount = picdirRecords.length;
                 var newDirEncoded = new Uint8Array(recordCount * 3);
-                newDirEncoded[0] = 0xFF;
-                newDirEncoded[0] = 0xFF;
-                newDirEncoded[0] = 0xFF;
+                newDirEncoded[0] = 255;
+                newDirEncoded[0] = 255;
+                newDirEncoded[0] = 255;
                 for (var d = 1; d < recordCount; d++) {
                     var volume = picRecord.volNo;
                     var offset = picdirRecords[d].volOffset;
