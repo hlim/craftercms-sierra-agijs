@@ -15,7 +15,7 @@ export function EditPictureDialog(props) {
 
   const [mouseTrapped, setMouseTrapped] = useState(false);
   const [scaleFactor, setScaleFactor] = useState(10);
-  const [drawMode, setDrawMode] = useState('Pen');
+  const [drawMode, setDrawMode] = useState('Abs');
 
   const prettyPrintCommands = (commands: any) => {
     let code = '';
@@ -376,8 +376,12 @@ export function EditPictureDialog(props) {
 
           let picsStream = volBuffers[picRecord.volNo].buffer;
 
-          let newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
-          let newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
+          let lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset
+          let newPicSizeDiff = newPicData.length - lengthOfOldPic + 2; // last command + 255 end marker
+          
+          // now that we know how the new picture relates to the old one we can re-size the stream
+          // up or down accordingly.
+          let newStreamLength = picsStream.length + newPicSizeDiff; 
 
           let newStream = new Uint8Array(newStreamLength);
           for (var n = 0; n < newStream.length; n++) {
@@ -395,22 +399,27 @@ export function EditPictureDialog(props) {
             }
           }
 
-          // replace old byte stream with new one
-          //volBuffers[picRecord.volNo].buffer = newStream;
-
           // now modify the directory
-          let newDirEncoded = new Uint8Array(picdirRecords.length * 3);
-          for (var d = 0; d < picdirRecords.length-1; d++) {
-            if (d+1 <= roomValue) {
-              var val = picdirRecords[d+1].volOffset;
-              picdirRecords[d + 1].volOffset = val; // optimize as no op
-              newDirEncoded[d] = (val << 16) + (val << 8) + val;
-            } else {
-              // update the offset by the new size
-              var val = picdirRecords[d+1].volOffset + newPicSizeDiff;
-              picdirRecords[d + 1].volOffset = val;
-              newDirEncoded[d] = (val << 16) + (val << 8) + val;
+          let position = 3
+          let recordCount = picdirRecords.length 
+          let newDirEncoded = new Uint8Array(recordCount * 3);
+
+          newDirEncoded[0] = 255
+          newDirEncoded[1] = 255
+          newDirEncoded[2] = 255
+
+          for (var d = 1; d < recordCount; d++) {
+            var volume = picRecord.volNo
+            var offset = picdirRecords[d].volOffset 
+
+            if (d > roomValue) {
+              offset = picdirRecords[d].volOffset + newPicSizeDiff;
             }
+
+            newDirEncoded[position] = volume
+            newDirEncoded[position+1] = offset >> 8
+            newDirEncoded[position+2] = offset & 0xFFFF >> 8
+            position = position + 3 
           }
 
           const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';

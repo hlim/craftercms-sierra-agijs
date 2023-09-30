@@ -907,7 +907,7 @@ function EditPictureDialog(props) {
     var _b = React.useState(''); _b[0]; _b[1];
     var _c = useState(false), mouseTrapped = _c[0], setMouseTrapped = _c[1];
     var _d = useState(10), scaleFactor = _d[0]; _d[1];
-    var _e = useState('Pen'), drawMode = _e[0], setDrawMode = _e[1];
+    var _e = useState('Abs'), drawMode = _e[0], setDrawMode = _e[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1206,8 +1206,11 @@ function EditPictureDialog(props) {
                 var picRecord = picdirRecords[roomValue];
                 var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
                 var picsStream = volBuffers[picRecord.volNo].buffer;
-                var newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
-                var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
+                var lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+                var newPicSizeDiff = newPicData.length - lengthOfOldPic + 2; // last command + 255 end marker
+                // now that we know how the new picture relates to the old one we can re-size the stream
+                // up or down accordingly.
+                var newStreamLength = picsStream.length + newPicSizeDiff;
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
                     if (n < picRecord.volOffset) {
@@ -1223,22 +1226,23 @@ function EditPictureDialog(props) {
                         newStream[n] = picsStream[n];
                     }
                 }
-                // replace old byte stream with new one
-                //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
-                var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
-                for (var d = 0; d < picdirRecords.length - 1; d++) {
-                    if (d + 1 <= roomValue) {
-                        var val = picdirRecords[d + 1].volOffset;
-                        picdirRecords[d + 1].volOffset = val; // optimize as no op
-                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
+                var position = 3;
+                var recordCount = picdirRecords.length;
+                var newDirEncoded = new Uint8Array(recordCount * 3);
+                newDirEncoded[0] = 255;
+                newDirEncoded[1] = 255;
+                newDirEncoded[2] = 255;
+                for (var d = 1; d < recordCount; d++) {
+                    var volume = picRecord.volNo;
+                    var offset = picdirRecords[d].volOffset;
+                    if (d > roomValue) {
+                        offset = picdirRecords[d].volOffset + newPicSizeDiff;
                     }
-                    else {
-                        // update the offset by the new size
-                        var val = picdirRecords[d + 1].volOffset + newPicSizeDiff;
-                        picdirRecords[d + 1].volOffset = val;
-                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
-                    }
+                    newDirEncoded[position] = volume;
+                    newDirEncoded[position + 1] = offset >> 8;
+                    newDirEncoded[position + 2] = offset & 0xFFFF >> 8;
+                    position = position + 3;
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
