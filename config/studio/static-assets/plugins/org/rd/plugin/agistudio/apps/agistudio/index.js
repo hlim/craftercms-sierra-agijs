@@ -1239,9 +1239,9 @@ function EditPictureDialog(props) {
                         offset = picdirRecords[d].volOffset + newPicSizeDiff;
                     }
                     newDirEncoded[position] = volume;
-                    var offetAsBinary = offset.toString(2).split("").reverse().join("");
-                    newDirEncoded[position + 1] = parseInt(offetAsBinary.substring(0, 8), 2);
-                    newDirEncoded[position + 2] = parseInt(offetAsBinary.substring(9), 2);
+                    //            let offetAsBinary = offset.toString(2).split("").reverse().join("");
+                    newDirEncoded[position + 1] = offset >> 8; //parseInt(offetAsBinary.substring(0, 8), 2)
+                    newDirEncoded[position + 2] = offset & 0xFFFF >> 8; //parseInt(offetAsBinary.substring(9), 2)
                     position = position + 3;
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
