@@ -345,6 +345,24 @@ export function EditPictureDialog(props) {
     window.agistudioPicCommands = currentPictureCommands;
   }, []);
 
+  const addVolumeHeader = (picData, volume) => {
+    let dataWithHeader = new Uint8Array(picData.length + 5);
+     
+    dataWithHeader[0] = 0x12                            // signature
+    dataWithHeader[1] = 0x34                            // signature
+    dataWithHeader[2] = volume                          // volume
+    dataWithHeader[3] = picData.length & (0xffff >> 8); // resource len LO
+    dataWithHeader[4] = picData.length >> 8             // resource len HI
+     // dataWithHeader[5] = 0    // compressed resource len LO
+     // dataWithHeader[6] = 0    // compressed resource len HI
+
+    for(var i=0; i<picData.length; i++) {
+      dataWithHeader[i+5] = picData[i]
+    }
+
+    return dataWithHeader
+  }
+
   const handleSavePicture = () => {
     var game = 'contest2';
     downloadAllFiles(
@@ -370,56 +388,54 @@ export function EditPictureDialog(props) {
           }
 
           let newPicData = encodeCommands(commands);
+          newPicData = addVolumeHeader(newPicData , 0);
+
+
           let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
           let picRecord = picdirRecords[roomValue];
           let nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
 
           let picsStream = volBuffers[picRecord.volNo].buffer;
 
-          let lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset
+          let lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
           let newPicSizeDiff = newPicData.length - lengthOfOldPic + 2; // last command + 255 end marker
-          
+
           // now that we know how the new picture relates to the old one we can re-size the stream
           // up or down accordingly.
-          let newStreamLength = picsStream.length + newPicSizeDiff; 
+          let newStreamLength = picsStream.length + newPicSizeDiff;
 
           let newStream = new Uint8Array(newStreamLength);
           for (var n = 0; n < newStream.length; n++) {
-            if(n<picRecord.volOffset) {
+            if (n < picRecord.volOffset || n > picRecord.volOffset + newPicData.length) {
               // copy the original buffer to the new buffer
               newStream[n] = picsStream[n];
-            }
-            else if(n>=picRecord.volOffset && n < (picRecord.volOffset+newPicData.length)) {
+            } else {
               // copy the new picture into the new stream
-              newStream[n] = newPicData[n-picRecord.volOffset]
-            }
-            else {
-              // copy the rest of the stream
-              newStream[n] = picsStream[n]
+              newStream[n] = newPicData[n - picRecord.volOffset];
             }
           }
 
           // now modify the directory
-          let position = 3
-          let recordCount = picdirRecords.length 
+          let position = 3;
+          let recordCount = picdirRecords.length;
           let newDirEncoded = new Uint8Array(recordCount * 3);
 
-          newDirEncoded[0] = 255
-          newDirEncoded[1] = 255
-          newDirEncoded[2] = 255
+          newDirEncoded[0] = 255;
+          newDirEncoded[1] = 255;
+          newDirEncoded[2] = 255;
 
           for (var d = 1; d < recordCount; d++) {
-            var volume = picRecord.volNo
-            var offset = picdirRecords[d].volOffset 
+            var volume = picRecord.volNo;
+            var offset = picdirRecords[d].volOffset;
 
             if (d > roomValue) {
               offset = picdirRecords[d].volOffset + newPicSizeDiff;
             }
 
-            newDirEncoded[position] = volume
-            newDirEncoded[position+1] = offset >> 8
-            newDirEncoded[position+2] = offset & 0xFFFF >> 8
-            position = position + 3 
+            newDirEncoded[position] = volume;
+            newDirEncoded[position + 1] = offset >> 8;
+            newDirEncoded[position + 2] = offset & (0xffff >> 8);
+            position = position + 3;
           }
 
           const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
@@ -476,20 +492,10 @@ export function EditPictureDialog(props) {
               alert('failed');
             }
           });
-
-
-
-
         });
       }
     );
   };
- 
-  
-  // useEffect(() => {
-  //   currentUrlPath && setInternalUrl(currentUrlPath);
-  //   loadRoomData();
-  // }, [currentUrlPath]);
 
   interface IDirectoryEntry {
     volNo: number;
