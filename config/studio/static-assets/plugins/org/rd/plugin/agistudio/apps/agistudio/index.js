@@ -1227,12 +1227,13 @@ function EditPictureDialog(props) {
                 //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
                 var position = 0;
-                var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
-                for (var d = 0; d < picdirRecords.length - 1; d++) {
+                var recordCount = picdirRecords.length - 1; // first element is empty
+                var newDirEncoded = new Uint8Array(recordCount * 3);
+                for (var d = 1; d <= recordCount; d++) {
                     var volume = picRecord.volNo;
-                    var offset = picdirRecords[d + 1].volOffset;
-                    if (d + 1 > roomValue) {
-                        picdirRecords[d + 1].volOffset + newPicSizeDiff;
+                    var offset = picdirRecords[d].volOffset;
+                    if (d > roomValue) {
+                        picdirRecords[d].volOffset + newPicSizeDiff;
                     }
                     newDirEncoded[position] = volume;
                     newDirEncoded[position + 1] = parseInt((offset << 8).toString(2).substring(0, 8), 2);
