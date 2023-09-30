@@ -907,7 +907,7 @@ function EditPictureDialog(props) {
     var _b = React.useState(''); _b[0]; _b[1];
     var _c = useState(false), mouseTrapped = _c[0], setMouseTrapped = _c[1];
     var _d = useState(10), scaleFactor = _d[0]; _d[1];
-    var _e = useState('Pen'), drawMode = _e[0], setDrawMode = _e[1];
+    var _e = useState('Abs'), drawMode = _e[0], setDrawMode = _e[1];
     var prettyPrintCommands = function (commands) {
         var code = '';
         commands.forEach(function (command) {
@@ -1226,19 +1226,18 @@ function EditPictureDialog(props) {
                 // replace old byte stream with new one
                 //volBuffers[picRecord.volNo].buffer = newStream;
                 // now modify the directory
+                var position = 0;
                 var newDirEncoded = new Uint8Array(picdirRecords.length * 3);
                 for (var d = 0; d < picdirRecords.length - 1; d++) {
-                    if (d + 1 <= roomValue) {
-                        var val = picdirRecords[d + 1].volOffset;
-                        picdirRecords[d + 1].volOffset = val; // optimize as no op
-                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
+                    var volume = picRecord.volNo;
+                    var offset = picdirRecords[d + 1].volOffset;
+                    if (d + 1 > roomValue) {
+                        picdirRecords[d + 1].volOffset + newPicSizeDiff;
                     }
-                    else {
-                        // update the offset by the new size
-                        var val = picdirRecords[d + 1].volOffset + newPicSizeDiff;
-                        picdirRecords[d + 1].volOffset = val;
-                        newDirEncoded[d] = (val << 16) + (val << 8) + val;
-                    }
+                    newDirEncoded[position] = volume;
+                    newDirEncoded[position + 1] = offset << 8;
+                    newDirEncoded[position + 2] = offset << 16;
+                    position = position + 3;
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
                 // write the volume file
