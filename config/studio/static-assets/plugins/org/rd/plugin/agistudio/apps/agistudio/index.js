@@ -1213,17 +1213,13 @@ function EditPictureDialog(props) {
                 var newStreamLength = picsStream.length + newPicSizeDiff;
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
-                    if (n < picRecord.volOffset) {
+                    if (n < picRecord.volOffset || n > picRecord.volOffset + newPicData.length) {
                         // copy the original buffer to the new buffer
                         newStream[n] = picsStream[n];
                     }
-                    else if (n >= picRecord.volOffset && n < (picRecord.volOffset + newPicData.length)) {
+                    else {
                         // copy the new picture into the new stream
                         newStream[n] = newPicData[n - picRecord.volOffset];
-                    }
-                    else {
-                        // copy the rest of the stream
-                        newStream[n] = picsStream[n];
                     }
                 }
                 // now modify the directory
@@ -1241,7 +1237,7 @@ function EditPictureDialog(props) {
                     }
                     newDirEncoded[position] = volume;
                     newDirEncoded[position + 1] = offset >> 8;
-                    newDirEncoded[position + 2] = offset & 0xFFFF >> 8;
+                    newDirEncoded[position + 2] = offset & (0xffff >> 8);
                     position = position + 3;
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
