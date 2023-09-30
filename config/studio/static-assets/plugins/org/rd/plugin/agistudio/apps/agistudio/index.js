@@ -1206,7 +1206,7 @@ function EditPictureDialog(props) {
                 var picRecord = picdirRecords[roomValue];
                 var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
                 var picsStream = volBuffers[picRecord.volNo].buffer;
-                var newPicSizeDiff = (picRecord.volOffset + newPicData.length) - nextPicRecord.volOffset;
+                var newPicSizeDiff = (newPicData.length - (nextPicRecord.volOffset - picRecord.volOffset));
                 var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
@@ -1239,9 +1239,8 @@ function EditPictureDialog(props) {
                         offset = picdirRecords[d].volOffset + newPicSizeDiff;
                     }
                     newDirEncoded[position] = volume;
-                    //            let offetAsBinary = offset.toString(2).split("").reverse().join("");
-                    newDirEncoded[position + 1] = offset >> 8; //parseInt(offetAsBinary.substring(0, 8), 2)
-                    newDirEncoded[position + 2] = offset & 0xFFFF >> 8; //parseInt(offetAsBinary.substring(9), 2)
+                    newDirEncoded[position + 1] = offset >> 8;
+                    newDirEncoded[position + 2] = offset & 0xFFFF >> 8;
                     position = position + 3;
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
