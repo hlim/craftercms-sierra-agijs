@@ -1235,8 +1235,8 @@ function EditPictureDialog(props) {
                         picdirRecords[d + 1].volOffset + newPicSizeDiff;
                     }
                     newDirEncoded[position] = volume;
-                    newDirEncoded[position + 1] = offset << 8;
-                    newDirEncoded[position + 2] = offset << 16;
+                    newDirEncoded[position + 1] = parseInt((offset << 8).toString(2).substring(0, 8), 2);
+                    newDirEncoded[position + 2] = parseInt((offset << 8).toString(2).substring(9, 16), 2);
                     position = position + 3;
                 }
                 var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
