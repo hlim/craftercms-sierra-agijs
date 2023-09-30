@@ -1182,6 +1182,20 @@ function EditPictureDialog(props) {
         //@ts-ignore
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
+    var addVolumeHeader = function (picData, volume) {
+        var dataWithHeader = new Uint8Array(picData.length + 5);
+        dataWithHeader[0] = 0x12; // signature
+        dataWithHeader[1] = 0x34; // signature
+        dataWithHeader[2] = volume; // volume
+        dataWithHeader[3] = picData.length >> 8; // resource len LO
+        dataWithHeader[4] = picData.length & (0xffff >> 8); // resource len HI
+        // dataWithHeader[5] = 0    // compressed resource len LO
+        // dataWithHeader[6] = 0    // compressed resource len HI
+        for (var i = 5; i < picData.length; i++) {
+            dataWithHeader[i] = picData[i];
+        }
+        return dataWithHeader;
+    };
     var handleSavePicture = function () {
         var game = 'contest2';
         downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
@@ -1202,6 +1216,7 @@ function EditPictureDialog(props) {
                     volBuffers[j] = buffers[volNames[j]];
                 }
                 var newPicData = encodeCommands(commands);
+                newPicData = addVolumeHeader(newPicData, 0);
                 var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
                 var picRecord = picdirRecords[roomValue];
                 var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
