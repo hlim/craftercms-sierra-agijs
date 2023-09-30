@@ -1206,7 +1206,7 @@ function EditPictureDialog(props) {
                 var picRecord = picdirRecords[roomValue];
                 var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
                 var picsStream = volBuffers[picRecord.volNo].buffer;
-                var newPicSizeDiff = newPicData.length - nextPicRecord.volOffset;
+                var newPicSizeDiff = (picRecord.volOffset + newPicData.length) - nextPicRecord.volOffset;
                 var newStreamLength = picsStream.length + newPicSizeDiff; // assumption: it always grows
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newStream.length; n++) {
