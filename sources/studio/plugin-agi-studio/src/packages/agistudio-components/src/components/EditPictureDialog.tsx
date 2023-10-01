@@ -482,7 +482,11 @@ export function EditPictureDialog(props) {
 
           let picsStream = volBuffers[picRecord.volNo].buffer;
 
-          let lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+          let lengthOfOldPic = 0
+          if(nextPicRecord) {
+            lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+          }
+
           let newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
 
           // now that we know how the new picture relates to the old one we can re-size the stream
