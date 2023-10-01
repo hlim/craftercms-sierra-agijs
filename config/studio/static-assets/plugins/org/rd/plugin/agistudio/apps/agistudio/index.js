@@ -1208,12 +1208,14 @@ function EditPictureDialog(props) {
         //@ts-ignore
         var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
         commandsAsArray = existingCommands.split(';');
-        var undoArray = commandsAsArray.splice(0, commandsAsArray.length - 2);
-        var commandsAsText = undoArray.join(";") + ";\nEnd();";
-        //@ts-ignore
-        window.agistudioPicCommands = commandsAsText;
-        setCommands(commandsAsText);
-        renderCommands(commandsAsText);
+        if (commandsAsArray.length >= 2) {
+            var undoArray = commandsAsArray.splice(commandsAsArray.length - 2, 2);
+            var commandsAsText = undoArray.join(";") + ";\nEnd();";
+            //@ts-ignore
+            window.agistudioPicCommands = commandsAsText;
+            setCommands(commandsAsText);
+            renderCommands(commandsAsText);
+        }
     };
     var appendCommand = function (command) {
         //@ts-ignore
