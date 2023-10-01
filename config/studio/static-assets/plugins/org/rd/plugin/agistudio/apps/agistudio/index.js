@@ -1193,31 +1193,27 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var undoCommand = function () {
-        // //@ts-ignore
-        // if (window.agistudioLastCommand) {
-        //   //@ts-ignore
-        //   var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        //   //@ts-ignore
-        //   var newCommands = existingCommands.replace(`${window.agistudioLastCommand}\nEnd();`, 'End();');
-        //   setCommands(newCommands);
-        //   //@ts-ignore
-        //   window.agistudioPicCommands = newCommands;
-        //  renderCommands(newCommands);
-        //    }
-        var commandsAsArray = [];
         //@ts-ignore
         var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        commandsAsArray = existingCommands.split(';');
-        if (commandsAsArray.length >= 2) {
-            commandsAsArray = commandsAsArray.splice(-1); // End();
-            commandsAsArray = commandsAsArray.splice(-1); // LASTCOMMAND
-            var commandsAsText = commandsAsArray.join(";");
-            commandsAsText += ";\nEnd();";
-            //@ts-ignore
-            window.agistudioPicCommands = commandsAsText;
-            setCommands(commandsAsText);
-            renderCommands(commandsAsText);
+        var commandsAsArray = existingCommands.split(';');
+        var lastCommandPosition = -1;
+        var i = commandsAsArray.length - 1;
+        // find last command position
+        while (lastCommandPosition == -1 && i != 0) {
+            var command = commandsAsArray[i];
+            if (command != '\n' && command != '\nEnd()') {
+                lastCommandPosition = i;
+            }
+            i--;
         }
+        var numberOfElementsToRemove = commandsAsArray.length - lastCommandPosition;
+        commandsAsArray.splice(lastCommandPosition, numberOfElementsToRemove);
+        var commandsAsText = commandsAsArray.join(';');
+        commandsAsText += ';\nEnd();';
+        //@ts-ignore
+        window.agistudioPicCommands = commandsAsText;
+        setCommands(commandsAsText);
+        renderCommands(commandsAsText);
     };
     var appendCommand = function (command) {
         //@ts-ignore
