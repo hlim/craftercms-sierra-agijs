@@ -1226,7 +1226,7 @@ function EditPictureDialog(props) {
         for (var d = 0; d < recordCount; d++) {
             if (dirRecords[d]) {
                 var offset = dirRecords[d].volOffset;
-                var volume = dirRecords[d].volume;
+                var volume = dirRecords[d].volNo;
                 if (offset > startOffset) {
                     offset = dirRecords[d].volOffset + adjustBy;
                 }
