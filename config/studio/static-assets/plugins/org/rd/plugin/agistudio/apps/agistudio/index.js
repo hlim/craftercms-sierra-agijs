@@ -970,13 +970,15 @@ function EditPictureDialog(props) {
                         opCode = 255;
                         break;
                 }
-                encodedBuffer[i] = opCode;
-                if (opCode != 255) {
-                    i++;
-                    for (var a = 0; a < args.length; a++) {
-                        var value = args[a];
-                        encodedBuffer[i] = parseInt(value);
+                if (command != 0) {
+                    encodedBuffer[i] = opCode;
+                    if (opCode != 255) {
                         i++;
+                        for (var a = 0; a < args.length; a++) {
+                            var value = args[a];
+                            encodedBuffer[i] = parseInt(value);
+                            i++;
+                        }
                     }
                 }
             }
