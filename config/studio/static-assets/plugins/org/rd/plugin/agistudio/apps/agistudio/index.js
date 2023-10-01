@@ -1217,12 +1217,9 @@ function EditPictureDialog(props) {
     };
     var updateDirectoryOffsets = function (dirname, dirRecords, startOffset, adjustBy) {
         // now modify the directory
-        var position = 3;
+        var position = 0;
         var recordCount = dirRecords.length;
         var newDirEncoded = new Uint8Array(recordCount * 3);
-        newDirEncoded[0] = 255;
-        newDirEncoded[1] = 255;
-        newDirEncoded[2] = 255;
         for (var d = 0; d < recordCount; d++) {
             if (dirRecords[d]) {
                 var offset = dirRecords[d].volOffset;
@@ -1234,6 +1231,11 @@ function EditPictureDialog(props) {
                 newDirEncoded[position + 1] = offset >> 8;
                 newDirEncoded[position + 2] = offset & (0xffff >> 8);
                 position = position + 3;
+            }
+            else {
+                newDirEncoded[position] = 0xFF;
+                newDirEncoded[position + 1] = 0xFF;
+                newDirEncoded[position + 2] = 0xFF;
             }
         }
         return newDirEncoded;
