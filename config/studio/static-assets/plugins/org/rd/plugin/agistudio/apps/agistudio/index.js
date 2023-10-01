@@ -1118,7 +1118,7 @@ function EditPictureDialog(props) {
         window.agistudioDrawMode = existingDrawMode;
         var newCommand = '';
         if (existingDrawMode == 'Abs') {
-            newCommand = "DrawAbs(".concat(x, ",").concat(y, ");");
+            newCommand = "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ");");
         }
         else if (existingDrawMode == 'Pen') {
             newCommand = "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");");
