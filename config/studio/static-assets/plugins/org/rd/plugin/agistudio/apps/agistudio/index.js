@@ -130,7 +130,7 @@ function AllowInput(props) {
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Allow Input' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DirectionsRunRoundedIcon, null)))));
 }
 
@@ -181,7 +181,7 @@ function RoomSelector(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Room Selector' },
             React.createElement(Badge, { badgeContent: roomCount > 0 ? roomCount : null, color: "primary", overlap: "circular", style: { position: 'relative' } },
-                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                     React.createElement(AccountTreeRoundedIcon, null)),
                 isFetching && (React.createElement(CircularProgress, { size: void 0, value: 100, variant: 'determinate', style: { position: 'absolute', top: 0, left: 0, pointerEvents: 'none' } })))),
         React.createElement(Menu, { id: "demo-positioned-menu", "aria-labelledby": "demo-positioned-button", anchorEl: anchorEl, open: open, onClose: handleClose, anchorOrigin: {
@@ -246,7 +246,7 @@ function SoundSelector(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Sound Selector' },
             React.createElement(Badge, { badgeContent: soundCount > 0 ? soundCount : null, color: "secondary", overlap: "circular", style: { position: 'relative' } },
-                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                     React.createElement(AudiotrackRoundedIcon, null)),
                 isFetching && (React.createElement(CircularProgress, { size: void 0, value: 100, variant: 'determinate', style: { position: 'absolute', top: 0, left: 0, pointerEvents: 'none' } })))),
         React.createElement(Menu, { id: "demo-positioned-menu", "aria-labelledby": "demo-positioned-button", anchorEl: anchorEl, open: open, onClose: handleClose, anchorOrigin: {
@@ -278,7 +278,7 @@ function SetEgoPosition(props) {
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Set Ego Position' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ControlCameraRoundedIcon, null)))));
 }
 
@@ -295,7 +295,7 @@ function ShowPriorityBuffer(props) {
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Show Priority Buffer' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(CopyAllRoundedIcon, null)))));
 }
 
@@ -326,7 +326,7 @@ function ShowWords(props) {
                             React.createElement("td", { style: { width: '100%' } },
                                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: words.join("\n") }))))); })))),
         React.createElement(Tooltip, { title: 'Show Words' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(SpeakerNotesRoundedIcon, null)))));
 }
 
@@ -359,7 +359,7 @@ function CurrentRoom(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Reload Current Room' },
             React.createElement(Badge, { badgeContent: currentRoom != -1 ? currentRoom : null, color: "success", overlap: "circular", style: { position: 'relative' } },
-                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                     React.createElement(RoomRoundedIcon, null))))));
 }
 
@@ -752,7 +752,7 @@ function ShowCode(props) {
                     logic.no),
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: prettyPrintCode(decompile(logic)) }))); }))),
         React.createElement(Tooltip, { title: 'Show Code' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DataObjectRoundedIcon, null)))));
 }
 
