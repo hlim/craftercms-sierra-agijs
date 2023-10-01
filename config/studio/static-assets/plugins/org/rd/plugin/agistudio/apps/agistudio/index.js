@@ -1079,43 +1079,6 @@ function EditPictureDialog(props) {
         agiInterpreter.agi_draw_pic(0);
         agiInterpreter.agi_show_pic(0);
     };
-    var mouseDraw = function (clientX, clientY) {
-        // something is wrong with getting commands from inside this event :-/
-        //@ts-ignore
-        var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-        var canvas = previewDocument.getElementById('canvas');
-        var rect = canvas.getBoundingClientRect();
-        // the bit map is 160 x 200 so we need to scale the mouse input
-        var ratioOfX = clientX / rect.width;
-        var ratioOfY = clientY / rect.height;
-        var x = Math.round(160 * ratioOfX);
-        var y = Math.round(200 * ratioOfY);
-        var scale = scaleFactor;
-        //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        //@ts-ignore
-        var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
-        var newCommands = existingCommands.replace('End();', '');
-        if (existingDrawMode == 'Abs') {
-            newCommands = newCommands + "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");\nEnd();");
-        }
-        else if (existingDrawMode == 'Pen') {
-            newCommands =
-                newCommands + "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");\nEnd();");
-        }
-        else if (existingDrawMode == 'Fill') {
-            newCommands = newCommands + "DrawFill(".concat(x, ",").concat(y, ");\nEnd();");
-        }
-        else {
-            alert('unknown tool');
-        }
-        setCommands(newCommands);
-        //@ts-ignore
-        window.agistudioPicCommands = newCommands;
-        //@ts-ignore
-        window.agistudioDrawMode = existingDrawMode;
-        renderCommands(newCommands);
-    };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
         var commandsAsArray = [];
@@ -1134,18 +1097,47 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = newCommands;
         setCommands(newCommands);
     };
+    var mouseDraw = function (clientX, clientY) {
+        // something is wrong with getting commands from inside this event :-/
+        //@ts-ignore
+        var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+        var canvas = previewDocument.getElementById('canvas');
+        var rect = canvas.getBoundingClientRect();
+        // the bit map is 160 x 200 so we need to scale the mouse input
+        var ratioOfX = clientX / rect.width;
+        var ratioOfY = clientY / rect.height;
+        var x = Math.round(160 * ratioOfX);
+        var y = Math.round(200 * ratioOfY);
+        var scale = scaleFactor;
+        handleMouseDraw(x, y, scale);
+    };
+    var handleMouseDraw = function (x, y, scale) {
+        //@ts-ignore
+        var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
+        //@ts-ignore
+        window.agistudioDrawMode = existingDrawMode;
+        var newCommand = '';
+        if (existingDrawMode == 'Abs') {
+            newCommand = "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ",").concat(x, ",").concat(y + 1, ",").concat(x + 1, ",").concat(y + 1, ");");
+        }
+        else if (existingDrawMode == 'Pen') {
+            newCommand = "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");");
+        }
+        else if (existingDrawMode == 'Fill') {
+            newCommand = "DrawFill(".concat(x, ",").concat(y, ");");
+        }
+        else {
+            alert('unknown tool');
+        }
+        appendCommand(newCommand);
+    };
     var handleDrawModeUpdate = function (mode) {
         setDrawMode(mode);
-        //@ts-ignore
-        window.agistudioDrawMode = mode;
-        //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        var newCommands = existingCommands.replace('End();', '');
         var value = 1 & 0x10 & 0x07;
-        newCommands = newCommands + "PicSetPen(".concat(value, ");\nEnd();");
-        setCommands(newCommands);
-        //@ts-ignore
-        window.agistudioPicCommands = newCommands;
+        appendCommand("PicSetPen(".concat(value, ");"));
+    };
+    var setColor = function (color) {
+        appendCommand("PicSetColor(".concat(color, ");"));
     };
     var getCurrentPictureCommands = function () {
         try {
@@ -1161,15 +1153,6 @@ function EditPictureDialog(props) {
         AgiBridge.agiExecute('Keep Orig Visual Buffer', 'Agi.interpreter.gvb = (!Agi.interpreter.gvb) ? Agi.interpreter.visualBuffer : Agi.interpreter.gvb');
         AgiBridge.agiExecute('Set Visual Buffer', 'Agi.interpreter.visualBuffer = (Agi.interpreter.gbm==1) ? Agi.interpreter.priorityBuffer : Agi.interpreter.gvb');
         AgiBridge.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
-    };
-    var setColor = function (color) {
-        //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        var newCommands = existingCommands.replace('End();', '');
-        newCommands = newCommands + "PicSetColor(".concat(color, ");\nEnd();");
-        setCommands(newCommands);
-        //@ts-ignore
-        window.agistudioPicCommands = newCommands;
     };
     useEffect(function () {
         // load the current picture into the commands listing
@@ -1206,6 +1189,16 @@ function EditPictureDialog(props) {
         //@ts-ignore
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
+    var appendCommand = function (command) {
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        var newCommands = existingCommands.replace('End();', '');
+        newCommands = newCommands + "".concat(command, "\nEnd();");
+        setCommands(newCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
+        renderCommands(newCommands);
+    };
     var addVolumeHeader = function (picData, volume) {
         var endMarkerPosition = picData.length; //indexOf(255) + 1
         var sizeOfNewData = endMarkerPosition + 5;
