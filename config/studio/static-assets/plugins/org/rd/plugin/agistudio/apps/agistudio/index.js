@@ -1193,17 +1193,27 @@ function EditPictureDialog(props) {
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
     var undoCommand = function () {
+        // //@ts-ignore
+        // if (window.agistudioLastCommand) {
+        //   //@ts-ignore
+        //   var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        //   //@ts-ignore
+        //   var newCommands = existingCommands.replace(`${window.agistudioLastCommand}\nEnd();`, 'End();');
+        //   setCommands(newCommands);
+        //   //@ts-ignore
+        //   window.agistudioPicCommands = newCommands;
+        //  renderCommands(newCommands);
+        //    }
+        var commandsAsArray = [];
         //@ts-ignore
-        if (window.agistudioLastCommand) {
-            //@ts-ignore
-            var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-            //@ts-ignore
-            var newCommands = existingCommands.replace("".concat(window.agistudioLastCommand, "\nEnd();"), 'End();');
-            setCommands(newCommands);
-            //@ts-ignore
-            window.agistudioPicCommands = newCommands;
-            renderCommands(newCommands);
-        }
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        commandsAsArray = existingCommands.split(';');
+        var undoArray = commandsAsArray.splice(0, commandsAsArray.length - 2);
+        var commandsAsText = undoArray.join(";") + ";\nEnd();";
+        //@ts-ignore
+        window.agistudioPicCommands = commandsAsText;
+        setCommands(commandsAsText);
+        renderCommands(commandsAsText);
     };
     var appendCommand = function (command) {
         //@ts-ignore
