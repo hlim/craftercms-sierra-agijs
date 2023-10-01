@@ -1230,13 +1230,13 @@ function EditPictureDialog(props) {
                 newDirEncoded[position] = volume;
                 newDirEncoded[position + 1] = offset >> 8;
                 newDirEncoded[position + 2] = offset & (0xffff >> 8);
-                position = position + 3;
             }
             else {
-                newDirEncoded[position] = 0xFF;
-                newDirEncoded[position + 1] = 0xFF;
-                newDirEncoded[position + 2] = 0xFF;
+                newDirEncoded[position] = 255;
+                newDirEncoded[position + 1] = 255;
+                newDirEncoded[position + 2] = 255;
             }
+            position = position + 3;
         }
         return newDirEncoded;
     };
