@@ -1114,8 +1114,6 @@ function EditPictureDialog(props) {
     var handleMouseDraw = function (x, y, scale) {
         //@ts-ignore
         var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
-        //@ts-ignore
-        window.agistudioDrawMode = existingDrawMode;
         var newCommand = '';
         if (existingDrawMode == 'Abs') {
             newCommand = "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ");");
@@ -1129,10 +1127,14 @@ function EditPictureDialog(props) {
         else {
             alert('unknown tool');
         }
+        //@ts-ignore
+        window.agistudioDrawMode = existingDrawMode;
         appendCommand(newCommand);
     };
     var handleDrawModeUpdate = function (mode) {
         setDrawMode(mode);
+        //@ts-ignore
+        window.agistudioDrawMode = mode;
         var value = 1 & 0x10 & 0x07;
         appendCommand("PicSetPen(".concat(value, ");"));
     };
