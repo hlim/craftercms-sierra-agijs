@@ -971,7 +971,8 @@ function EditPictureDialog(props) {
                         break;
                 }
                 encodedBuffer[i] = opCode;
-                i++;
+                if (i != 255)
+                    i++;
                 for (var a = 0; a < args.length; a++) {
                     var value = args[a];
                     encodedBuffer[i] = parseInt(value);
@@ -984,7 +985,7 @@ function EditPictureDialog(props) {
             rightsizedBuffer[l] = encodedBuffer[l];
         }
         // for the picture to terminate
-        rightsizedBuffer[rightsizedBuffer.length - 1] = 255;
+        //   rightsizedBuffer[rightsizedBuffer.length - 1] = 255;
         return rightsizedBuffer;
     };
     var getFunctionArgsFromPicStream = function (stream) {
@@ -1236,7 +1237,7 @@ function EditPictureDialog(props) {
                 var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
                 var picsStream = volBuffers[picRecord.volNo].buffer;
                 var lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
-                var newPicSizeDiff = newPicData.length - lengthOfOldPic + 2; // last command + 255 end marker
+                var newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
                 // now that we know how the new picture relates to the old one we can re-size the stream
                 // up or down accordingly.
                 var newStreamLength = picsStream.length + newPicSizeDiff;
