@@ -1505,7 +1505,7 @@ function EditPictureDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'gray' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(9);
-                        }, sx: { height: '35px', 'background-color': 'lightblue' } }),
+                        }, sx: { height: '35px', 'background-color': 'RoyalBlue' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(10);
                         }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
