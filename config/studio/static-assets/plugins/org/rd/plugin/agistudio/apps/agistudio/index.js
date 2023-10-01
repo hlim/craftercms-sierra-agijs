@@ -1092,7 +1092,7 @@ function EditPictureDialog(props) {
                 }
             }
         }
-        var newCommands = optimizedArray.join(';');
+        var newCommands = optimizedArray.join(';') + ";";
         //@ts-ignore
         window.agistudioPicCommands = newCommands;
         setCommands(newCommands);
