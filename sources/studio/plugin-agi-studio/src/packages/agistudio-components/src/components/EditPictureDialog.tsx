@@ -83,13 +83,18 @@ export function EditPictureDialog(props) {
             break;
         }
 
-        encodedBuffer[i] = opCode;
-        i++;
+        if (opCode != 0) {
+          encodedBuffer[i] = opCode;
 
-        for (var a = 0; a < args.length; a++) {
-          var value = args[a];
-          encodedBuffer[i] = parseInt(value);
-          i++;
+          {
+            i++;
+            if (opCode != 255)
+              for (var a = 0; a < args.length; a++) {
+                var value = args[a];
+                encodedBuffer[i] = parseInt(value);
+                i++;
+              }
+          }
         }
       }
     });
@@ -100,7 +105,7 @@ export function EditPictureDialog(props) {
     }
 
     // for the picture to terminate
-    rightsizedBuffer[rightsizedBuffer.length - 1] = 255;
+    //   rightsizedBuffer[rightsizedBuffer.length - 1] = 255;
 
     return rightsizedBuffer;
   };
@@ -240,10 +245,27 @@ export function EditPictureDialog(props) {
 
   const handleCommandUpdate = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     let updatedCommands = event.target.value;
-    //@ts-ignore
-    window.agistudioPicCommands = updatedCommands;
 
-    setCommands(updatedCommands);
+    var commandsAsArray = [];
+    var optimizedArray = [];
+
+    commandsAsArray = updatedCommands.split(';');
+    for (var i = 0; i < commandsAsArray.length; i++) {
+      if (commandsAsArray[i] != commandsAsArray[i + 1]) {
+        optimizedArray[optimizedArray.length] = commandsAsArray[i];
+
+        if (commandsAsArray[i].indexOf('End()') != -1) {
+          break;
+        }
+      }
+    }
+
+    var newCommands = optimizedArray.join(';');
+
+    //@ts-ignore
+    window.agistudioPicCommands = newCommands;
+
+    setCommands(newCommands);
   };
 
   const handleDrawModeUpdate = (mode) => {
@@ -346,25 +368,86 @@ export function EditPictureDialog(props) {
   }, []);
 
   const addVolumeHeader = (picData, volume) => {
-
-    let endMarkerPosition = picData.length//indexOf(255) + 1
-    let sizeOfNewData = endMarkerPosition + 5 
+    let endMarkerPosition = picData.length; //indexOf(255) + 1
+    let sizeOfNewData = endMarkerPosition + 5;
     let dataWithHeader = new Uint8Array(sizeOfNewData);
-     
-    dataWithHeader[0] = 0x12                               // signature
-    dataWithHeader[1] = 0x34                               // signature
-    dataWithHeader[2] = volume                             // volume
-    dataWithHeader[3] = endMarkerPosition & (0xffff >> 8); // resource len LO
-    dataWithHeader[4] = endMarkerPosition >> 8             // resource len HI
-     // dataWithHeader[5] = 0    // compressed resource len LO
-     // dataWithHeader[6] = 0    // compressed resource len HI
 
-    for(var i=0; i<picData.length; i++) {
-      dataWithHeader[i+5] = picData[i]
+    dataWithHeader[0] = 0x12; // signature
+    dataWithHeader[1] = 0x34; // signature
+    dataWithHeader[2] = volume; // volume
+    dataWithHeader[3] = endMarkerPosition & (0xffff >> 8); // resource len LO
+    dataWithHeader[4] = endMarkerPosition >> 8; // resource len HI
+    // dataWithHeader[5] = 0    // compressed resource len LO
+    // dataWithHeader[6] = 0    // compressed resource len HI
+
+    for (var i = 0; i < picData.length; i++) {
+      dataWithHeader[i + 5] = picData[i];
     }
 
-    return dataWithHeader
-  }
+    return dataWithHeader;
+  };
+
+  const updateDirectoryOffsets = (dirname, dirRecords, startOffset, adjustBy) => {
+    // now modify the directory
+    let position = 0;
+    let recordCount = dirRecords.length;
+    let newDirEncoded = new Uint8Array(recordCount * 3);
+
+    for (var d = 0; d < recordCount; d++) {
+      if(dirRecords[d]) {
+        var offset = dirRecords[d].volOffset;
+        var volume = dirRecords[d].volNo;
+  
+        if (offset > startOffset) {
+          offset = dirRecords[d].volOffset + adjustBy;
+        }
+  
+        newDirEncoded[position] = volume;
+        newDirEncoded[position + 1] = offset >> 8;
+        newDirEncoded[position + 2] = offset & (0xffff >> 8);
+      }
+      else {
+        newDirEncoded[position] = 255;
+        newDirEncoded[position + 1] = 255;
+        newDirEncoded[position + 2] = 255;
+      }
+
+      position = position + 3;
+    }
+
+    return newDirEncoded;
+  };
+
+  const saveFile = (siteId, path, filename, data) => {
+    const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
+
+    // write the volume file
+    let gameContentPath = path;
+    let uploadFilename = filename;
+    let serviceUrl =
+      API_WRITE_CONTENT +
+      `?site=${siteId}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`;
+
+    let body = new FormData();
+    body.append('site', siteId);
+    body.append('relativePath', 'null');
+    body.append('validating', 'false');
+    body.append('path', path);
+    body.append('name', filename);
+
+    body.append('type', 'application/octet-stream');
+    body.append('allowed', 'true');
+    body.append('file', new Blob([data]), filename);
+
+    post(serviceUrl, body).subscribe({
+      next: (response) => {
+        alert('File Saved: ' + filename);
+      },
+      error(e) {
+        alert('File Failed :' + filename);
+      }
+    });
+  };
 
   const handleSavePicture = () => {
     var game = 'contest2';
@@ -391,8 +474,7 @@ export function EditPictureDialog(props) {
           }
 
           let newPicData = encodeCommands(commands);
-          newPicData = addVolumeHeader(newPicData , 0);
-
+          newPicData = addVolumeHeader(newPicData, 0);
 
           let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
           let picRecord = picdirRecords[roomValue];
@@ -401,7 +483,7 @@ export function EditPictureDialog(props) {
           let picsStream = volBuffers[picRecord.volNo].buffer;
 
           let lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
-          let newPicSizeDiff = newPicData.length - lengthOfOldPic + 2; // last command + 255 end marker
+          let newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
 
           // now that we know how the new picture relates to the old one we can re-size the stream
           // up or down accordingly.
@@ -409,92 +491,34 @@ export function EditPictureDialog(props) {
 
           let newStream = new Uint8Array(newStreamLength);
           for (var n = 0; n < newStream.length; n++) {
-            if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length-1)) {
+            if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
               // copy the original buffer to the new buffer
-              newStream[n] = picsStream[n];
+              if (n < picRecord.volOffset) {
+                // before the new resource
+                newStream[n] = picsStream[n];
+              } else {
+                // after our resource, we have to account for 'overlap'
+                newStream[n] = picsStream[n - newPicSizeDiff];
+              }
             } else {
               // copy the new picture into the new stream
               newStream[n] = newPicData[n - picRecord.volOffset];
             }
           }
 
-          // now modify the directory
-          let position = 3;
-          let recordCount = picdirRecords.length;
-          let newDirEncoded = new Uint8Array(recordCount * 3);
+          let newPicDirEncoded = updateDirectoryOffsets("PICDIR", picdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newLogDirEncoded = updateDirectoryOffsets("LOGDIR", logdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
 
-          newDirEncoded[0] = 255;
-          newDirEncoded[1] = 255;
-          newDirEncoded[2] = 255;
+          let gamePath = '/static-assets/games/' + game + '/';
+          saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+          saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
+          saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
+          saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
 
-          for (var d = 1; d < recordCount; d++) {
-            var volume = picRecord.volNo;
-            var offset = picdirRecords[d].volOffset;
-
-            if (d > roomValue) {
-              offset = picdirRecords[d].volOffset + newPicSizeDiff;
-            }
-
-            newDirEncoded[position] = volume;
-            newDirEncoded[position + 1] = offset >> 8;
-            newDirEncoded[position + 2] = offset & (0xffff >> 8);
-            position = position + 3;
-          }
-
-          const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
-
-          // write the volume file
-          let gameContentPath = '/static-assets/games/' + game + '/';
-          let uploadFilename = 'VOL.' + picRecord.volNo;
-          let serviceUrl =
-            API_WRITE_CONTENT +
-            `?site=${siteId}&path=${gameContentPath}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`;
-
-          let body = new FormData();
-          body.append('site', siteId);
-          body.append('relativePath', 'null');
-          body.append('validating', 'false');
-          body.append('path', gameContentPath);
-          body.append('name', uploadFilename);
-
-          body.append('type', 'application/octet-stream');
-          body.append('allowed', 'true');
-          body.append('file', new Blob([newStream]), uploadFilename);
-
-          post(serviceUrl, body).subscribe({
-            next: (response) => {
-              alert('Volume Saved');
-            },
-            error(e) {
-              alert('failed');
-            }
-          });
-
-          gameContentPath = '/static-assets/games/' + game + '/';
-          uploadFilename = 'PICDIR';
-          serviceUrl =
-            API_WRITE_CONTENT +
-            `?site=${siteId}&path=${gameContentPath}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`;
-
-          body = new FormData();
-          body.append('site', siteId);
-          body.append('relativePath', 'null');
-          body.append('validating', 'false');
-          body.append('path', gameContentPath);
-          body.append('name', uploadFilename);
-
-          body.append('type', 'application/octet-stream');
-          body.append('allowed', 'true');
-          body.append('file', new Blob([newDirEncoded]), uploadFilename);
-
-          post(serviceUrl, body).subscribe({
-            next: (response) => {
-              alert('DIR Saved');
-            },
-            error(e) {
-              alert('failed');
-            }
-          });
+          // save updated volume file
+          saveFile(siteId, gamePath, 'VOL.0', newStream);
         });
       }
     );
