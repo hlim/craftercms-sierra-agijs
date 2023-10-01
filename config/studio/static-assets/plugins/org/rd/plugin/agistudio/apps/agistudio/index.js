@@ -1209,8 +1209,8 @@ function EditPictureDialog(props) {
         var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
         commandsAsArray = existingCommands.split(';');
         if (commandsAsArray.length >= 2) {
-            commandsAsArray.pop(); // End();
-            commandsAsArray.pop(); // LASTCOMMAND
+            commandsAsArray.splice(-1); // End();
+            commandsAsArray.splice(-1); // LASTCOMMAND
             var commandsAsText = commandsAsArray.join(";");
             commandsAsText += ";\nEnd();";
             //@ts-ignore
