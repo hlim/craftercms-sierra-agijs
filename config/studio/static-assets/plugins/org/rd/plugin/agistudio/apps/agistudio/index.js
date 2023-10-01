@@ -1306,6 +1306,17 @@ function EditPictureDialog(props) {
                         newStream[n] = newPicData[n - picRecord.volOffset];
                     }
                 }
+                var newPicDirEncoded = updateDirectoryOffsets(picdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newLogDirEncoded = updateDirectoryOffsets(logdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newViewDirEncoded = updateDirectoryOffsets(viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newSndDirEncoded = updateDirectoryOffsets(snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                var gamePath = '/static-assets/games/' + game + '/';
+                saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+                saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
+                saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
+                saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
+                // save updated volume file
+                saveFile(siteId, gamePath, 'VOL.0', newStream);
                 // // now modify the directory
                 // let position = 3;
                 // let recordCount = picdirRecords.length;
@@ -1370,17 +1381,6 @@ function EditPictureDialog(props) {
                 //     alert('failed');
                 //   }
                 // });
-                var gamePath = '/static-assets/games/' + game + '/';
-                var newPicDirEncoded = updateDirectoryOffsets(picdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newLogDirEncoded = updateDirectoryOffsets(logdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newViewDirEncoded = updateDirectoryOffsets(viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newSndDirEncoded = updateDirectoryOffsets(snddirRecords, picRecord.volOffset, newPicSizeDiff);
-                saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
-                saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
-                saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
-                saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
-                // save updated volume file
-                saveFile(siteId, gamePath, 'VOL.0', newStream);
             });
         });
     };
