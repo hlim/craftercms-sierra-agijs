@@ -1112,7 +1112,7 @@ function EditPictureDialog(props) {
         for (var i = 0; i < commandsAsArray.length; i++) {
             if (commandsAsArray[i] != commandsAsArray[i + 1]) {
                 optimizedArray[optimizedArray.length] = commandsAsArray[i];
-                if (commandsAsArray[i].contains("End()")) {
+                if (commandsAsArray[i].indexOf("End()") != -1) {
                     break;
                 }
             }
