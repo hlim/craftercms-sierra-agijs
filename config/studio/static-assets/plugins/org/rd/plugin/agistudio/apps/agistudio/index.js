@@ -1212,7 +1212,7 @@ function EditPictureDialog(props) {
             commandsAsArray.pop(); // End();
             commandsAsArray.pop(); // LASTCOMMAND
             var commandsAsText = commandsAsArray.join(";");
-            commandsAsText += "\nEnd();";
+            commandsAsText += ";\nEnd();";
             //@ts-ignore
             window.agistudioPicCommands = commandsAsText;
             setCommands(commandsAsText);
