@@ -1292,7 +1292,8 @@ function EditPictureDialog(props) {
         });
     };
     var handleSavePicture = function () {
-        var game = document.location.pathname.replace("/games/", "");
+        //@ts-ignore
+        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.replace("/games/", "");
         downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
