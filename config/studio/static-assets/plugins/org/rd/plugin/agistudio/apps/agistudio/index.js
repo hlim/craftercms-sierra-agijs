@@ -972,13 +972,14 @@ function EditPictureDialog(props) {
                 }
                 if (opCode != 0) {
                     encodedBuffer[i] = opCode;
-                    if (opCode != 255) {
+                    {
                         i++;
-                        for (var a = 0; a < args.length; a++) {
-                            var value = args[a];
-                            encodedBuffer[i] = parseInt(value);
-                            i++;
-                        }
+                        if (opCode != 255)
+                            for (var a = 0; a < args.length; a++) {
+                                var value = args[a];
+                                encodedBuffer[i] = parseInt(value);
+                                i++;
+                            }
                     }
                 }
             }
@@ -1112,16 +1113,16 @@ function EditPictureDialog(props) {
         var updatedCommands = event.target.value;
         var commandsAsArray = [];
         var optimizedArray = [];
-        commandsAsArray = updatedCommands.split(";");
+        commandsAsArray = updatedCommands.split(';');
         for (var i = 0; i < commandsAsArray.length; i++) {
             if (commandsAsArray[i] != commandsAsArray[i + 1]) {
                 optimizedArray[optimizedArray.length] = commandsAsArray[i];
-                if (commandsAsArray[i].indexOf("End()") != -1) {
+                if (commandsAsArray[i].indexOf('End()') != -1) {
                     break;
                 }
             }
         }
-        var newCommands = optimizedArray.join(";");
+        var newCommands = optimizedArray.join(';');
         //@ts-ignore
         window.agistudioPicCommands = newCommands;
         setCommands(newCommands);
