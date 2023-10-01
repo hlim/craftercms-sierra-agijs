@@ -1244,7 +1244,14 @@ function EditPictureDialog(props) {
                 for (var n = 0; n < newStream.length; n++) {
                     if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
                         // copy the original buffer to the new buffer
-                        newStream[n] = picsStream[n];
+                        if (n < picRecord.volOffset) {
+                            // before the new resource
+                            newStream[n] = picsStream[n];
+                        }
+                        else {
+                            // after our resource, we have to account for 'overlap'
+                            newStream[n] = picsStream[n - newPicSizeDiff];
+                        }
                     }
                     else {
                         // copy the new picture into the new stream
