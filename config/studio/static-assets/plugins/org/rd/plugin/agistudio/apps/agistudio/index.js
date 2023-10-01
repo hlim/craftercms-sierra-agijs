@@ -1201,7 +1201,7 @@ function EditPictureDialog(props) {
         // find last command position
         while (lastCommandPosition == -1 && i != 0) {
             var command = commandsAsArray[i];
-            if (command != '\n' && command != '\nEnd()') {
+            if (command != '' && command != '\n' && command != '\nEnd()') {
                 lastCommandPosition = i;
             }
             i--;
