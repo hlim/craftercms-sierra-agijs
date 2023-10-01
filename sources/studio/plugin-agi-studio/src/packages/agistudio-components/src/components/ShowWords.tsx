@@ -65,6 +65,7 @@ export function ShowWords(props) {
 
       <Tooltip title={'Show Words'}>
         <IconButton
+          disabled={!AgiBridge.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

@@ -36,6 +36,7 @@ export function ShowPriorityBuffer(props) {
     <>
       <Tooltip title={'Show Priority Buffer'}>
         <IconButton
+          disabled={!AgiBridge.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

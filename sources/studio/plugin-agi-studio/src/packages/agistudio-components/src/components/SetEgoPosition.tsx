@@ -32,6 +32,7 @@ export function SetEgoPosition(props) {
     <>
       <Tooltip title={'Set Ego Position'}>
         <IconButton
+          disabled={!AgiBridge.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

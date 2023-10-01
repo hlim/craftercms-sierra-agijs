@@ -436,6 +436,7 @@ export function ShowCode(props) {
 
       <Tooltip title={'Show Code'}>
         <IconButton
+          disabled={!AgiBridge.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

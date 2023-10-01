@@ -4,8 +4,7 @@ import { DialogContent, TextField } from '@mui/material';
 import { AgiBridge } from './AgiBridge';
 import { useState, useEffect } from 'react';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
-import { get, post } from '@craftercms/studio-ui/utils/ajax';
-//import { ajax, AjaxError, AjaxResponse, AjaxConfig } from 'rxjs/ajax';
+import { post } from '@craftercms/studio-ui/utils/ajax';
 
 export function EditPictureDialog(props) {
   const siteId = useActiveSiteId();
@@ -394,19 +393,18 @@ export function EditPictureDialog(props) {
     let newDirEncoded = new Uint8Array(recordCount * 3);
 
     for (var d = 0; d < recordCount; d++) {
-      if(dirRecords[d]) {
+      if (dirRecords[d]) {
         var offset = dirRecords[d].volOffset;
         var volume = dirRecords[d].volNo;
-  
+
         if (offset > startOffset) {
           offset = dirRecords[d].volOffset + adjustBy;
         }
-  
+
         newDirEncoded[position] = volume;
         newDirEncoded[position + 1] = offset >> 8;
         newDirEncoded[position + 2] = offset & (0xffff >> 8);
-      }
-      else {
+      } else {
         newDirEncoded[position] = 255;
         newDirEncoded[position + 1] = 255;
         newDirEncoded[position + 2] = 255;
@@ -482,8 +480,8 @@ export function EditPictureDialog(props) {
 
           let picsStream = volBuffers[picRecord.volNo].buffer;
 
-          let lengthOfOldPic = 0
-          if(nextPicRecord) {
+          let lengthOfOldPic = 0;
+          if (nextPicRecord) {
             lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
           }
 
@@ -510,10 +508,15 @@ export function EditPictureDialog(props) {
             }
           }
 
-          let newPicDirEncoded = updateDirectoryOffsets("PICDIR", picdirRecords, picRecord.volOffset, newPicSizeDiff);
-          let newLogDirEncoded = updateDirectoryOffsets("LOGDIR", logdirRecords, picRecord.volOffset, newPicSizeDiff);
-          let newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-          let newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newPicDirEncoded = updateDirectoryOffsets('PICDIR', picdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newLogDirEncoded = updateDirectoryOffsets('LOGDIR', logdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newViewDirEncoded = updateDirectoryOffsets(
+            'VIEWDIR',
+            viewdirRecords,
+            picRecord.volOffset,
+            newPicSizeDiff
+          );
+          let newSndDirEncoded = updateDirectoryOffsets('SNDDIR', snddirRecords, picRecord.volOffset, newPicSizeDiff);
 
           let gamePath = '/static-assets/games/' + game + '/';
           saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);

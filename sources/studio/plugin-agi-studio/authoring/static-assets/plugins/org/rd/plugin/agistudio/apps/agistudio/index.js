@@ -63,6 +63,14 @@ function usePreviewNavigation() {
 var AgiBridge = /** @class */ (function () {
     function AgiBridge() {
     }
+    AgiBridge.gameIsLoaded = function () {
+        var gameIsLoaded = false;
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        if (roomValue) {
+            gameIsLoaded = true;
+        }
+        return gameIsLoaded;
+    };
     AgiBridge.agiExecute = function (intent, command) {
         var frameElPath = "document.getElementById('crafterCMSPreviewIframe')";
         var previewFrameEl = eval(frameElPath);
@@ -122,7 +130,7 @@ function AllowInput(props) {
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Allow Input' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DirectionsRunRoundedIcon, null)))));
 }
 
@@ -173,7 +181,7 @@ function RoomSelector(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Room Selector' },
             React.createElement(Badge, { badgeContent: roomCount > 0 ? roomCount : null, color: "primary", overlap: "circular", style: { position: 'relative' } },
-                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                     React.createElement(AccountTreeRoundedIcon, null)),
                 isFetching && (React.createElement(CircularProgress, { size: void 0, value: 100, variant: 'determinate', style: { position: 'absolute', top: 0, left: 0, pointerEvents: 'none' } })))),
         React.createElement(Menu, { id: "demo-positioned-menu", "aria-labelledby": "demo-positioned-button", anchorEl: anchorEl, open: open, onClose: handleClose, anchorOrigin: {
@@ -238,7 +246,7 @@ function SoundSelector(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Sound Selector' },
             React.createElement(Badge, { badgeContent: soundCount > 0 ? soundCount : null, color: "secondary", overlap: "circular", style: { position: 'relative' } },
-                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                     React.createElement(AudiotrackRoundedIcon, null)),
                 isFetching && (React.createElement(CircularProgress, { size: void 0, value: 100, variant: 'determinate', style: { position: 'absolute', top: 0, left: 0, pointerEvents: 'none' } })))),
         React.createElement(Menu, { id: "demo-positioned-menu", "aria-labelledby": "demo-positioned-button", anchorEl: anchorEl, open: open, onClose: handleClose, anchorOrigin: {
@@ -270,7 +278,7 @@ function SetEgoPosition(props) {
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Set Ego Position' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ControlCameraRoundedIcon, null)))));
 }
 
@@ -287,7 +295,7 @@ function ShowPriorityBuffer(props) {
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Show Priority Buffer' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(CopyAllRoundedIcon, null)))));
 }
 
@@ -318,7 +326,7 @@ function ShowWords(props) {
                             React.createElement("td", { style: { width: '100%' } },
                                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: words.join("\n") }))))); })))),
         React.createElement(Tooltip, { title: 'Show Words' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(SpeakerNotesRoundedIcon, null)))));
 }
 
@@ -351,7 +359,7 @@ function CurrentRoom(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Tooltip, { title: 'Reload Current Room' },
             React.createElement(Badge, { badgeContent: currentRoom != -1 ? currentRoom : null, color: "success", overlap: "circular", style: { position: 'relative' } },
-                React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+                React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                     React.createElement(RoomRoundedIcon, null))))));
 }
 
@@ -744,7 +752,7 @@ function ShowCode(props) {
                     logic.no),
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: prettyPrintCode(decompile(logic)) }))); }))),
         React.createElement(Tooltip, { title: 'Show Code' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DataObjectRoundedIcon, null)))));
 }
 
@@ -900,7 +908,6 @@ function AddGame(props) {
                 React.createElement(AddRoundedIcon, null)))));
 }
 
-//import { ajax, AjaxError, AjaxResponse, AjaxConfig } from 'rxjs/ajax';
 function EditPictureDialog(props) {
     var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
@@ -1313,10 +1320,10 @@ function EditPictureDialog(props) {
                         newStream[n] = newPicData[n - picRecord.volOffset];
                     }
                 }
-                var newPicDirEncoded = updateDirectoryOffsets("PICDIR", picdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newLogDirEncoded = updateDirectoryOffsets("LOGDIR", logdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newPicDirEncoded = updateDirectoryOffsets('PICDIR', picdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newLogDirEncoded = updateDirectoryOffsets('LOGDIR', logdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newViewDirEncoded = updateDirectoryOffsets('VIEWDIR', viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newSndDirEncoded = updateDirectoryOffsets('SNDDIR', snddirRecords, picRecord.volOffset, newPicSizeDiff);
                 var gamePath = '/static-assets/games/' + game + '/';
                 saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
                 saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
@@ -1513,7 +1520,7 @@ function OpenPicDialogButton(props) {
                 keepMounted: false
             }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } }, drawerOpen ? (React.createElement(EditPictureDialog, { props: true })) : ""),
         React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
 }
 

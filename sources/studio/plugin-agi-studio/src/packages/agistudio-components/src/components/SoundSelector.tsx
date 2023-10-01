@@ -85,6 +85,7 @@ export function SoundSelector(props) {
           style={{ position: 'relative' }}
         >
           <IconButton
+            disabled={!AgiBridge.gameIsLoaded()}
             size="medium"
             style={{ padding: 4 }}
             id="go-positioned-button"

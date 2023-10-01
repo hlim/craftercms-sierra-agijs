@@ -1,10 +1,20 @@
 export class AgiBridge {
+  static gameIsLoaded() {
+    let gameIsLoaded = false;
+
+    let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+    if (roomValue) {
+      gameIsLoaded = true;
+    }
+
+    return gameIsLoaded;
+  }
+
   static agiExecute(intent: string, command: string) {
     let frameElPath = "document.getElementById('crafterCMSPreviewIframe')";
     let previewFrameEl = eval(frameElPath);
 
     if (previewFrameEl) {
-
       const agiPath = frameElPath + '.contentWindow.Agi';
       const resourcesPath = frameElPath + '.contentWindow.Resources';
       const fsPath = frameElPath + '.contentWindow.Fs';
@@ -23,9 +33,9 @@ export class AgiBridge {
             commandToSend = commandToSend.replaceAll('Fs', fsPath);
           }
 
-//          console.log('Sending Command :' + intent);
-//          console.log('Command :' + command);
-//          console.log('Sending Command :' + commandToSend);
+          //          console.log('Sending Command :' + intent);
+          //          console.log('Command :' + command);
+          //          console.log('Sending Command :' + commandToSend);
 
           // Can the rollup message be disabled?
           let result = eval(commandToSend);

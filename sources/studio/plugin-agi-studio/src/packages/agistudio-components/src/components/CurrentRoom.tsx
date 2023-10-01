@@ -62,6 +62,7 @@ export function CurrentRoom(props) {
         >
 
         <IconButton
+          disabled={!AgiBridge.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"
