@@ -1310,13 +1310,13 @@ function EditPictureDialog(props) {
                 }
                 var newPicDirEncoded = updateDirectoryOffsets("PICDIR", picdirRecords, picRecord.volOffset, newPicSizeDiff);
                 var newLogDirEncoded = updateDirectoryOffsets("LOGDIR", logdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                //let newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                //let newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
                 var gamePath = '/static-assets/games/' + game + '/';
                 saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
                 saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
-                saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
-                saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
+                //saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
+                //saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
                 // save updated volume file
                 saveFile(siteId, gamePath, 'VOL.0', newStream);
                 // // now modify the directory
