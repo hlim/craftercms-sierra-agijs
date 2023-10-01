@@ -1215,15 +1215,15 @@ function EditPictureDialog(props) {
         }
         return dataWithHeader;
     };
-    var updateDirectoryOffsets = function (dirRecords, startOffset, adjustBy) {
+    var updateDirectoryOffsets = function (dirname, dirRecords, startOffset, adjustBy) {
         // now modify the directory
         var position = 3;
         var recordCount = dirRecords.length;
         var newDirEncoded = new Uint8Array(recordCount * 3);
-        newDirEncoded[0] = 255;
-        newDirEncoded[1] = 255;
-        newDirEncoded[2] = 255;
-        for (var d = 1; d < recordCount; d++) {
+        newDirEncoded[0] = 0; // 255;
+        newDirEncoded[1] = 0; // 255;
+        newDirEncoded[2] = 0; // 255;
+        for (var d = 0; d < recordCount; d++) {
             if (dirRecords[d]) {
                 var offset = dirRecords[d].volOffset;
                 var volume = dirRecords[d].volume;
@@ -1308,10 +1308,10 @@ function EditPictureDialog(props) {
                         newStream[n] = newPicData[n - picRecord.volOffset];
                     }
                 }
-                var newPicDirEncoded = updateDirectoryOffsets(picdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newLogDirEncoded = updateDirectoryOffsets(logdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newViewDirEncoded = updateDirectoryOffsets(viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newSndDirEncoded = updateDirectoryOffsets(snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newPicDirEncoded = updateDirectoryOffsets("PICDIR", picdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newLogDirEncoded = updateDirectoryOffsets("LOGDIR", logdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
                 var gamePath = '/static-assets/games/' + game + '/';
                 saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
                 saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
