@@ -1106,9 +1106,17 @@ function EditPictureDialog(props) {
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
+        var commandsAsArray, optimizedArray;
+        commandsAsArray = updatedCommands.split(";");
+        for (var i = 0; i < commandsAsArray.length; i++) {
+            if (commandsAsArray[i] != commandsAsArray[i + 1]) {
+                optimizedArray[optimizedArray.length] = commandsAsArray[i];
+            }
+        }
+        var newCommands = optimizedArray.join(";");
         //@ts-ignore
-        window.agistudioPicCommands = updatedCommands;
-        setCommands(updatedCommands);
+        window.agistudioPicCommands = newCommands;
+        setCommands(newCommands);
     };
     var handleDrawModeUpdate = function (mode) {
         setDrawMode(mode);
