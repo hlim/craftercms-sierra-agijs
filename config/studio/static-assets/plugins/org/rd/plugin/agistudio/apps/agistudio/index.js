@@ -1106,7 +1106,8 @@ function EditPictureDialog(props) {
     };
     var handleCommandUpdate = function (event) {
         var updatedCommands = event.target.value;
-        var commandsAsArray, optimizedArray;
+        var commandsAsArray = [];
+        var optimizedArray = [];
         commandsAsArray = updatedCommands.split(";");
         for (var i = 0; i < commandsAsArray.length; i++) {
             if (commandsAsArray[i] != commandsAsArray[i + 1]) {
