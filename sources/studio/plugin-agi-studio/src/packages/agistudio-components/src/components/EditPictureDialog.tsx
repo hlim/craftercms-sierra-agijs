@@ -103,9 +103,6 @@ export function EditPictureDialog(props) {
       rightsizedBuffer[l] = encodedBuffer[l];
     }
 
-    // for the picture to terminate
-    //   rightsizedBuffer[rightsizedBuffer.length - 1] = 255;
-
     return rightsizedBuffer;
   };
 
@@ -216,7 +213,7 @@ export function EditPictureDialog(props) {
       }
     }
 
-    var newCommands = optimizedArray.join(';') + ";";
+    var newCommands = optimizedArray.join(';') + ';';
 
     //@ts-ignore
     window.agistudioPicCommands = newCommands;
@@ -359,7 +356,7 @@ export function EditPictureDialog(props) {
     // find last command position
     while (lastCommandPosition == -1 && i != 0) {
       var command = commandsAsArray[i];
-      if (command !='' && command != '\n' && command != '\nEnd()') {
+      if (command != '' && command != '\n' && command != '\nEnd()') {
         lastCommandPosition = i;
       }
       i--;
@@ -464,7 +461,7 @@ export function EditPictureDialog(props) {
 
     post(serviceUrl, body).subscribe({
       next: (response) => {
-        alert('File Saved: ' + filename);
+        // alert('File Saved: ' + filename);
       },
       error(e) {
         alert('File Failed :' + filename);
@@ -473,7 +470,8 @@ export function EditPictureDialog(props) {
   };
 
   const handleSavePicture = () => {
-    var game = 'contest2';
+    //@ts-ignore
+    var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace("/games/", "")
     downloadAllFiles(
       '/static-assets/games/' + game + '/',
       ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
@@ -533,15 +531,10 @@ export function EditPictureDialog(props) {
             }
           }
 
-          let newPicDirEncoded = updateDirectoryOffsets('PICDIR', picdirRecords, picRecord.volOffset, newPicSizeDiff);
-          let newLogDirEncoded = updateDirectoryOffsets('LOGDIR', logdirRecords, picRecord.volOffset, newPicSizeDiff);
-          let newViewDirEncoded = updateDirectoryOffsets(
-            'VIEWDIR',
-            viewdirRecords,
-            picRecord.volOffset,
-            newPicSizeDiff
-          );
-          let newSndDirEncoded = updateDirectoryOffsets('SNDDIR', snddirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newLogDirEncoded = updateDirectoryOffsets('L', logdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newViewDirEncoded = updateDirectoryOffsets('V', viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+          let newSndDirEncoded = updateDirectoryOffsets('S', snddirRecords, picRecord.volOffset, newPicSizeDiff);
 
           let gamePath = '/static-assets/games/' + game + '/';
           saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
