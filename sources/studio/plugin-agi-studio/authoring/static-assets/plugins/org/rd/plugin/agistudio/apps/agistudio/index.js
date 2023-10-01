@@ -1092,10 +1092,11 @@ function EditPictureDialog(props) {
                 }
             }
         }
-        var newCommands = optimizedArray.join(';');
+        var newCommands = optimizedArray.join(';') + ";";
         //@ts-ignore
         window.agistudioPicCommands = newCommands;
         setCommands(newCommands);
+        renderCommands(newCommands);
     };
     var mouseDraw = function (clientX, clientY) {
         // something is wrong with getting commands from inside this event :-/
@@ -1191,12 +1192,35 @@ function EditPictureDialog(props) {
         //@ts-ignore
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
+    var undoCommand = function () {
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        var commandsAsArray = existingCommands.split(';');
+        var lastCommandPosition = -1;
+        var i = commandsAsArray.length - 1;
+        // find last command position
+        while (lastCommandPosition == -1 && i != 0) {
+            var command = commandsAsArray[i];
+            if (command != '' && command != '\n' && command != '\nEnd()') {
+                lastCommandPosition = i;
+            }
+            i--;
+        }
+        var numberOfElementsToRemove = commandsAsArray.length - lastCommandPosition;
+        commandsAsArray.splice(lastCommandPosition, numberOfElementsToRemove);
+        var commandsAsText = commandsAsArray.join(';');
+        commandsAsText += ';\nEnd();';
+        //@ts-ignore
+        window.agistudioPicCommands = commandsAsText;
+        setCommands(commandsAsText);
+        renderCommands(commandsAsText);
+    };
     var appendCommand = function (command) {
         //@ts-ignore
         if (command != window.agistudioLastCommand) {
-            //@ts-ignore  
+            //@ts-ignore
             window.agistudioLastCommand = command;
-            //@ts-ignore  
+            //@ts-ignore
             var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
             var newCommands = existingCommands.replace('End();', '');
             newCommands = newCommands + "".concat(command, "\nEnd();");
@@ -1430,7 +1454,11 @@ function EditPictureDialog(props) {
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
         React.createElement(DialogContent, null,
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: commands }),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(Button, { onClick: function () {
+                        undoCommand();
+                    } }, "Undo")),
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: commands }),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleCommandUpdate }),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(TextField, { id: "outlined-textarea", value: scaleFactor }),
@@ -1460,16 +1488,16 @@ function EditPictureDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'black' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(1);
-                        }, sx: { height: '35px', 'background-color': 'darkblue' } }),
+                        }, sx: { height: '35px', 'background-color': 'blue' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(2);
                         }, sx: { height: '35px', 'background-color': 'green' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(3);
-                        }, sx: { height: '35px', 'background-color': 'crayon' } }),
+                        }, sx: { height: '35px', 'background-color': 'Teal' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(4);
-                        }, sx: { height: '35px', 'background-color': 'darkred' } }),
+                        }, sx: { height: '35px', 'background-color': 'red' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(5);
                         }, sx: { height: '35px', 'background-color': 'purple' } }),
@@ -1485,16 +1513,16 @@ function EditPictureDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'gray' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(9);
-                        }, sx: { height: '35px', 'background-color': 'blue' } }),
+                        }, sx: { height: '35px', 'background-color': 'RoyalBlue' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(10);
                         }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(11);
-                        }, sx: { height: '35px', 'background-color': 'lightcrayon' } }),
+                        }, sx: { height: '35px', 'background-color': 'Aqua' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(12);
-                        }, sx: { height: '35px', 'background-color': 'red' } }),
+                        }, sx: { height: '35px', 'background-color': 'Salmon' } }),
                     React.createElement(Button, { onClick: function () {
                             setColor(13);
                         }, sx: { height: '35px', 'background-color': 'magenta' } }),

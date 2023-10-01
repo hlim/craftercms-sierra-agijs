@@ -216,12 +216,13 @@ export function EditPictureDialog(props) {
       }
     }
 
-    var newCommands = optimizedArray.join(';');
+    var newCommands = optimizedArray.join(';') + ";";
 
     //@ts-ignore
     window.agistudioPicCommands = newCommands;
 
     setCommands(newCommands);
+    renderCommands(newCommands);
   };
 
   const mouseDraw = (clientX, clientY) => {
@@ -347,21 +348,48 @@ export function EditPictureDialog(props) {
     window.agistudioPicCommands = currentPictureCommands;
   }, []);
 
+  const undoCommand = () => {
+    //@ts-ignore
+    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+    var commandsAsArray = existingCommands.split(';');
+
+    var lastCommandPosition = -1;
+    var i = commandsAsArray.length - 1;
+
+    // find last command position
+    while (lastCommandPosition == -1 && i != 0) {
+      var command = commandsAsArray[i];
+      if (command !='' && command != '\n' && command != '\nEnd()') {
+        lastCommandPosition = i;
+      }
+      i--;
+    }
+    var numberOfElementsToRemove = commandsAsArray.length - lastCommandPosition;
+    commandsAsArray.splice(lastCommandPosition, numberOfElementsToRemove);
+
+    var commandsAsText = commandsAsArray.join(';');
+    commandsAsText += ';\nEnd();';
+
+    //@ts-ignore
+    window.agistudioPicCommands = commandsAsText;
+    setCommands(commandsAsText);
+    renderCommands(commandsAsText);
+  };
   const appendCommand = (command) => {
     //@ts-ignore
-    if(command != window.agistudioLastCommand){
-      //@ts-ignore  
-      window.agistudioLastCommand = command
-      //@ts-ignore  
+    if (command != window.agistudioLastCommand) {
+      //@ts-ignore
+      window.agistudioLastCommand = command;
+      //@ts-ignore
       var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
       var newCommands = existingCommands.replace('End();', '');
       newCommands = newCommands + `${command}\nEnd();`;
       setCommands(newCommands);
-  
+
       //@ts-ignore
       window.agistudioPicCommands = newCommands;
       renderCommands(newCommands);
-    } 
+    }
   };
   const addVolumeHeader = (picData, volume) => {
     let endMarkerPosition = picData.length; //indexOf(255) + 1
@@ -673,7 +701,17 @@ export function EditPictureDialog(props) {
       </DialogActions>
 
       <DialogContent>
-        <TextField id="outlined-textarea" sx={{ width: '100%' }} multiline rows={10} value={commands} />
+        <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
+          <Button
+            onClick={() => {
+              undoCommand();
+            }}
+          >
+            Undo
+          </Button>
+        </Paper>
+
+        <TextField id="outlined-textarea" sx={{ width: '100%' }} multiline rows={3} value={commands} />
         <TextField id="outlined-textarea" sx={{ width: '100%' }} multiline rows={1} onChange={handleCommandUpdate} />
 
         <Paper elevation={1} sx={{ width: '355px', padding: '15px' }}>
@@ -731,7 +769,7 @@ export function EditPictureDialog(props) {
               onClick={() => {
                 setColor(1);
               }}
-              sx={{ height: '35px', 'background-color': 'darkblue' }}
+              sx={{ height: '35px', 'background-color': 'blue' }}
             ></Button>
             <Button
               onClick={() => {
@@ -743,13 +781,13 @@ export function EditPictureDialog(props) {
               onClick={() => {
                 setColor(3);
               }}
-              sx={{ height: '35px', 'background-color': 'crayon' }}
+              sx={{ height: '35px', 'background-color': 'Teal' }}
             ></Button>
             <Button
               onClick={() => {
                 setColor(4);
               }}
-              sx={{ height: '35px', 'background-color': 'darkred' }}
+              sx={{ height: '35px', 'background-color': 'red' }}
             ></Button>
             <Button
               onClick={() => {
@@ -782,7 +820,7 @@ export function EditPictureDialog(props) {
               onClick={() => {
                 setColor(9);
               }}
-              sx={{ height: '35px', 'background-color': 'blue' }}
+              sx={{ height: '35px', 'background-color': 'RoyalBlue' }}
             ></Button>
             <Button
               onClick={() => {
@@ -794,13 +832,13 @@ export function EditPictureDialog(props) {
               onClick={() => {
                 setColor(11);
               }}
-              sx={{ height: '35px', 'background-color': 'lightcrayon' }}
+              sx={{ height: '35px', 'background-color': 'Aqua' }}
             ></Button>
             <Button
               onClick={() => {
                 setColor(12);
               }}
-              sx={{ height: '35px', 'background-color': 'red' }}
+              sx={{ height: '35px', 'background-color': 'Salmon' }}
             ></Button>
             <Button
               onClick={() => {
