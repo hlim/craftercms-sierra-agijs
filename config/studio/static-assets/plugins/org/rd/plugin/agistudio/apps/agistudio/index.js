@@ -970,7 +970,7 @@ function EditPictureDialog(props) {
                         opCode = 255;
                         break;
                 }
-                if (command != 0) {
+                if (opCode != 0) {
                     encodedBuffer[i] = opCode;
                     if (opCode != 255) {
                         i++;
