@@ -1287,7 +1287,10 @@ function EditPictureDialog(props) {
                 var picRecord = picdirRecords[roomValue];
                 var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
                 var picsStream = volBuffers[picRecord.volNo].buffer;
-                var lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+                var lengthOfOldPic = 0;
+                if (nextPicRecord) {
+                    lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+                }
                 var newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
                 // now that we know how the new picture relates to the old one we can re-size the stream
                 // up or down accordingly.
