@@ -1224,15 +1224,17 @@ function EditPictureDialog(props) {
         newDirEncoded[1] = 255;
         newDirEncoded[2] = 255;
         for (var d = 1; d < recordCount; d++) {
-            var offset = dirRecords[d].volOffset;
-            var volume = dirRecords[d].volume;
-            if (offset > startOffset) {
-                offset = dirRecords[d].volOffset + adjustBy;
+            if (dirRecords[d]) {
+                var offset = dirRecords[d].volOffset;
+                var volume = dirRecords[d].volume;
+                if (offset > startOffset) {
+                    offset = dirRecords[d].volOffset + adjustBy;
+                }
+                newDirEncoded[position] = volume;
+                newDirEncoded[position + 1] = offset >> 8;
+                newDirEncoded[position + 2] = offset & (0xffff >> 8);
+                position = position + 3;
             }
-            newDirEncoded[position] = volume;
-            newDirEncoded[position + 1] = offset >> 8;
-            newDirEncoded[position + 2] = offset & (0xffff >> 8);
-            position = position + 3;
         }
         return newDirEncoded;
     };
