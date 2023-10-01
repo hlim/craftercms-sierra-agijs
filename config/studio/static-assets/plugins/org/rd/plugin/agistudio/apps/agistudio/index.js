@@ -63,6 +63,14 @@ function usePreviewNavigation() {
 var AgiBridge = /** @class */ (function () {
     function AgiBridge() {
     }
+    AgiBridge.gameIsLoaded = function () {
+        var gameIsLoaded = false;
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        if (roomValue) {
+            gameIsLoaded = true;
+        }
+        return gameIsLoaded;
+    };
     AgiBridge.agiExecute = function (intent, command) {
         var frameElPath = "document.getElementById('crafterCMSPreviewIframe')";
         var previewFrameEl = eval(frameElPath);
@@ -900,7 +908,6 @@ function AddGame(props) {
                 React.createElement(AddRoundedIcon, null)))));
 }
 
-//import { ajax, AjaxError, AjaxResponse, AjaxConfig } from 'rxjs/ajax';
 function EditPictureDialog(props) {
     var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
@@ -1313,10 +1320,10 @@ function EditPictureDialog(props) {
                         newStream[n] = newPicData[n - picRecord.volOffset];
                     }
                 }
-                var newPicDirEncoded = updateDirectoryOffsets("PICDIR", picdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newLogDirEncoded = updateDirectoryOffsets("LOGDIR", logdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newPicDirEncoded = updateDirectoryOffsets('PICDIR', picdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newLogDirEncoded = updateDirectoryOffsets('LOGDIR', logdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newViewDirEncoded = updateDirectoryOffsets('VIEWDIR', viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newSndDirEncoded = updateDirectoryOffsets('SNDDIR', snddirRecords, picRecord.volOffset, newPicSizeDiff);
                 var gamePath = '/static-assets/games/' + game + '/';
                 saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
                 saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
@@ -1513,7 +1520,7 @@ function OpenPicDialogButton(props) {
                 keepMounted: false
             }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } }, drawerOpen ? (React.createElement(EditPictureDialog, { props: true })) : ""),
         React.createElement(Tooltip, { title: 'Edit Current Room Picture' },
-            React.createElement(IconButton, { size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
+            React.createElement(IconButton, { disabled: AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
 }
 
