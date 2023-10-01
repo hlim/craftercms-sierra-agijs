@@ -109,6 +109,10 @@ var AgiBridge = /** @class */ (function () {
             }
         }
     };
+    AgiBridge.currentRoom = function () {
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        return roomValue;
+    };
     return AgiBridge;
 }());
 
@@ -140,14 +144,14 @@ function RoomSelector(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
-    var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
+    var _c = useState(currentUrlPath); _c[0]; _c[1];
     var _d = React.useState(false), isFetching = _d[0], setIsFetching = _d[1];
     var _e = React.useState(0), roomCount = _e[0], setRoomCount = _e[1];
     var _f = useState(), rooms = _f[0], setRooms = _f[1];
     var loadRoomData = function () {
         var rooms = [];
         var Resources = AgiBridge.agiExecute('Get Resources', 'Resources');
-        for (var i = 0; i < 1000; i++) {
+        for (var i = 0; i < 10000; i++) {
             try {
                 // @ts-ignore
                 var pic = Resources.readAgiResource(Resources.AgiResource.Pic, i);
@@ -165,10 +169,9 @@ function RoomSelector(props) {
         loadRoomData();
     }, []);
     useEffect(function () {
-        currentUrlPath && setInternalUrl(currentUrlPath);
         console.log('Game changed, reload rooms');
         loadRoomData();
-    }, [currentUrlPath]);
+    }, [currentUrlPath, AgiBridge.currentRoom()]);
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
     };
@@ -336,22 +339,22 @@ function CurrentRoom(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
-    var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
-    var _d = useState(-1), currentRoom = _d[0], setCurrentRoom = _d[1];
-    var loadRoomData = function () {
-        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-        var roomInt = (parseInt(roomValue)) ? roomValue : -1;
-        setCurrentRoom(roomInt);
-    };
-    useEffect(function () {
-        setInterval(function () {
-            loadRoomData();
-        }, 3 * 1000);
-    }, []);
-    useEffect(function () {
-        currentUrlPath && setInternalUrl(currentUrlPath);
-        loadRoomData();
-    }, [currentUrlPath]);
+    var _c = useState(currentUrlPath); _c[0]; _c[1];
+    var _d = useState(AgiBridge.currentRoom()), currentRoom = _d[0]; _d[1];
+    // const loadRoomData = () => {
+    //   let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+    //   let roomInt = (parseInt(roomValue)) ? roomValue : -1
+    //   setCurrentRoom(roomInt) 
+    // };
+    // useEffect(() => {
+    //   setInterval(() => {
+    //     loadRoomData();
+    //   }, 3 * 1000);
+    // }, []);
+    // useEffect(() => {
+    //   currentUrlPath && setInternalUrl(currentUrlPath);
+    //   loadRoomData();
+    // }, [currentUrlPath]);
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         AgiBridge.agiExecute('Reload Current Room', 'Agi.interpreter.newroom = currentRoom');
