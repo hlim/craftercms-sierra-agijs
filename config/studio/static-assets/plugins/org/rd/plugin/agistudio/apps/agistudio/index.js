@@ -971,12 +971,13 @@ function EditPictureDialog(props) {
                         break;
                 }
                 encodedBuffer[i] = opCode;
-                if (i != 255)
+                if (opCode != 255) {
                     i++;
-                for (var a = 0; a < args.length; a++) {
-                    var value = args[a];
-                    encodedBuffer[i] = parseInt(value);
-                    i++;
+                    for (var a = 0; a < args.length; a++) {
+                        var value = args[a];
+                        encodedBuffer[i] = parseInt(value);
+                        i++;
+                    }
                 }
             }
         });
