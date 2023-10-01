@@ -1,11 +1,10 @@
 # craftercms-sierra-agijs
-Sierra AGI emulator running AGI.JS in CrafterCMS  -- Why? because it's cool. 
+Sierra AGI emulator and game resources editor running AGI.JS in CrafterCMS  -- Why? because it's cool. 
 
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/950a604a-20ca-4e9c-8cfb-154355c6fc59)
 
-# Is there a bigger picture?
-Yeah, there is. CrafterCMS supports plugins so we can turn Crafter Studio into an AGI Studio and player with custom plugins.
-This project already contains a few plugins for interacting with the game in the preview area.
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/381780c1-b367-4ee8-b80f-dd004b98e8fb)
+
 
 # Uploading a game into the app
 1. Click the add button in the toolbar
