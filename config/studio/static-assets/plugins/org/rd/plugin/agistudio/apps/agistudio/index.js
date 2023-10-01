@@ -1312,79 +1312,15 @@ function EditPictureDialog(props) {
                 }
                 var newPicDirEncoded = updateDirectoryOffsets("PICDIR", picdirRecords, picRecord.volOffset, newPicSizeDiff);
                 var newLogDirEncoded = updateDirectoryOffsets("LOGDIR", logdirRecords, picRecord.volOffset, newPicSizeDiff);
-                //let newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-                //let newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newViewDirEncoded = updateDirectoryOffsets("VIEWDIR", viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newSndDirEncoded = updateDirectoryOffsets("SNDDIR", snddirRecords, picRecord.volOffset, newPicSizeDiff);
                 var gamePath = '/static-assets/games/' + game + '/';
                 saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
                 saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
-                //saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
-                //saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
+                saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
+                saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
                 // save updated volume file
                 saveFile(siteId, gamePath, 'VOL.0', newStream);
-                // // now modify the directory
-                // let position = 3;
-                // let recordCount = picdirRecords.length;
-                // let newDirEncoded = new Uint8Array(recordCount * 3);
-                // newDirEncoded[0] = 255;
-                // newDirEncoded[1] = 255;
-                // newDirEncoded[2] = 255;
-                // for (var d = 1; d < recordCount; d++) {
-                //   var volume = picRecord.volNo;
-                //   var offset = picdirRecords[d].volOffset;
-                //   if (d > roomValue) {
-                //     offset = picdirRecords[d].volOffset + newPicSizeDiff;
-                //   }
-                //   newDirEncoded[position] = volume;
-                //   newDirEncoded[position + 1] = offset >> 8;
-                //   newDirEncoded[position + 2] = offset & (0xffff >> 8);
-                //   position = position + 3;
-                // }
-                // const API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
-                // // write the volume file
-                // let gameContentPath = '/static-assets/games/' + game + '/';
-                // let uploadFilename = 'VOL.' + picRecord.volNo;
-                // let serviceUrl =
-                //   API_WRITE_CONTENT +
-                //   `?site=${siteId}&path=${gameContentPath}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`;
-                // let body = new FormData();
-                // body.append('site', siteId);
-                // body.append('relativePath', 'null');
-                // body.append('validating', 'false');
-                // body.append('path', gameContentPath);
-                // body.append('name', uploadFilename);
-                // body.append('type', 'application/octet-stream');
-                // body.append('allowed', 'true');
-                // body.append('file', new Blob([newStream]), uploadFilename);
-                // post(serviceUrl, body).subscribe({
-                //   next: (response) => {
-                //     alert('Volume Saved');
-                //   },
-                //   error(e) {
-                //     alert('failed');
-                //   }
-                // });
-                // gameContentPath = '/static-assets/games/' + game + '/';
-                // uploadFilename = 'PICDIR';
-                // serviceUrl =
-                //   API_WRITE_CONTENT +
-                //   `?site=${siteId}&path=${gameContentPath}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true`;
-                // body = new FormData();
-                // body.append('site', siteId);
-                // body.append('relativePath', 'null');
-                // body.append('validating', 'false');
-                // body.append('path', gameContentPath);
-                // body.append('name', uploadFilename);
-                // body.append('type', 'application/octet-stream');
-                // body.append('allowed', 'true');
-                // body.append('file', new Blob([newDirEncoded]), uploadFilename);
-                // post(serviceUrl, body).subscribe({
-                //   next: (response) => {
-                //     alert('DIR Saved');
-                //   },
-                //   error(e) {
-                //     alert('failed');
-                //   }
-                // });
             });
         });
     };
