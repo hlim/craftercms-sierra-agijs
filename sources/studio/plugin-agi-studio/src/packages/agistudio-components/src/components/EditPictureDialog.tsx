@@ -199,49 +199,6 @@ export function EditPictureDialog(props) {
     agiInterpreter.agi_show_pic(0);
   };
 
-  const mouseDraw = (clientX, clientY) => {
-    // something is wrong with getting commands from inside this event :-/
-
-    //@ts-ignore
-    let previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-    let canvas = previewDocument.getElementById('canvas');
-    let rect = canvas.getBoundingClientRect();
-
-    // the bit map is 160 x 200 so we need to scale the mouse input
-    let ratioOfX = clientX / rect.width;
-    let ratioOfY = clientY / rect.height;
-    let x = Math.round(160 * ratioOfX);
-    let y = Math.round(200 * ratioOfY);
-    let scale = scaleFactor;
-
-    //@ts-ignore
-    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-    //@ts-ignore
-    var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
-
-    var newCommands = existingCommands.replace('End();', '');
-
-    if (existingDrawMode == 'Abs') {
-      newCommands = newCommands + `DrawAbs(${x},${y},${x + 1},${y},${x},${y + 1},${x + 1},${y + 1});\nEnd();`;
-    } else if (existingDrawMode == 'Pen') {
-      newCommands =
-        newCommands + `DrawPen(${x},${y},${x + scale},${y},${x},${y + scale},${x + scale},${y + scale});\nEnd();`;
-    } else if (existingDrawMode == 'Fill') {
-      newCommands = newCommands + `DrawFill(${x},${y});\nEnd();`;
-    } else {
-      alert('unknown tool');
-    }
-
-    setCommands(newCommands);
-
-    //@ts-ignore
-    window.agistudioPicCommands = newCommands;
-    //@ts-ignore
-    window.agistudioDrawMode = existingDrawMode;
-
-    renderCommands(newCommands);
-  };
-
   const handleCommandUpdate = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     let updatedCommands = event.target.value;
 
@@ -267,21 +224,56 @@ export function EditPictureDialog(props) {
     setCommands(newCommands);
   };
 
+  const mouseDraw = (clientX, clientY) => {
+    // something is wrong with getting commands from inside this event :-/
+
+    //@ts-ignore
+    let previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+    let canvas = previewDocument.getElementById('canvas');
+    let rect = canvas.getBoundingClientRect();
+
+    // the bit map is 160 x 200 so we need to scale the mouse input
+    let ratioOfX = clientX / rect.width;
+    let ratioOfY = clientY / rect.height;
+    let x = Math.round(160 * ratioOfX);
+    let y = Math.round(200 * ratioOfY);
+    let scale = scaleFactor;
+    handleMouseDraw(x, y, scale);
+  };
+
+  const handleMouseDraw = (x, y, scale) => {
+    //@ts-ignore
+    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+    //@ts-ignore
+    var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
+
+    var newCommand = '';
+
+    if (existingDrawMode == 'Abs') {
+      newCommand = `DrawAbs(${x},${y},${x + 1},${y});`;
+    } else if (existingDrawMode == 'Pen') {
+      newCommand = `DrawPen(${x},${y},${x + scale},${y},${x},${y + scale},${x + scale},${y + scale});`;
+    } else if (existingDrawMode == 'Fill') {
+      newCommand = `DrawFill(${x},${y});`;
+    } else {
+      alert('unknown tool');
+    }
+    //@ts-ignore
+    window.agistudioDrawMode = existingDrawMode;
+
+    appendCommand(newCommand);
+  };
   const handleDrawModeUpdate = (mode) => {
     setDrawMode(mode);
     //@ts-ignore
     window.agistudioDrawMode = mode;
 
-    //@ts-ignore
-    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-    var newCommands = existingCommands.replace('End();', '');
-
     var value = 1 & 0x10 & 0x07;
-    newCommands = newCommands + `PicSetPen(${value});\nEnd();`;
-    setCommands(newCommands);
+    appendCommand(`PicSetPen(${value});`);
+  };
 
-    //@ts-ignore
-    window.agistudioPicCommands = newCommands;
+  const setColor = (color: number) => {
+    appendCommand(`PicSetColor(${color});`);
   };
 
   const getCurrentPictureCommands = () => {
@@ -312,17 +304,6 @@ export function EditPictureDialog(props) {
       'Agi.interpreter.visualBuffer = (Agi.interpreter.gbm==1) ? Agi.interpreter.priorityBuffer : Agi.interpreter.gvb'
     );
     AgiBridge.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
-  };
-
-  const setColor = (color: number) => {
-    //@ts-ignore
-    var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-    var newCommands = existingCommands.replace('End();', '');
-    newCommands = newCommands + `PicSetColor(${color});\nEnd();`;
-    setCommands(newCommands);
-
-    //@ts-ignore
-    window.agistudioPicCommands = newCommands;
   };
 
   useEffect(() => {
@@ -366,6 +347,22 @@ export function EditPictureDialog(props) {
     window.agistudioPicCommands = currentPictureCommands;
   }, []);
 
+  const appendCommand = (command) => {
+    //@ts-ignore
+    if(command != window.agistudioLastCommand){
+      //@ts-ignore  
+      window.agistudioLastCommand = command
+      //@ts-ignore  
+      var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+      var newCommands = existingCommands.replace('End();', '');
+      newCommands = newCommands + `${command}\nEnd();`;
+      setCommands(newCommands);
+  
+      //@ts-ignore
+      window.agistudioPicCommands = newCommands;
+      renderCommands(newCommands);
+    } 
+  };
   const addVolumeHeader = (picData, volume) => {
     let endMarkerPosition = picData.length; //indexOf(255) + 1
     let sizeOfNewData = endMarkerPosition + 5;
