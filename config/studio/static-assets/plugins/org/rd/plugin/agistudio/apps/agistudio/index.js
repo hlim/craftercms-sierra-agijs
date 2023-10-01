@@ -1193,13 +1193,18 @@ function EditPictureDialog(props) {
     }, []);
     var appendCommand = function (command) {
         //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        var newCommands = existingCommands.replace('End();', '');
-        newCommands = newCommands + "".concat(command, "\nEnd();");
-        setCommands(newCommands);
-        //@ts-ignore
-        window.agistudioPicCommands = newCommands;
-        renderCommands(newCommands);
+        if (command != window.agistudioLastCommand) {
+            //@ts-ignore  
+            window.agistudioLastCommand = command;
+            //@ts-ignore  
+            var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+            var newCommands = existingCommands.replace('End();', '');
+            newCommands = newCommands + "".concat(command, "\nEnd();");
+            setCommands(newCommands);
+            //@ts-ignore
+            window.agistudioPicCommands = newCommands;
+            renderCommands(newCommands);
+        }
     };
     var addVolumeHeader = function (picData, volume) {
         var endMarkerPosition = picData.length; //indexOf(255) + 1
