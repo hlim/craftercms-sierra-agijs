@@ -169,7 +169,6 @@ function RoomSelector(props) {
         loadRoomData();
     }, []);
     useEffect(function () {
-        console.log('Game changed, reload rooms');
         loadRoomData();
     }, [currentUrlPath, AgiBridge.currentRoom()]);
     var handleClick = function (event) {
@@ -233,10 +232,9 @@ function SoundSelector(props) {
         loadSoundData();
     }, []);
     useEffect(function () {
-        console.log('Game changed, reload sound');
         currentUrlPath && setInternalUrl(currentUrlPath);
         loadSoundData();
-    }, [currentUrlPath]);
+    }, [currentUrlPath, AgiBridge.currentRoom()]);
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
     };
@@ -339,10 +337,22 @@ function CurrentRoom(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
-    var _c = useState(currentUrlPath); _c[0]; _c[1];
-    var _d = useState(AgiBridge.currentRoom()), currentRoom = _d[0]; _d[1];
+    var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
+    var _d = useState(-1), currentRoom = _d[0], setCurrentRoom = _d[1];
+    var loadRoomData = function () {
+        var roomValue = AgiBridge.currentRoom();
+        var roomInt = (parseInt(roomValue)) ? roomValue : -1;
+        setCurrentRoom(roomInt);
+    };
     useEffect(function () {
-    }, [currentUrlPath, AgiBridge.currentRoom()]);
+        setInterval(function () {
+            loadRoomData();
+        }, 3 * 1000);
+    }, []);
+    useEffect(function () {
+        currentUrlPath && setInternalUrl(currentUrlPath);
+        loadRoomData();
+    }, [currentUrlPath]);
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         AgiBridge.agiExecute('Reload Current Room', 'Agi.interpreter.newroom = currentRoom');
