@@ -1325,7 +1325,7 @@ function EditPictureDialog(props) {
                 var offset = picsStream.length;
                 var roomValue = picdirRecords.length;
                 var picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
-                var newStreamLength = picsStream.length + picsStream.length;
+                var newStreamLength = picsStream.length + newPicData.length;
                 var newStream = new Uint8Array(newStreamLength);
                 for (var n = 0; n < newPicData.length; n++) {
                     var nso = newStream.length - newPicData.length + n;
