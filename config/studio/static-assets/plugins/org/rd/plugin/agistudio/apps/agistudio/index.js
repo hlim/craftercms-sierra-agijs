@@ -341,20 +341,8 @@ function CurrentRoom(props) {
     var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
     var _c = useState(currentUrlPath); _c[0]; _c[1];
     var _d = useState(AgiBridge.currentRoom()), currentRoom = _d[0]; _d[1];
-    // const loadRoomData = () => {
-    //   let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-    //   let roomInt = (parseInt(roomValue)) ? roomValue : -1
-    //   setCurrentRoom(roomInt) 
-    // };
-    // useEffect(() => {
-    //   setInterval(() => {
-    //     loadRoomData();
-    //   }, 3 * 1000);
-    // }, []);
-    // useEffect(() => {
-    //   currentUrlPath && setInternalUrl(currentUrlPath);
-    //   loadRoomData();
-    // }, [currentUrlPath]);
+    useEffect(function () {
+    }, [currentUrlPath, AgiBridge.currentRoom()]);
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         AgiBridge.agiExecute('Reload Current Room', 'Agi.interpreter.newroom = currentRoom');
