@@ -1330,7 +1330,7 @@ function EditPictureDialog(props) {
                 for (var n = 0; n < newStreamLength; n++) {
                     if (n < picsStream.length) {
                         // copy in the existing resources
-                        newStreamLength[n] = picsStream[n];
+                        newStream[n] = picsStream[n];
                     }
                     else {
                         // copy in new resource
