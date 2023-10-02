@@ -1318,7 +1318,7 @@ function EditPictureDialog(props) {
                 newPicData[2] = 0; // draw fill
                 newPicData[3] = 10; // arg: x
                 newPicData[4] = 0; // arg: y
-                newPicData[5] = 0; // end
+                newPicData[5] = 255; // end
                 newPicData = addVolumeHeader(newPicData, 0);
                 var volNum = 0;
                 var picsStream = volBuffers[0].buffer;
