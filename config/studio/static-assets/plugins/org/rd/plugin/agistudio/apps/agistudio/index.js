@@ -1292,9 +1292,56 @@ function EditPictureDialog(props) {
             }
         });
     };
+    var handleSaveAsNewPicture = function () {
+        //@ts-ignore
+        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+            console.log('Directory files downloaded.');
+            parseDirfile(buffers['LOGDIR'], logdirRecords);
+            parseDirfile(buffers['PICDIR'], picdirRecords);
+            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+            parseDirfile(buffers['SNDDIR'], snddirRecords);
+            var volNames = [];
+            for (var i = 0; i < availableVols.length; i++) {
+                if (availableVols[i] === true) {
+                    volNames.push('VOL.' + i);
+                }
+            }
+            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
+                console.log('Resource volumes downloaded.');
+                for (var j = 0; j < volNames.length; j++) {
+                    volBuffers[j] = buffers[volNames[j]];
+                }
+                var newPicData = new Uint8Array(6);
+                newPicData[0] = 240; // set pic color
+                newPicData[1] = 0; // ard: black
+                newPicData[2] = 0; // draw fill
+                newPicData[3] = 10; // arg: x
+                newPicData[4] = 0; // arg: y
+                newPicData[5] = 0; // end
+                newPicData = addVolumeHeader(newPicData, 0);
+                var volNum = 0;
+                var picsStream = volBuffers[0].buffer;
+                var offset = picsStream.length;
+                var roomValue = picdirRecords.length + 1;
+                var picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
+                var newStreamLength = picsStream.length + picsStream.length;
+                var newStream = new Uint8Array(newStreamLength);
+                for (var n = 0; n < newPicData.length; n++) {
+                    var nso = newStream.length - newPicData.length + n;
+                    newStream[nso] = newPicData[n];
+                }
+                var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
+                var gamePath = '/static-assets/games/' + game + '/';
+                saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+                // save updated volume file
+                saveFile(siteId, gamePath, 'VOL.0', newStream);
+            });
+        });
+    };
     var handleSavePicture = function () {
         //@ts-ignore
-        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace("/games/", "");
+        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
         downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
@@ -1533,7 +1580,8 @@ function EditPictureDialog(props) {
                             setColor(15);
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
-                React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture")))));
+                React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture"),
+                React.createElement(Button, { onClick: handleSaveAsNewPicture, variant: "outlined", sx: { mr: 1 } }, "Save New Picture")))));
 }
 
 function OpenPicDialogButton(props) {
