@@ -1334,7 +1334,7 @@ function EditPictureDialog(props) {
                     }
                     else {
                         // copy in new resource
-                        newStream[n] = newPicData[n - newPicData.length];
+                        newStream[n] = newPicData[n - picsStream.length];
                     }
                 }
                 var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
