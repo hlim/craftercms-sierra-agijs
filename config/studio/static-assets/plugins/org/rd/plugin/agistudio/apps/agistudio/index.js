@@ -1327,9 +1327,15 @@ function EditPictureDialog(props) {
                 var picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
                 var newStreamLength = picsStream.length + newPicData.length;
                 var newStream = new Uint8Array(newStreamLength);
-                for (var n = 0; n < newPicData.length; n++) {
-                    var nso = newStream.length - newPicData.length + n;
-                    newStream[nso] = newPicData[n];
+                for (var n = 0; n < newStreamLength; n++) {
+                    if (n < picsStream.length) {
+                        // copy in the existing resources
+                        newStreamLength[n] = picsStream[n];
+                    }
+                    else {
+                        // copy in new resource
+                        newStream[n] = newPicData[n - newPicData.length];
+                    }
                 }
                 var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
                 var gamePath = '/static-assets/games/' + game + '/';
