@@ -1323,7 +1323,7 @@ function EditPictureDialog(props) {
                 var volNum = 0;
                 var picsStream = volBuffers[0].buffer;
                 var offset = picsStream.length;
-                var roomValue = picdirRecords.length + 1;
+                var roomValue = picdirRecords.length;
                 var picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
                 var newStreamLength = picsStream.length + picsStream.length;
                 var newStream = new Uint8Array(newStreamLength);
@@ -1499,6 +1499,7 @@ function EditPictureDialog(props) {
     }
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
+            React.createElement(Button, { onClick: handleSaveAsNewPicture, variant: "outlined", sx: { mr: 1 } }, "Add New Picture"),
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
         React.createElement(DialogContent, null,
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
@@ -1580,8 +1581,7 @@ function EditPictureDialog(props) {
                             setColor(15);
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
-                React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture"),
-                React.createElement(Button, { onClick: handleSaveAsNewPicture, variant: "outlined", sx: { mr: 1 } }, "Save New Picture")))));
+                React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture")))));
 }
 
 function OpenPicDialogButton(props) {
