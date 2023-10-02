@@ -1,4 +1,5 @@
 export class AgiBridge {
+  
   static gameIsLoaded() {
     let gameIsLoaded = false;
 
@@ -9,6 +10,11 @@ export class AgiBridge {
 
     return gameIsLoaded;
   }
+  static currentRoom = () => {
+    let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+    let roomInt = (parseInt(roomValue)) ? roomValue : -1
+    return roomValue
+  };
 
   static agiExecute(intent: string, command: string) {
     let frameElPath = "document.getElementById('crafterCMSPreviewIframe')";

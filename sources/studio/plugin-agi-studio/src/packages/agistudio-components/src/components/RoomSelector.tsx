@@ -34,7 +34,7 @@ export function RoomSelector(props) {
     let rooms = [];
     let Resources = AgiBridge.agiExecute('Get Resources', 'Resources');
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 10000; i++) {
       try {
         // @ts-ignore
         let pic = Resources.readAgiResource(Resources.AgiResource.Pic, i);
@@ -55,10 +55,8 @@ export function RoomSelector(props) {
   }, []);
 
   useEffect(() => {
-    currentUrlPath && setInternalUrl(currentUrlPath);
-    console.log('Game changed, reload rooms');
     loadRoomData();
-  }, [currentUrlPath]);
+  }, [currentUrlPath, AgiBridge.currentRoom()]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

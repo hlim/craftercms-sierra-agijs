@@ -109,6 +109,10 @@ var AgiBridge = /** @class */ (function () {
             }
         }
     };
+    AgiBridge.currentRoom = function () {
+        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        return roomValue;
+    };
     return AgiBridge;
 }());
 
@@ -140,14 +144,14 @@ function RoomSelector(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = usePreviewNavigation().currentUrlPath, currentUrlPath = _b === void 0 ? '' : _b;
-    var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
+    var _c = useState(currentUrlPath); _c[0]; _c[1];
     var _d = React.useState(false), isFetching = _d[0], setIsFetching = _d[1];
     var _e = React.useState(0), roomCount = _e[0], setRoomCount = _e[1];
     var _f = useState(), rooms = _f[0], setRooms = _f[1];
     var loadRoomData = function () {
         var rooms = [];
         var Resources = AgiBridge.agiExecute('Get Resources', 'Resources');
-        for (var i = 0; i < 1000; i++) {
+        for (var i = 0; i < 10000; i++) {
             try {
                 // @ts-ignore
                 var pic = Resources.readAgiResource(Resources.AgiResource.Pic, i);
@@ -165,10 +169,8 @@ function RoomSelector(props) {
         loadRoomData();
     }, []);
     useEffect(function () {
-        currentUrlPath && setInternalUrl(currentUrlPath);
-        console.log('Game changed, reload rooms');
         loadRoomData();
-    }, [currentUrlPath]);
+    }, [currentUrlPath, AgiBridge.currentRoom()]);
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
     };
@@ -230,10 +232,9 @@ function SoundSelector(props) {
         loadSoundData();
     }, []);
     useEffect(function () {
-        console.log('Game changed, reload sound');
         currentUrlPath && setInternalUrl(currentUrlPath);
         loadSoundData();
-    }, [currentUrlPath]);
+    }, [currentUrlPath, AgiBridge.currentRoom()]);
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
     };
@@ -339,7 +340,7 @@ function CurrentRoom(props) {
     var _c = useState(currentUrlPath); _c[0]; var setInternalUrl = _c[1];
     var _d = useState(-1), currentRoom = _d[0], setCurrentRoom = _d[1];
     var loadRoomData = function () {
-        var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+        var roomValue = AgiBridge.currentRoom();
         var roomInt = (parseInt(roomValue)) ? roomValue : -1;
         setCurrentRoom(roomInt);
     };
@@ -1291,9 +1292,62 @@ function EditPictureDialog(props) {
             }
         });
     };
+    var handleSaveAsNewPicture = function () {
+        //@ts-ignore
+        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+            console.log('Directory files downloaded.');
+            parseDirfile(buffers['LOGDIR'], logdirRecords);
+            parseDirfile(buffers['PICDIR'], picdirRecords);
+            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+            parseDirfile(buffers['SNDDIR'], snddirRecords);
+            var volNames = [];
+            for (var i = 0; i < availableVols.length; i++) {
+                if (availableVols[i] === true) {
+                    volNames.push('VOL.' + i);
+                }
+            }
+            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
+                console.log('Resource volumes downloaded.');
+                for (var j = 0; j < volNames.length; j++) {
+                    volBuffers[j] = buffers[volNames[j]];
+                }
+                var newPicData = new Uint8Array(6);
+                newPicData[0] = 240; // set pic color
+                newPicData[1] = 0; // ard: black
+                newPicData[2] = 0; // draw fill
+                newPicData[3] = 10; // arg: x
+                newPicData[4] = 0; // arg: y
+                newPicData[5] = 255; // end
+                newPicData = addVolumeHeader(newPicData, 0);
+                var volNum = 0;
+                var picsStream = volBuffers[0].buffer;
+                var offset = picsStream.length;
+                var roomValue = picdirRecords.length;
+                var picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
+                var newStreamLength = picsStream.length + newPicData.length;
+                var newStream = new Uint8Array(newStreamLength);
+                for (var n = 0; n < newStreamLength; n++) {
+                    if (n < picsStream.length) {
+                        // copy in the existing resources
+                        newStream[n] = picsStream[n];
+                    }
+                    else {
+                        // copy in new resource
+                        newStream[n] = newPicData[n - picsStream.length];
+                    }
+                }
+                var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
+                var gamePath = '/static-assets/games/' + game + '/';
+                saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+                // save updated volume file
+                saveFile(siteId, gamePath, 'VOL.0', newStream);
+            });
+        });
+    };
     var handleSavePicture = function () {
         //@ts-ignore
-        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace("/games/", "");
+        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
         downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
@@ -1451,6 +1505,7 @@ function EditPictureDialog(props) {
     }
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
+            React.createElement(Button, { onClick: handleSaveAsNewPicture, variant: "outlined", sx: { mr: 1 } }, "Add New Picture"),
             React.createElement(Button, { onClick: handleSwitchBuffer, variant: "outlined", sx: { mr: 1 } }, "Switch Buffer")),
         React.createElement(DialogContent, null,
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },

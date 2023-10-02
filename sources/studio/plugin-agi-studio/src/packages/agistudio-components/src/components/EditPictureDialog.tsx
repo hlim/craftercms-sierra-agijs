@@ -469,9 +469,77 @@ export function EditPictureDialog(props) {
     });
   };
 
+  const handleSaveAsNewPicture = () => {
+    //@ts-ignore
+    var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+
+    downloadAllFiles(
+      '/static-assets/games/' + game + '/',
+      ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
+      (buffers: IByteStreamDict) => {
+        console.log('Directory files downloaded.');
+        parseDirfile(buffers['LOGDIR'], logdirRecords);
+        parseDirfile(buffers['PICDIR'], picdirRecords);
+        parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+        parseDirfile(buffers['SNDDIR'], snddirRecords);
+        var volNames: string[] = [];
+        for (var i = 0; i < availableVols.length; i++) {
+          if (availableVols[i] === true) {
+            volNames.push('VOL.' + i);
+          }
+        }
+
+        downloadAllFiles('/static-assets/games/' + game + '/', volNames, (buffers: IByteStreamDict) => {
+          console.log('Resource volumes downloaded.');
+          for (var j: number = 0; j < volNames.length; j++) {
+            volBuffers[j] = buffers[volNames[j]];
+          }
+
+          let newPicData = new Uint8Array(6);
+          newPicData[0] = 240; // set pic color
+          newPicData[1] = 0; // ard: black
+          newPicData[2] = 0; // draw fill
+          newPicData[3] = 10; // arg: x
+          newPicData[4] = 0; // arg: y
+          newPicData[5] = 255; // end
+
+          newPicData = addVolumeHeader(newPicData, 0);
+
+          let volNum = 0;
+          let picsStream = volBuffers[0].buffer;
+          let offset = picsStream.length;
+          let roomValue = picdirRecords.length;
+          let picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
+          let newStreamLength = picsStream.length + newPicData.length;
+
+          let newStream = new Uint8Array(newStreamLength);
+
+          for (var n = 0; n < newStreamLength; n++) {
+            if(n<picsStream.length) {
+              // copy in the existing resources
+              newStream[n] = picsStream[n]
+            }
+            else {
+              // copy in new resource
+              newStream[n] = newPicData[n-picsStream.length];
+            }
+          }          
+
+          let newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
+
+          let gamePath = '/static-assets/games/' + game + '/';
+          saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+
+          // save updated volume file
+          saveFile(siteId, gamePath, 'VOL.0', newStream);
+        });
+      }
+    );
+  };
+
   const handleSavePicture = () => {
     //@ts-ignore
-    var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace("/games/", "")
+    var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
     downloadAllFiles(
       '/static-assets/games/' + game + '/',
       ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
@@ -688,6 +756,10 @@ export function EditPictureDialog(props) {
   return (
     <>
       <DialogActions>
+      <Button onClick={handleSaveAsNewPicture} variant="outlined" sx={{ mr: 1 }}>
+            Add New Picture
+          </Button>
+
         <Button onClick={handleSwitchBuffer} variant="outlined" sx={{ mr: 1 }}>
           Switch Buffer
         </Button>

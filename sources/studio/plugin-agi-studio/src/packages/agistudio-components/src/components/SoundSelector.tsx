@@ -56,10 +56,9 @@ export function SoundSelector(props) {
   }, []);
 
   useEffect(() => {
-    console.log('Game changed, reload sound');
     currentUrlPath && setInternalUrl(currentUrlPath);
     loadSoundData();
-  }, [currentUrlPath]);
+  }, [currentUrlPath, AgiBridge.currentRoom()]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

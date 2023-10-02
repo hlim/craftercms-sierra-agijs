@@ -23,8 +23,7 @@ export function CurrentRoom(props) {
   const [currentRoom, setCurrentRoom] = useState(-1);
 
   const loadRoomData = () => {
-    let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-
+    let roomValue = AgiBridge.currentRoom()
     let roomInt = (parseInt(roomValue)) ? roomValue : -1
 
     setCurrentRoom(roomInt) 
