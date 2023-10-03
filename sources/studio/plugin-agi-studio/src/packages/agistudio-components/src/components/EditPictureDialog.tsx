@@ -515,23 +515,49 @@ export function EditPictureDialog(props) {
           let newStream = new Uint8Array(newStreamLength);
 
           for (var n = 0; n < newStreamLength; n++) {
-            if(n<picsStream.length) {
+            if (n < picsStream.length) {
               // copy in the existing resources
-              newStream[n] = picsStream[n]
-            }
-            else {
+              newStream[n] = picsStream[n];
+            } else {
               // copy in new resource
-              newStream[n] = newPicData[n-picsStream.length];
+              newStream[n] = newPicData[n - picsStream.length];
             }
-          }          
+          }
 
           let newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
 
+          // Every room has a logic file. Add logic file
+          let roomLogic = [
+            12, 34, 0, 112, 0,
+
+            82, 0, 255, 7, 5, 255, 29, 0, 24, 0, 25, 0, 27, 0, 63, 50, 255, 252, 1, 1, 1, 1, 1, 0, 252, 255, 6, 0, 37,
+            0, 120, 140, 112, 120, 35, 0, 26, 255, 14, 1, 20, 0, 255, 2, 0, 101, 1, 255, 1, 2, 1, 255, 2, 0, 18, 2, 255,
+            1, 2, 2, 255, 2, 0, 18, 2, 255, 1, 2, 3, 255, 2, 0, 18, 2, 255, 1, 2, 4, 255, 2, 0, 18, 2, 0, 1, 27, 0, 4,
+            0, 21, 30, 0, 0, 0, 45, 6, 82, 6, 15, 78, 36, 27, 25, 7, 89, 100, 7, 29, 8, 12, 64, 65
+          ];
+
+          let volStream = new Uint8Array(newStreamLength + 117);
+
+          for (var n = 0; n < volStream.length; n++) {
+            if (n < newStream.length) {
+              // copy in the existing resources
+              volStream[n] = newStream[n];
+            } else {
+              // copy in new resource
+              volStream[n] = roomLogic[n - newStream.length];
+            }
+          }
+
+          let logRecord = (logdirRecords[roomValue] = { volNo: volNum, volOffset: newStream.length });
+          let newLogDirEncoded = updateDirectoryOffsets('L', logdirRecords, logRecord.volOffset, 0);
+
+          //@ts-ignore
           let gamePath = '/static-assets/games/' + game + '/';
           saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+          saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
 
           // save updated volume file
-          saveFile(siteId, gamePath, 'VOL.0', newStream);
+          saveFile(siteId, gamePath, 'VOL.0', volStream);
         });
       }
     );
@@ -756,9 +782,9 @@ export function EditPictureDialog(props) {
   return (
     <>
       <DialogActions>
-      <Button onClick={handleSaveAsNewPicture} variant="outlined" sx={{ mr: 1 }}>
-            Add New Picture
-          </Button>
+        <Button onClick={handleSaveAsNewPicture} variant="outlined" sx={{ mr: 1 }}>
+          Add New Picture
+        </Button>
 
         <Button onClick={handleSwitchBuffer} variant="outlined" sx={{ mr: 1 }}>
           Switch Buffer
