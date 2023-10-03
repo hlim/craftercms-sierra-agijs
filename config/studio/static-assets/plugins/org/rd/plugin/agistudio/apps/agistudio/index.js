@@ -1348,7 +1348,7 @@ function EditPictureDialog(props) {
                 ];
                 var volStream = new Uint8Array(newStreamLength + 117);
                 for (var n = 0; n < volStream.length; n++) {
-                    if (n < picsStream.length) {
+                    if (n < newStream.length) {
                         // copy in the existing resources
                         volStream[n] = newStream[n];
                     }
