@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+	<content-type>/page/gametitle</content-type>
+	<display-template>/templates/web/Game.ftl</display-template>
+	<no-template-required>true</no-template-required>
+	<merge-strategy>inherit-levels</merge-strategy>
+	<file-name>index.xml</file-name>
+	<orderDefault_f>4000</orderDefault_f>
+	<placeInNav>true</placeInNav>
+	<game_s/>
+	<folder-name/>
+	<navLabel/>
+	<internal-name/>
+	<objectGroupId>6e48</objectGroupId>
+	<objectId>6e48424b-a55c-446f-98fd-2c8570c949d6</objectId>
+	<createdDate>2023-10-06T15:11:11.690Z</createdDate>
+	<createdDate_dt>2023-10-06T15:11:11.690Z</createdDate_dt>
+	<lastModifiedDate>2023-10-06T15:11:11.690Z</lastModifiedDate>
+	<lastModifiedDate_dt>2023-10-06T15:11:11.690Z</lastModifiedDate_dt>
+</page>
