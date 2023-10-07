@@ -175,7 +175,9 @@ function RoomSelector(props) {
         setIsFetching(false);
     };
     useEffect(function () {
-        loadRoomData();
+        setInterval(function () {
+            loadRoomData();
+        }, 3 * 1000);
     }, []);
     useEffect(function () {
         loadRoomData();
