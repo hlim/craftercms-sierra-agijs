@@ -759,16 +759,6 @@ function ShowCode(props) {
                 var logic = Resources.readAgiResource(Resources.AgiResource.Logic, i);
                 if (logic) {
                     logics.push({ id: i, logic: logic });
-                    if (i == 90) {
-                        var str = "";
-                        console.log("buffer 90");
-                        if (logic.buffer) {
-                            for (var x = 0; x < logic.length; x++) {
-                                str += logic.buffer[x] + ", ";
-                            }
-                            console.log(str);
-                        }
-                    }
                 }
             }
             catch (err) { }
