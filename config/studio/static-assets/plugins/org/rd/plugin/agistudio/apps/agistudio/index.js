@@ -1340,7 +1340,10 @@ function EditPictureDialog(props) {
                 var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
                 // Every room has a logic file. Add logic file
                 var roomLogic = [
-                    12, 34, 0, 112, 0,
+                    12, 34,
+                    0,
+                    112,
+                    newStream.length + 50,
                     82, 0, 255, 7, 5, 255, 29, 0, 24, 0, 25, 0, 27, 0, 63, 50, 255, 252, 1, 1, 1, 1, 1, 0, 252, 255, 6, 0, 37,
                     0, 120, 140, 112, 120, 35, 0, 26, 255, 14, 1, 20, 0, 255, 2, 0, 101, 1, 255, 1, 2, 1, 255, 2, 0, 18, 2, 255,
                     1, 2, 2, 255, 2, 0, 18, 2, 255, 1, 2, 3, 255, 2, 0, 18, 2, 255, 1, 2, 4, 255, 2, 0, 18, 2, 0, 1, 27, 0, 4,
