@@ -758,7 +758,7 @@ function ShowCode(props) {
                 // @ts-ignore
                 var logic = Resources.readAgiResource(Resources.AgiResource.Logic, i);
                 if (logic) {
-                    logics.push(i);
+                    logics.push({ id: i, logic: logic });
                 }
             }
             catch (err) { }
