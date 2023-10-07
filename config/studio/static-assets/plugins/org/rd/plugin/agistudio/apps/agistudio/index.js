@@ -63,6 +63,10 @@ function usePreviewNavigation() {
 var AgiBridge = /** @class */ (function () {
     function AgiBridge() {
     }
+    AgiBridge.reload = function () {
+        //@ts-ignore
+        (document.getElementById('crafterCMSPreviewIframe')).location.reload();
+    };
     AgiBridge.gameIsLoaded = function () {
         var gameIsLoaded = false;
         var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
@@ -1434,7 +1438,7 @@ function EditPictureDialog(props) {
                 saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
                 // save updated volume file
                 saveFile(siteId, gamePath, 'VOL.0', newStream);
-                AgiBridge.agiExecute('reload the game with the new game', 'Agi.start(\'/static-assets/games/' + game + '/\', context)');
+                AgiBridge.reload();
             });
         });
     };
