@@ -763,7 +763,7 @@ function ShowCode(props) {
                         var str = "";
                         console.log("buffer 90");
                         if (logic.buffer) {
-                            for (var x = 0; x < logic.buffer.length; x++) {
+                            for (var x = 0; x < logic.length; x++) {
                                 str += logic.buffer[x] + ", ";
                             }
                             console.log(str);
