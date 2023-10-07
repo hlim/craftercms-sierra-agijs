@@ -65,7 +65,12 @@ var AgiBridge = /** @class */ (function () {
     }
     AgiBridge.reload = function () {
         //@ts-ignore
-        (document.getElementById('crafterCMSPreviewIframe')).location.reload();
+        document.getElementById('crafterCMSPreviewIframe').contentWindow.location.reload();
+    };
+    AgiBridge.getActiveGameId = function () {
+        //@ts-ignore
+        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+        return game;
     };
     AgiBridge.gameIsLoaded = function () {
         var gameIsLoaded = false;
@@ -1376,8 +1381,7 @@ function EditPictureDialog(props) {
         });
     };
     var handleSavePicture = function () {
-        //@ts-ignore
-        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+        var game = AgiBridge.getActiveGameId();
         downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
