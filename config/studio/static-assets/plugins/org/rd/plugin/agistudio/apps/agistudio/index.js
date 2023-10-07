@@ -751,6 +751,18 @@ function ShowCode(props) {
     };
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
+        var logics = [];
+        var Resources = AgiBridge.agiExecute('Get Resources', 'Resources');
+        for (var i = 0; i < 10000; i++) {
+            try {
+                // @ts-ignore
+                var logic = Resources.readAgiResource(Resources.AgiResource.Logic, i);
+                if (logic) {
+                    logics.push(i);
+                }
+            }
+            catch (err) { }
+        }
         var code = AgiBridge.agiExecute('Get Logic Array', 'Agi.interpreter.loadedLogics');
         setLogics(code);
         setDialogOpen(true);
