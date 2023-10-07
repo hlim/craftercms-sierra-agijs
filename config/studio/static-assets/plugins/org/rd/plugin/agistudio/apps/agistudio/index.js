@@ -1379,6 +1379,7 @@ function EditPictureDialog(props) {
                 saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
                 // save updated volume file
                 saveFile(siteId, gamePath, 'VOL.0', volStream);
+                AgiBridge.reload();
             });
         });
     };
