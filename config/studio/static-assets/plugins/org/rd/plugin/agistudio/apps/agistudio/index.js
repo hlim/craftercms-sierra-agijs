@@ -751,19 +751,19 @@ function ShowCode(props) {
     };
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
-        var logics = [];
-        var Resources = AgiBridge.agiExecute('Get Resources', 'Resources');
-        for (var i = 0; i < 10000; i++) {
-            try {
-                // @ts-ignore
-                var logic = Resources.readAgiResource(Resources.AgiResource.Logic, i);
-                if (logic) {
-                    logics.push({ id: i, logic: logic });
-                }
-            }
-            catch (err) { }
-        }
-        var code = AgiBridge.agiExecute('Get Logic Array', 'Agi.interpreter.loadedLogics');
+        AgiBridge.agiExecute('Get Resources', 'Resources');
+        // for (let i = 0; i < 10000; i++) {
+        //   try {
+        //     // @ts-ignore
+        //     let logic = Resources.readAgiResource(Resources.AgiResource.Logic, i);
+        //     if (logic) {
+        //       logics.push({id:i, logic: logic});
+        //     }
+        //   } catch (err) {}
+        // }
+        // let code = AgiBridge.agiExecute('Get Logic Array', 'Agi.interpreter.loadedLogics');
+        var currentRoom = AgiBridge.currentRoom();
+        var code = [AgiBridge.agiExecute('Get Logic Array', "(new Agi.loadLogic(Agi.interpreter, " + currentRoom + "))")];
         setLogics(code);
         setDialogOpen(true);
     };
