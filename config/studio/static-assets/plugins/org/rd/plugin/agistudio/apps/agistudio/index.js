@@ -94,6 +94,9 @@ var AgiBridge = /** @class */ (function () {
                     if (command.startsWith('Agi')) {
                         commandToSend = command.replaceAll('Agi', agiPath);
                     }
+                    else if (command.startsWith('new (Agi')) {
+                        commandToSend = command.replaceAll('Agi', agiPath);
+                    }
                     else if (command.startsWith('Resources')) {
                         commandToSend = commandToSend.replaceAll('Resources', resourcesPath);
                     }
