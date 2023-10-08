@@ -94,9 +94,6 @@ var AgiBridge = /** @class */ (function () {
                     if (command.startsWith('Agi')) {
                         commandToSend = command.replaceAll('Agi', agiPath);
                     }
-                    else if (command.startsWith('(new Agi')) {
-                        commandToSend = command.replaceAll('Agi', agiPath);
-                    }
                     else if (command.startsWith('Resources')) {
                         commandToSend = commandToSend.replaceAll('Resources', resourcesPath);
                     }
@@ -766,7 +763,8 @@ function ShowCode(props) {
         // }
         // let code = AgiBridge.agiExecute('Get Logic Array', 'Agi.interpreter.loadedLogics');
         var currentRoom = AgiBridge.currentRoom();
-        var code = [AgiBridge.agiExecute('Get Logic Array', "(new Agi.LogicParser(Agi.interpreter, " + currentRoom + "))")];
+        var Agi = AgiBridge.agiExecute('Get Logic Array', 'Agi');
+        var code = [new Agi.LogicParser(Agi.interpreter, currentRoom)];
         setLogics(code);
         setDialogOpen(true);
     };
