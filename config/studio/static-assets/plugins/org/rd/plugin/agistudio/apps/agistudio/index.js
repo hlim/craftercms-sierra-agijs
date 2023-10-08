@@ -763,7 +763,7 @@ function ShowCode(props) {
         // }
         // let code = AgiBridge.agiExecute('Get Logic Array', 'Agi.interpreter.loadedLogics');
         var currentRoom = AgiBridge.currentRoom();
-        var code = [AgiBridge.agiExecute('Get Logic Array', "(new Agi.loadLogic(Agi.interpreter, " + currentRoom + "))")];
+        var code = [AgiBridge.agiExecute('Get Logic Array', "(new Agi.LogicParser(Agi.interpreter, " + currentRoom + "))")];
         setLogics(code);
         setDialogOpen(true);
     };
