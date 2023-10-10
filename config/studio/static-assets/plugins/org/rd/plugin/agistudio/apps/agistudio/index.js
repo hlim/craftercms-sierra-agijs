@@ -557,7 +557,8 @@ var AgiBridge = /** @class */ (function () {
                             }
                         }
                         else {
-                            args_1[argIdx_1] = parseInt(arg);
+                            var argAsNum = parseInt(arg);
+                            args_1[argIdx_1] = isNaN(argAsNum) ? arg : argAsNum;
                         }
                     });
                 }
