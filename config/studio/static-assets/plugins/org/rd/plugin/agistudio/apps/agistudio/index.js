@@ -782,29 +782,26 @@ function ShowCode(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState([]), logics = _c[0], setLogics = _c[1];
+    var _c = React.useState(null), roomCode = _c[0], setRoomCode = _c[1];
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         var currentRoom = AgiBridge.currentRoom();
         var Agi = AgiBridge.agiExecute('Get Logic Array', 'Agi');
-        var code = [new Agi.LogicParser(Agi.interpreter, currentRoom)];
-        setLogics(code);
+        var code = new Agi.LogicParser(Agi.interpreter, currentRoom);
+        setRoomCode(AgiBridge.prettyPrintCode(AgiBridge.decompile(code)));
         setDialogOpen(true);
     };
     var handleSaveClick = function (event) {
         setAnchorEl(event.currentTarget);
-        AgiBridge.compile(logics[0]);
+        AgiBridge.compile(roomCode);
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Logic Listing"),
             React.createElement(IconButton, { onClick: handleSaveClick },
                 React.createElement(DataObjectRoundedIcon, null)),
-            React.createElement(DialogContent, null, logics === null || logics === void 0 ? void 0 : logics.filter(function (v) { return v !== null; }).map(function (logic, i) { return (React.createElement(React.Fragment, null,
-                React.createElement("h1", null,
-                    "Logic Resource #", logic === null || logic === void 0 ? void 0 :
-                    logic.no),
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: AgiBridge.prettyPrintCode(AgiBridge.decompile(logic)) }))); }))),
+            React.createElement(DialogContent, null,
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: roomCode }))),
         React.createElement(Tooltip, { title: 'Show Code' },
             React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DataObjectRoundedIcon, null)))));
