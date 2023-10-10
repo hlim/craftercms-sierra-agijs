@@ -500,8 +500,9 @@ var AgiBridge = /** @class */ (function () {
         var messageTable = messageTableStr.split("#");
         var msgIdx = 0;
         messageTable.forEach(function (msg) {
-            messageTable[msgIdx] = (msg.substring(msg.indexOf("\""), msg.lastIndexOf("\"") + 1)).replaceAll("\"", "");
-            msgIdx++;
+            msg = (msg.substring(msg.indexOf("\""), msg.lastIndexOf("\"") + 1)).replaceAll("\"", "").toLowerCase();
+            messageTable[msgIdx] =
+                msgIdx++;
         });
         var lines = [];
         lines = logicCode.split(";");
