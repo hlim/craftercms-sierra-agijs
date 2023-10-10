@@ -503,7 +503,14 @@ var AgiBridge = /** @class */ (function () {
             lineToParse = lineToParse.toLowerCase();
             var command = "";
             try {
-                command = lineToParse.substring(0, lineToParse.indexOf("("));
+                if (lineToParse.indexOf("(") != -1) {
+                    // function or if statement
+                    command = lineToParse.substring(0, lineToParse.indexOf("("));
+                }
+                else {
+                    // other
+                    command = lineToParse;
+                }
                 var opCode = -1;
                 var args = [];
                 if (command === "return") {
