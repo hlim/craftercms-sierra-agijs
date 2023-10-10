@@ -561,10 +561,12 @@ var AgiBridge = /** @class */ (function () {
                         }
                     });
                 }
-                console.log("opcode :" + command + " => " + opCode + " | " + args_1);
+                if (opCode != -1) {
+                    console.log("opcode :" + command + " => " + opCode + " | " + args_1);
+                }
             }
             catch (err) {
-                console.log("crap :" + line + " => " + command);
+                console.log("err parsing command :" + line + " => " + command);
             }
         });
     };
