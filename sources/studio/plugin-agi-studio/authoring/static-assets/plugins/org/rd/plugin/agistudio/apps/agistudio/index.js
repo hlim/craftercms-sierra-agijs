@@ -63,6 +63,15 @@ function usePreviewNavigation() {
 var AgiBridge = /** @class */ (function () {
     function AgiBridge() {
     }
+    AgiBridge.reload = function () {
+        //@ts-ignore
+        document.getElementById('crafterCMSPreviewIframe').contentWindow.location.reload();
+    };
+    AgiBridge.getActiveGameId = function () {
+        //@ts-ignore
+        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+        return game;
+    };
     AgiBridge.gameIsLoaded = function () {
         var gameIsLoaded = false;
         var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
@@ -112,6 +121,455 @@ var AgiBridge = /** @class */ (function () {
     AgiBridge.currentRoom = function () {
         var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
         return roomValue;
+    };
+    AgiBridge.testFunctions = [
+        'equaln',
+        'equalv',
+        'lessn',
+        'lessv',
+        'greatern',
+        'greaterv',
+        'isset',
+        'issetv',
+        'has',
+        'obj_in_room',
+        'posn',
+        'controller',
+        'have_key',
+        'said',
+        'compare_strings',
+        'obj_in_box',
+        'center_posn',
+        'right_posn'
+    ];
+    AgiBridge.statementFunctions = [
+        'return',
+        'increment',
+        'decrement',
+        'assignn',
+        'assignv',
+        'addn',
+        'addv',
+        'subn',
+        'subv',
+        'lindirectv',
+        'rindirect',
+        'lindirectn',
+        'set',
+        'reset',
+        'toggle',
+        'set_v',
+        'reset_v',
+        'toggle_v',
+        'new_room',
+        'new_room_v',
+        'load_logic',
+        'load_logic_v',
+        'call',
+        'call_v',
+        'load_pic',
+        'draw_pic',
+        'show_pic',
+        'discard_pic',
+        'overlay_pic',
+        'show_pri_screen',
+        'load_view',
+        'load_view_v',
+        'discard_view',
+        'animate_obj',
+        'unanimate_all',
+        'draw',
+        'erase',
+        'position',
+        'position_v',
+        'get_posn',
+        'reposition',
+        'set_view',
+        'set_view_v',
+        'set_loop',
+        'set_loop_v',
+        'fix_loop',
+        'release_loop',
+        'set_cel',
+        'set_cel_v',
+        'last_cel',
+        'current_cel',
+        'current_loop',
+        'current_view',
+        'number_of_loops',
+        'set_priority',
+        'set_priority_v',
+        'release_priority',
+        'get_priority',
+        'stop_update',
+        'start_update',
+        'force_update',
+        'ignore_horizon',
+        'observe_horizon',
+        'set_horizon',
+        'object_on_water',
+        'object_on_land',
+        'object_on_anything',
+        'ignore_objs',
+        'observe_objs',
+        'distance',
+        'stop_cycling',
+        'start_cycling',
+        'normal_cycle',
+        'end_of_loop',
+        'reverse_cycle',
+        'reverse_loop',
+        'cycle_time',
+        'stop_motion',
+        'start_motion',
+        'step_size',
+        'step_time',
+        'move_obj',
+        'move_obj_v',
+        'follow_ego',
+        'wander',
+        'normal_motion',
+        'set_dir',
+        'get_dir',
+        'ignore_blocks',
+        'observe_blocks',
+        'block',
+        'unblock',
+        'get',
+        'get_v',
+        'drop',
+        'put',
+        'put_v',
+        'get_room_v',
+        'load_sound',
+        'sound',
+        'stop_sound',
+        'print',
+        'print_v',
+        'display',
+        'display_v',
+        'clear_lines',
+        'text_screen',
+        'graphics',
+        'set_cursor_char',
+        'set_text_attribute',
+        'shake_screen',
+        'configure_screen',
+        'status_line_on',
+        'status_line_off',
+        'set_string',
+        'get_string',
+        'word_to_string',
+        'parse',
+        'get_num',
+        'prevent_input',
+        'accept_input',
+        'set_key',
+        'add_to_pic',
+        'add_to_pic_v',
+        'status',
+        'save_game',
+        'restore_game',
+        'init_disk',
+        'restart_game',
+        'show_obj',
+        'random',
+        'program_control',
+        'player_control',
+        'obj_status_v',
+        'quit',
+        'show_mem',
+        'pause',
+        'echo_line',
+        'cancel_line',
+        'init_joy',
+        'toggle_monitor',
+        'version',
+        'script_size',
+        'set_game_id',
+        'log',
+        'set_scan_start',
+        'reset_scan_start',
+        'reposition_to',
+        'reposition_to_v',
+        'trace_on',
+        'trace_info',
+        'print_at',
+        'print_at_v',
+        'discard_view_v',
+        'clear_text_rect',
+        'set_upper_left',
+        'set_menu',
+        'set_menu_member',
+        'submit_menu',
+        'enable_member',
+        'disable_member',
+        'menu_input',
+        'show_obj_v',
+        'open_dialogue',
+        'close_dialogue',
+        'mul_n',
+        'mul_v',
+        'div_n',
+        'div_v',
+        'close_window',
+        'set_simple',
+        'push_script',
+        'pop_script',
+        'hold_key',
+        'set_pri_base',
+        'discard_sound',
+        'hide_mouse',
+        'allow_menu',
+        'show_mouse',
+        'fence_mouse',
+        'mouse_posn',
+        'release_key',
+        'adj_ego_move_to_xy'
+    ];
+    AgiBridge.prettyPrintCode = function (lines) {
+        var code = '';
+        lines.forEach(function (line) {
+            if (line == '{') {
+                code += ' ';
+            }
+            else {
+                code += '\n';
+            }
+            code += line;
+        });
+        return code;
+    };
+    AgiBridge.decompile = function (logic) {
+        var lines = [];
+        if (logic) {
+            var codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + logic.no + ')');
+            var program = logic.decompile();
+            AgiBridge.decompileScope(codeData, logic.logic.messages, program, lines, 0);
+            var m = 1;
+            logic.logic.messages.forEach(function (msg) {
+                lines.push('#message ' + m + ' "' + msg + '"');
+                m++;
+            });
+        }
+        return lines;
+    };
+    AgiBridge.decompileScope = function (binary, messages, scope, lines, depth) {
+        scope.body.forEach(function (node) {
+            lines.push('\t'.repeat(depth) + AgiBridge.decompileNode(binary, messages, node));
+            if (node.then) {
+                lines.push('{');
+                AgiBridge.decompileScope(binary, messages, node.then, lines, depth + 1);
+                lines.push('\t'.repeat(depth) + '}');
+            }
+            if (node.else) {
+                lines.push('\t'.repeat(depth) + 'else {');
+                AgiBridge.decompileScope(binary, messages, node.else, lines, depth + 1);
+                lines.push('\t'.repeat(depth) + '}');
+            }
+        });
+        return lines;
+    };
+    AgiBridge.decompileExpression = function (expression) {
+        var line = '';
+        var opCode = expression.opcode;
+        var args = expression.args;
+        var negate = expression.negate;
+        var right = expression.right;
+        var left = expression.left;
+        //} else if (opCode == 0xfd) { //line += '!';
+        if (left && right) {
+            line += AgiBridge.decompileExpression(left);
+            line += left.constructor.name == 'AndNode' ? ' && ' : ' || ';
+            line += AgiBridge.decompileExpression(right);
+        }
+        else {
+            var funcName = AgiBridge.testFunctions[opCode];
+            line = (negate ? '!' : '') + funcName + '(';
+            if (args) {
+                var testVars = AgiBridge.processArgNames(funcName, true, args, []);
+                for (var a = 0; a < testVars.length; a++) {
+                    var arg = testVars[a];
+                    if (a > 0)
+                        line += ', ';
+                    line += arg;
+                }
+            }
+            line += ')';
+        }
+        return line;
+    };
+    AgiBridge.processArgNames = function (funcName, isTest, args, messages) {
+        var values = [];
+        for (var i = 0; i < args.length; i++) {
+            var value = args[i];
+            if (i == 0) {
+                if (isTest == true) {
+                    if (funcName.startsWith('isset'))
+                        value = 'f' + value;
+                    else
+                        value = 'v' + value;
+                }
+                else {
+                    if (funcName === 'print')
+                        value = '"' + messages[parseInt(value)] + '"';
+                    else if (funcName.startsWith('set_menu'))
+                        value = '"' + messages[parseInt(value)] + '"';
+                    else if (funcName.startsWith('set'))
+                        value = 'f' + value;
+                    else if (funcName.startsWith('assign'))
+                        value = 'v' + value;
+                }
+            }
+            else {
+                if (!isTest) {
+                    if (!funcName.startsWith('assign')) {
+                        if (funcName.endsWith('v'))
+                            value = 'v' + value;
+                        else if (funcName == 'set_menu_member')
+                            value = 'c' + value;
+                    }
+                }
+            }
+            values.push(value);
+        }
+        return values;
+    };
+    AgiBridge.decompileNode = function (binary, messages, node) {
+        var line = '';
+        var opCode = node.opcode;
+        var byteOffset = node.byteOffset; // ast node
+        var statement = node.statement; // statement
+        var args = node.args; // test and statement
+        var expression = node.expression; // if
+        if (opCode == 0x00) {
+            line = 'return;';
+        }
+        else if (opCode == 0xff) {
+            line = 'if(';
+            line += AgiBridge.decompileExpression(expression);
+            line += ')';
+        }
+        else if (opCode == 0xfe) {
+            if (node.expression) {
+                line = 'else (';
+                line += AgiBridge.decompileExpression(expression);
+                line += ')';
+            }
+            else {
+                line += 'goto';
+            }
+        }
+        else if (opCode == 0x0e) {
+            line = 'said';
+        }
+        else {
+            var funcName = AgiBridge.statementFunctions[opCode];
+            line += funcName;
+            line += '(';
+            if (args) {
+                line += args;
+            }
+            else {
+                var statementArgs = [];
+                for (var i = 0; i < statement.length; i++) {
+                    statementArgs.push(AgiBridge.getValueAtOffset(binary, byteOffset - statement.length + i));
+                }
+                var statementArgsx = AgiBridge.processArgNames(funcName, false, statementArgs, messages);
+                for (var a = 0; a < statementArgsx.length; a++) {
+                    var arg = statementArgsx[a];
+                    if (a > 0)
+                        line += ', ';
+                    line += arg;
+                }
+            }
+            line += ');';
+        }
+        return line;
+    };
+    AgiBridge.getValueAtOffset = function (binary, offset) {
+        binary.position = offset;
+        return binary.readUint8();
+    };
+    AgiBridge.compile = function (logicCode) {
+        logicCode = logicCode.replaceAll("}", "};");
+        logicCode = logicCode.replaceAll("{", "{;");
+        logicCode = logicCode.replaceAll("\n", "");
+        logicCode = logicCode.replaceAll("\t", "");
+        var messageTableStr = logicCode.substring(logicCode.indexOf("#"));
+        var messageTable = messageTableStr.split("#");
+        var msgIdx = 0;
+        messageTable.forEach(function (msg) {
+            msg = (msg.substring(msg.indexOf("\""), msg.lastIndexOf("\"") + 1)).replaceAll("\"", "").toLowerCase();
+            messageTable[msgIdx] = msg;
+            msgIdx++;
+        });
+        var lines = [];
+        lines = logicCode.split(";");
+        lines.forEach(function (line) {
+            var lineToParse = line; //.replaceAll(" ", "")
+            lineToParse = lineToParse.toLowerCase();
+            var command = "";
+            try {
+                if (lineToParse.indexOf("(") != -1) {
+                    // function or if statement
+                    command = lineToParse.substring(0, lineToParse.indexOf("("));
+                }
+                else {
+                    // other
+                    command = lineToParse;
+                }
+                var opCode = -1;
+                var args_1 = [];
+                if (command === "return") {
+                    opCode = 0x00;
+                }
+                else if (command === "if") {
+                    opCode = 0xff;
+                }
+                else if (command === "else") {
+                    opCode = 0xfe;
+                }
+                else if (command === "said") {
+                    opCode = 0x0e;
+                }
+                else if (command === "}") {
+                    // close of scope, nothng to do
+                }
+                else if (command.indexOf("#") != -1) {
+                    // message table item
+                }
+                else {
+                    opCode = AgiBridge.statementFunctions.indexOf(command);
+                    var argsStr = lineToParse.replaceAll(command, "");
+                    argsStr = argsStr.replace("(", "").replace(")", "");
+                    argsStr = argsStr.replaceAll("f", "");
+                    argsStr = argsStr.replaceAll("v", "");
+                    args_1 = argsStr.split(",");
+                    // convert argments that are strings to ID in message tabel
+                    var argIdx_1 = 0;
+                    args_1.forEach(function (arg) {
+                        if (arg.indexOf("\"") != -1) {
+                            var msg = arg.replaceAll("\"", "");
+                            var msgId = messageTable.indexOf(msg);
+                            if (msgId != -1) {
+                                args_1[argIdx_1] = msgId;
+                            }
+                        }
+                        else {
+                            var argAsNum = parseInt(arg);
+                            args_1[argIdx_1] = isNaN(argAsNum) ? arg : argAsNum;
+                        }
+                    });
+                }
+                if (opCode != -1) {
+                    console.log("opcode :" + command + " => " + opCode + " | " + args_1);
+                }
+            }
+            catch (err) {
+                console.log("err parsing command :" + line + " => " + command);
+            }
+        });
     };
     return AgiBridge;
 }());
@@ -166,7 +624,9 @@ function RoomSelector(props) {
         setIsFetching(false);
     };
     useEffect(function () {
-        loadRoomData();
+        setInterval(function () {
+            loadRoomData();
+        }, 3 * 1000);
     }, []);
     useEffect(function () {
         loadRoomData();
@@ -368,390 +828,26 @@ function ShowCode(props) {
     var _a = React.useState(null), anchorEl = _a[0], setAnchorEl = _a[1];
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
-    var _c = React.useState([]), logics = _c[0], setLogics = _c[1];
-    var testFunctions = [
-        'equaln',
-        'equalv',
-        'lessn',
-        'lessv',
-        'greatern',
-        'greaterv',
-        'isset',
-        'issetv',
-        'has',
-        'obj_in_room',
-        'posn',
-        'controller',
-        'have_key',
-        'said',
-        'compare_strings',
-        'obj_in_box',
-        'center_posn',
-        'right_posn'
-    ];
-    var statementFunctions = [
-        'return',
-        'increment',
-        'decrement',
-        'assignn',
-        'assignv',
-        'addn',
-        'addv',
-        'subn',
-        'subv',
-        'lindirectv',
-        'rindirect',
-        'lindirectn',
-        'set',
-        'reset',
-        'toggle',
-        'set_v',
-        'reset_v',
-        'toggle_v',
-        'new_room',
-        'new_room_v',
-        'load_logic',
-        'load_logic_v',
-        'call',
-        'call_v',
-        'load_pic',
-        'draw_pic',
-        'show_pic',
-        'discard_pic',
-        'overlay_pic',
-        'show_pri_screen',
-        'load_view',
-        'load_view_v',
-        'discard_view',
-        'animate_obj',
-        'unanimate_all',
-        'draw',
-        'erase',
-        'position',
-        'position_v',
-        'get_posn',
-        'reposition',
-        'set_view',
-        'set_view_v',
-        'set_loop',
-        'set_loop_v',
-        'fix_loop',
-        'release_loop',
-        'set_cel',
-        'set_cel_v',
-        'last_cel',
-        'current_cel',
-        'current_loop',
-        'current_view',
-        'number_of_loops',
-        'set_priority',
-        'set_priority_v',
-        'release_priority',
-        'get_priority',
-        'stop_update',
-        'start_update',
-        'force_update',
-        'ignore_horizon',
-        'observe_horizon',
-        'set_horizon',
-        'object_on_water',
-        'object_on_land',
-        'object_on_anything',
-        'ignore_objs',
-        'observe_objs',
-        'distance',
-        'stop_cycling',
-        'start_cycling',
-        'normal_cycle',
-        'end_of_loop',
-        'reverse_cycle',
-        'reverse_loop',
-        'cycle_time',
-        'stop_motion',
-        'start_motion',
-        'step_size',
-        'step_time',
-        'move_obj',
-        'move_obj_v',
-        'follow_ego',
-        'wander',
-        'normal_motion',
-        'set_dir',
-        'get_dir',
-        'ignore_blocks',
-        'observe_blocks',
-        'block',
-        'unblock',
-        'get',
-        'get_v',
-        'drop',
-        'put',
-        'put_v',
-        'get_room_v',
-        'load_sound',
-        'sound',
-        'stop_sound',
-        'print',
-        'print_v',
-        'display',
-        'display_v',
-        'clear_lines',
-        'text_screen',
-        'graphics',
-        'set_cursor_char',
-        'set_text_attribute',
-        'shake_screen',
-        'configure_screen',
-        'status_line_on',
-        'status_line_off',
-        'set_string',
-        'get_string',
-        'word_to_string',
-        'parse',
-        'get_num',
-        'prevent_input',
-        'accept_input',
-        'set_key',
-        'add_to_pic',
-        'add_to_pic_v',
-        'status',
-        'save_game',
-        'restore_game',
-        'init_disk',
-        'restart_game',
-        'show_obj',
-        'random',
-        'program_control',
-        'player_control',
-        'obj_status_v',
-        'quit',
-        'show_mem',
-        'pause',
-        'echo_line',
-        'cancel_line',
-        'init_joy',
-        'toggle_monitor',
-        'version',
-        'script_size',
-        'set_game_id',
-        'log',
-        'set_scan_start',
-        'reset_scan_start',
-        'reposition_to',
-        'reposition_to_v',
-        'trace_on',
-        'trace_info',
-        'print_at',
-        'print_at_v',
-        'discard_view_v',
-        'clear_text_rect',
-        'set_upper_left',
-        'set_menu',
-        'set_menu_member',
-        'submit_menu',
-        'enable_member',
-        'disable_member',
-        'menu_input',
-        'show_obj_v',
-        'open_dialogue',
-        'close_dialogue',
-        'mul_n',
-        'mul_v',
-        'div_n',
-        'div_v',
-        'close_window',
-        'set_simple',
-        'push_script',
-        'pop_script',
-        'hold_key',
-        'set_pri_base',
-        'discard_sound',
-        'hide_mouse',
-        'allow_menu',
-        'show_mouse',
-        'fence_mouse',
-        'mouse_posn',
-        'release_key',
-        'adj_ego_move_to_xy'
-    ];
-    var prettyPrintCode = function (lines) {
-        var code = '';
-        lines.forEach(function (line) {
-            if (line == '{') {
-                code += ' ';
-            }
-            else {
-                code += '\n';
-            }
-            code += line;
-        });
-        return code;
-    };
-    var decompile = function (logic) {
-        var lines = [];
-        if (logic) {
-            var codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + logic.no + ')');
-            var program = logic.decompile();
-            decompileScope(codeData, logic.logic.messages, program, lines, 0);
-            var m = 1;
-            logic.logic.messages.forEach(function (msg) {
-                lines.push('#message ' + m + ' "' + msg + '"');
-                m++;
-            });
-        }
-        return lines;
-    };
-    var decompileScope = function (binary, messages, scope, lines, depth) {
-        scope.body.forEach(function (node) {
-            lines.push('\t'.repeat(depth) + decompileNode(binary, messages, node));
-            if (node.then) {
-                lines.push('{');
-                decompileScope(binary, messages, node.then, lines, depth + 1);
-                lines.push('\t'.repeat(depth) + '}');
-            }
-            if (node.else) {
-                lines.push('\t'.repeat(depth) + 'else {');
-                decompileScope(binary, messages, node.else, lines, depth + 1);
-                lines.push('\t'.repeat(depth) + '}');
-            }
-        });
-        return lines;
-    };
-    var decompileExpression = function (expression) {
-        var line = '';
-        var opCode = expression.opcode;
-        var args = expression.args;
-        var negate = expression.negate;
-        var right = expression.right;
-        var left = expression.left;
-        //} else if (opCode == 0xfd) { //line += '!';
-        if (left && right) {
-            line += decompileExpression(left);
-            line += left.constructor.name == 'AndNode' ? ' && ' : ' || ';
-            line += decompileExpression(right);
-        }
-        else {
-            var funcName = testFunctions[opCode];
-            line = (negate ? '!' : '') + funcName + '(';
-            if (args) {
-                var testVars = processArgNames(funcName, true, args, []);
-                for (var a = 0; a < testVars.length; a++) {
-                    var arg = testVars[a];
-                    if (a > 0)
-                        line += ', ';
-                    line += arg;
-                }
-            }
-            line += ')';
-        }
-        return line;
-    };
-    var processArgNames = function (funcName, isTest, args, messages) {
-        var values = [];
-        for (var i = 0; i < args.length; i++) {
-            var value = args[i];
-            if (i == 0) {
-                if (isTest == true) {
-                    if (funcName.startsWith('isset'))
-                        value = 'f' + value;
-                    else
-                        value = 'v' + value;
-                }
-                else {
-                    if (funcName === 'print')
-                        value = '"' + messages[parseInt(value)] + '"';
-                    else if (funcName.startsWith('set_menu'))
-                        value = '"' + messages[parseInt(value)] + '"';
-                    else if (funcName.startsWith('set'))
-                        value = 'f' + value;
-                    else if (funcName.startsWith('assign'))
-                        value = 'v' + value;
-                }
-            }
-            else {
-                if (!isTest) {
-                    if (!funcName.startsWith('assign')) {
-                        if (funcName.endsWith('v'))
-                            value = 'v' + value;
-                        else if (funcName == 'set_menu_member')
-                            value = 'c' + value;
-                    }
-                }
-            }
-            values.push(value);
-        }
-        return values;
-    };
-    var decompileNode = function (binary, messages, node) {
-        var line = '';
-        var opCode = node.opcode;
-        var byteOffset = node.byteOffset; // ast node
-        var statement = node.statement; // statement
-        var args = node.args; // test and statement
-        var expression = node.expression; // if
-        if (opCode == 0x00) {
-            line = 'return;';
-        }
-        else if (opCode == 0xff) {
-            line = 'if(';
-            line += decompileExpression(expression);
-            line += ')';
-        }
-        else if (opCode == 0xfe) {
-            if (node.expression) {
-                line = 'else (';
-                line += decompileExpression(expression);
-                line += ')';
-            }
-            else {
-                line += 'goto';
-            }
-        }
-        else if (opCode == 0x0e) {
-            line = 'said';
-        }
-        else {
-            var funcName = statementFunctions[opCode];
-            line += funcName;
-            line += '(';
-            if (args) {
-                line += args;
-            }
-            else {
-                var statementArgs = [];
-                for (var i = 0; i < statement.length; i++) {
-                    statementArgs.push(getValueAtOffset(binary, byteOffset - statement.length + i));
-                }
-                var statementArgsx = processArgNames(funcName, false, statementArgs, messages);
-                for (var a = 0; a < statementArgsx.length; a++) {
-                    var arg = statementArgsx[a];
-                    if (a > 0)
-                        line += ', ';
-                    line += arg;
-                }
-            }
-            line += ');';
-        }
-        return line;
-    };
-    var getValueAtOffset = function (binary, offset) {
-        binary.position = offset;
-        return binary.readUint8();
-    };
+    var _c = React.useState(null), roomCode = _c[0], setRoomCode = _c[1];
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
-        var code = AgiBridge.agiExecute('Get Logic Array', 'Agi.interpreter.loadedLogics');
-        setLogics(code);
+        var currentRoom = AgiBridge.currentRoom();
+        var Agi = AgiBridge.agiExecute('Get Logic Array', 'Agi');
+        var code = new Agi.LogicParser(Agi.interpreter, currentRoom);
+        setRoomCode(AgiBridge.prettyPrintCode(AgiBridge.decompile(code)));
         setDialogOpen(true);
+    };
+    var handleSaveClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        AgiBridge.compile(roomCode);
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Logic Listing"),
-            React.createElement(DialogContent, null, logics === null || logics === void 0 ? void 0 : logics.filter(function (v) { return v !== null; }).map(function (logic, i) { return (React.createElement(React.Fragment, null,
-                React.createElement("h1", null,
-                    "Logic Resource #", logic === null || logic === void 0 ? void 0 :
-                    logic.no),
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: prettyPrintCode(decompile(logic)) }))); }))),
+            React.createElement(IconButton, { onClick: handleSaveClick },
+                React.createElement(DataObjectRoundedIcon, null)),
+            React.createElement(DialogContent, null,
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: roomCode }))),
         React.createElement(Tooltip, { title: 'Show Code' },
             React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DataObjectRoundedIcon, null)))));
@@ -1340,10 +1436,13 @@ function EditPictureDialog(props) {
                 var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
                 // Every room has a logic file. Add logic file
                 var roomLogic = [
-                    12, 34, 0, 112, 0,
+                    12, 34,
+                    0,
+                    112,
+                    84,
                     82, 0, 255, 7, 5, 255, 29, 0, 24, 0, 25, 0, 27, 0, 63, 50, 255, 252, 1, 1, 1, 1, 1, 0, 252, 255, 6, 0, 37,
-                    0, 120, 140, 112, 120, 35, 0, 26, 255, 14, 1, 20, 0, 255, 2, 0, 101, 1, 255, 1, 2, 1, 255, 2, 0, 18, 2, 255,
-                    1, 2, 2, 255, 2, 0, 18, 2, 255, 1, 2, 3, 255, 2, 0, 18, 2, 255, 1, 2, 4, 255, 2, 0, 18, 2, 0, 1, 27, 0, 4,
+                    0, 120, 140, 112, 120, 35, 0, 26, 255, 14, 1, 20, 0, 255, 2, 0, 101, 1, 255, 1, 2, 1, 255, 2, 0, 18, 99, 255,
+                    1, 2, 2, 255, 2, 0, 18, 99, 255, 1, 2, 3, 255, 2, 0, 18, 2, 255, 1, 2, 4, 255, 2, 0, 18, 99, 0, 1, 27, 0, 4,
                     0, 21, 30, 0, 0, 0, 45, 6, 82, 6, 15, 78, 36, 27, 25, 7, 89, 100, 7, 29, 8, 12, 64, 65
                 ];
                 var volStream = new Uint8Array(newStreamLength + 117);
@@ -1365,12 +1464,12 @@ function EditPictureDialog(props) {
                 saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
                 // save updated volume file
                 saveFile(siteId, gamePath, 'VOL.0', volStream);
+                AgiBridge.reload();
             });
         });
     };
     var handleSavePicture = function () {
-        //@ts-ignore
-        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+        var game = AgiBridge.getActiveGameId();
         downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
             console.log('Directory files downloaded.');
             parseDirfile(buffers['LOGDIR'], logdirRecords);
@@ -1431,6 +1530,7 @@ function EditPictureDialog(props) {
                 saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
                 // save updated volume file
                 saveFile(siteId, gamePath, 'VOL.0', newStream);
+                AgiBridge.reload();
             });
         });
     };

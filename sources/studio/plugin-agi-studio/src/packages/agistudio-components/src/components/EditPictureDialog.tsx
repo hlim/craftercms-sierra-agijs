@@ -528,13 +528,20 @@ export function EditPictureDialog(props) {
 
           // Every room has a logic file. Add logic file
           let roomLogic = [
-            12, 34, 0, 112, 0,
+            12, 34, // signature
+            0,      // volume
+            112,    // length
+            84,    // message start offset
 
             82, 0, 255, 7, 5, 255, 29, 0, 24, 0, 25, 0, 27, 0, 63, 50, 255, 252, 1, 1, 1, 1, 1, 0, 252, 255, 6, 0, 37,
-            0, 120, 140, 112, 120, 35, 0, 26, 255, 14, 1, 20, 0, 255, 2, 0, 101, 1, 255, 1, 2, 1, 255, 2, 0, 18, 2, 255,
-            1, 2, 2, 255, 2, 0, 18, 2, 255, 1, 2, 3, 255, 2, 0, 18, 2, 255, 1, 2, 4, 255, 2, 0, 18, 2, 0, 1, 27, 0, 4,
+            0, 120, 140, 112, 120, 35, 0, 26, 255, 14, 1, 20, 0, 255, 2, 0, 101, 1, 255, 1, 2, 1, 255, 2, 0, 18, 99, 255,
+            1, 2, 2, 255, 2, 0, 18, 99, 255, 1, 2, 3, 255, 2, 0, 18, 2, 255, 1, 2, 4, 255, 2, 0, 18, 99, 0, 1, 27, 0, 4,
             0, 21, 30, 0, 0, 0, 45, 6, 82, 6, 15, 78, 36, 27, 25, 7, 89, 100, 7, 29, 8, 12, 64, 65
+
+
           ];
+
+
 
           let volStream = new Uint8Array(newStreamLength + 117);
 
@@ -558,14 +565,16 @@ export function EditPictureDialog(props) {
 
           // save updated volume file
           saveFile(siteId, gamePath, 'VOL.0', volStream);
+          
+          AgiBridge.reload()
         });
       }
     );
   };
 
   const handleSavePicture = () => {
-    //@ts-ignore
-    var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
+    var game = AgiBridge.getActiveGameId()
+
     downloadAllFiles(
       '/static-assets/games/' + game + '/',
       ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
@@ -638,6 +647,8 @@ export function EditPictureDialog(props) {
 
           // save updated volume file
           saveFile(siteId, gamePath, 'VOL.0', newStream);
+          AgiBridge.reload();
+
         });
       }
     );

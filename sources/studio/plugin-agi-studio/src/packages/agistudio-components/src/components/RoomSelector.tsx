@@ -51,7 +51,9 @@ export function RoomSelector(props) {
   };
 
   useEffect(() => {
-    loadRoomData();
+    setInterval(() => {
+      loadRoomData();
+    }, 3 * 1000);
   }, []);
 
   useEffect(() => {
