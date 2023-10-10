@@ -505,6 +505,7 @@ var AgiBridge = /** @class */ (function () {
             try {
                 command = lineToParse.substring(0, lineToParse.indexOf("("));
                 var opCode = -1;
+                var args = [];
                 if (command === "return") {
                     opCode = 0x00;
                 }
@@ -517,10 +518,16 @@ var AgiBridge = /** @class */ (function () {
                 else if (command === "said") {
                     opCode = 0x0e;
                 }
+                else if (command === "}") {
+                    // close of scope, nothng to do
+                }
                 else {
                     opCode = AgiBridge.statementFunctions.indexOf(command);
+                    var argsStr = lineToParse.replaceAll(command, "");
+                    argsStr.replace("(", "").replace(")", "");
+                    args = argsStr.split(",");
                 }
-                console.log("opcode :" + command + " => " + opCode);
+                console.log("opcode :" + command + " => " + opCode + " | " + args);
             }
             catch (err) {
                 console.log("crap :" + line + " => " + command);
