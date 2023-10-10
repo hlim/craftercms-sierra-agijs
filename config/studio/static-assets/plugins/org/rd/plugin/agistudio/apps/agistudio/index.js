@@ -500,7 +500,7 @@ var AgiBridge = /** @class */ (function () {
         var messageTable = messageTableStr.split("#");
         var msgIdx = 0;
         messageTable.forEach(function (msg) {
-            messageTable[msgIdx] = (msg.substring(msg.indexOf("\""), msg.lastIndexOf("\"") + 1)).replaceAll("\"\"", "\"");
+            messageTable[msgIdx] = (msg.substring(msg.indexOf("\""), msg.lastIndexOf("\"") + 1)).replaceAll("\"", "");
             msgIdx++;
         });
         var lines = [];
@@ -548,7 +548,7 @@ var AgiBridge = /** @class */ (function () {
                     // convert argments that are strings to ID in message tabel
                     args.forEach(function (arg) {
                         if (arg.indexOf("\"") != -1) {
-                            var msgId = messageTable.indexOf(arg);
+                            var msgId = messageTable.indexOf(arg.replaceAll("\"", ""));
                             if (msgId != -1) {
                                 arg = msgId + 1;
                             }
