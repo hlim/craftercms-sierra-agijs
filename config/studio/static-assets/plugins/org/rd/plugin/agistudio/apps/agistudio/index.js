@@ -494,6 +494,7 @@ var AgiBridge = /** @class */ (function () {
     AgiBridge.compile = function (logicCode) {
         var lines = [];
         logicCode = logicCode.replaceAll("}", "};");
+        logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
         logicCode = logicCode.replaceAll("\t", "");
         lines = logicCode.split(";");
