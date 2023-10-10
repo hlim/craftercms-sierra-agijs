@@ -491,6 +491,40 @@ var AgiBridge = /** @class */ (function () {
         binary.position = offset;
         return binary.readUint8();
     };
+    AgiBridge.compile = function (logicCode) {
+        var lines = [];
+        logicCode = logicCode.replaceAll("\n", "");
+        logicCode = logicCode.replaceAll("\t", "");
+        lines = logicCode.split(";");
+        lines.forEach(function (line) {
+            var lineToParse = line.replaceAll(" ", "");
+            lineToParse = lineToParse.toLowerCase();
+            var command = "";
+            try {
+                command = lineToParse.substring(0, lineToParse.indexOf("("));
+                var opCode = -1;
+                if (command.indexOf("return")) {
+                    opCode = 0x00;
+                }
+                else if (command.indexOf("if")) {
+                    opCode = 0xff;
+                }
+                else if (command.indexOf("else")) {
+                    opCode = 0xfe;
+                }
+                else if (command.indexOf("said")) {
+                    opCode = 0x0e;
+                }
+                else {
+                    opCode = AgiBridge.statementFunctions.indexOf(command);
+                }
+                console.log("opcode :" + command + " => " + opCode);
+            }
+            catch (err) {
+                console.log("crap :" + line + " => " + command);
+            }
+        });
+    };
     return AgiBridge;
 }());
 
@@ -757,9 +791,15 @@ function ShowCode(props) {
         setLogics(code);
         setDialogOpen(true);
     };
+    var handleSaveClick = function (event) {
+        setAnchorEl(event.currentTarget);
+        AgiBridge.compile(logics[0]);
+    };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Logic Listing"),
+            React.createElement(IconButton, { onClick: handleSaveClick },
+                React.createElement(DataObjectRoundedIcon, null)),
             React.createElement(DialogContent, null, logics === null || logics === void 0 ? void 0 : logics.filter(function (v) { return v !== null; }).map(function (logic, i) { return (React.createElement(React.Fragment, null,
                 React.createElement("h1", null,
                     "Logic Resource #", logic === null || logic === void 0 ? void 0 :
