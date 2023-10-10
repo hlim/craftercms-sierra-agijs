@@ -524,7 +524,7 @@ var AgiBridge = /** @class */ (function () {
                 else {
                     opCode = AgiBridge.statementFunctions.indexOf(command);
                     var argsStr = lineToParse.replaceAll(command, "");
-                    argsStr.replace("(", "").replace(")", "");
+                    argsStr = argsStr.replace("(", "").replace(")", "");
                     args = argsStr.split(",");
                 }
                 console.log("opcode :" + command + " => " + opCode + " | " + args);
