@@ -548,9 +548,10 @@ var AgiBridge = /** @class */ (function () {
                     // convert argments that are strings to ID in message tabel
                     args.forEach(function (arg) {
                         if (arg.indexOf("\"") != -1) {
-                            var msgId = messageTable.indexOf(arg.replaceAll("\"", ""));
+                            var msg = arg.replaceAll("\"", "");
+                            var msgId = messageTable.indexOf(msg);
                             if (msgId != -1) {
-                                arg = msgId + 1;
+                                arg = msgId;
                             }
                         }
                     });
