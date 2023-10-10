@@ -492,11 +492,13 @@ var AgiBridge = /** @class */ (function () {
         return binary.readUint8();
     };
     AgiBridge.compile = function (logicCode) {
-        var lines = [];
         logicCode = logicCode.replaceAll("}", "};");
         logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
         logicCode = logicCode.replaceAll("\t", "");
+        var messageTableStr = logicCode.substring(logicCode.firstIndexOf("#"));
+        var messageTable = messageTableStr.split("#");
+        var lines = [];
         lines = logicCode.split(";");
         lines.forEach(function (line) {
             var lineToParse = line.replaceAll(" ", "");
@@ -528,11 +530,25 @@ var AgiBridge = /** @class */ (function () {
                 else if (command === "}") {
                     // close of scope, nothng to do
                 }
+                else if (command.indexOf("#")) {
+                    // message table item
+                }
                 else {
                     opCode = AgiBridge.statementFunctions.indexOf(command);
                     var argsStr = lineToParse.replaceAll(command, "");
                     argsStr = argsStr.replace("(", "").replace(")", "");
+                    argsStr = argsStr.replaceAll("f", "");
+                    argsStr = argsStr.replaceAll("v", "");
                     args = argsStr.split(",");
+                    // convert argments that are strings to ID in message tabel
+                    args.forEach(function (arg) {
+                        if (arg.indexOf("\"") != -1) {
+                            var msgId = messageTable.indexOf(arg);
+                            if (msgId != -1) {
+                                arg = msgId + 1;
+                            }
+                        }
+                    });
                 }
                 console.log("opcode :" + command + " => " + opCode + " | " + args);
             }
