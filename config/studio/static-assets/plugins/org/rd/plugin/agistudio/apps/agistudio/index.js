@@ -501,7 +501,7 @@ var AgiBridge = /** @class */ (function () {
         var lines = [];
         lines = logicCode.split(";");
         lines.forEach(function (line) {
-            var lineToParse = line.replaceAll(" ", "");
+            var lineToParse = line; //.replaceAll(" ", "")
             lineToParse = lineToParse.toLowerCase();
             var command = "";
             try {
