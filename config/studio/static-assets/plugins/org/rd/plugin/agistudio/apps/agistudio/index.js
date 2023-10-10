@@ -530,7 +530,7 @@ var AgiBridge = /** @class */ (function () {
                 else if (command === "}") {
                     // close of scope, nothng to do
                 }
-                else if (command.indexOf("#")) {
+                else if (command.indexOf("#") != -1) {
                     // message table item
                 }
                 else {
