@@ -520,7 +520,7 @@ var AgiBridge = /** @class */ (function () {
                     command = lineToParse;
                 }
                 var opCode = -1;
-                var args = [];
+                var args_1 = [];
                 if (command === "return") {
                     opCode = 0x00;
                 }
@@ -545,19 +545,23 @@ var AgiBridge = /** @class */ (function () {
                     argsStr = argsStr.replace("(", "").replace(")", "");
                     argsStr = argsStr.replaceAll("f", "");
                     argsStr = argsStr.replaceAll("v", "");
-                    args = argsStr.split(",");
+                    args_1 = argsStr.split(",");
                     // convert argments that are strings to ID in message tabel
-                    args.forEach(function (arg) {
+                    var argIdx_1 = 0;
+                    args_1.forEach(function (arg) {
                         if (arg.indexOf("\"") != -1) {
                             var msg = arg.replaceAll("\"", "");
                             var msgId = messageTable.indexOf(msg);
                             if (msgId != -1) {
-                                arg = msgId;
+                                args_1[argIdx_1] = msgId;
                             }
+                        }
+                        else {
+                            args_1[argIdx_1] = parseInt(arg);
                         }
                     });
                 }
-                console.log("opcode :" + command + " => " + opCode + " | " + args);
+                console.log("opcode :" + command + " => " + opCode + " | " + args_1);
             }
             catch (err) {
                 console.log("crap :" + line + " => " + command);
