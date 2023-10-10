@@ -505,16 +505,16 @@ var AgiBridge = /** @class */ (function () {
             try {
                 command = lineToParse.substring(0, lineToParse.indexOf("("));
                 var opCode = -1;
-                if (command.indexOf("return")) {
+                if (command === "return") {
                     opCode = 0x00;
                 }
-                else if (command.indexOf("if")) {
+                else if (command === "if") {
                     opCode = 0xff;
                 }
-                else if (command.indexOf("else")) {
+                else if (command === "else") {
                     opCode = 0xfe;
                 }
-                else if (command.indexOf("said")) {
+                else if (command === "said") {
                     opCode = 0x0e;
                 }
                 else {
