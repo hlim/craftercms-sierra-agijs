@@ -498,6 +498,9 @@ var AgiBridge = /** @class */ (function () {
         logicCode = logicCode.replaceAll("\t", "");
         var messageTableStr = logicCode.substring(logicCode.indexOf("#"));
         var messageTable = messageTableStr.split("#");
+        messageTable.forEach(function (msg) {
+            msg = msg.substring(msg.indexOf("\""), msg.lastIndexOf("\""));
+        });
         var lines = [];
         lines = logicCode.split(";");
         lines.forEach(function (line) {
