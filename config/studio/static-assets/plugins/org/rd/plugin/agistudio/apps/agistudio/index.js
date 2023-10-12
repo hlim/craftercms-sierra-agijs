@@ -492,6 +492,7 @@ var AgiBridge = /** @class */ (function () {
         return binary.readUint8();
     };
     AgiBridge.compile = function (logicCode) {
+        // this code needs to be re-built as a true parser
         logicCode = logicCode.replaceAll("}", "};");
         logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
@@ -526,6 +527,23 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "if") {
                     opCode = 0xff;
+                    var testStr = lineToParse.replace("if (", "").replace(") {", "");
+                    var testStrArray = testStr.split(/\|\||\&\&/);
+                    testStrArray.forEach(function (testStr) {
+                        // 0xFC OR
+                        // 0xFD AND
+                        // NEGATED?
+                        var compareCommand = testStr.substring(0, testStr.indexOf("("));
+                        var compOpCode = AgiBridge.testFunctions.indexOf(compareCommand);
+                        var compareArgsStr = testStr.substring(testStr.indexOf("(") + 1, testStr.indexOf(")"));
+                        compareArgsStr = compareArgsStr.replaceAll("f", "");
+                        compareArgsStr = compareArgsStr.replaceAll("v", "");
+                        var compareArgs = compareArgsStr.split(",");
+                        args_1[args_1.length] = compOpCode;
+                        compareArgs.forEach(function (arg) {
+                            args_1[args_1.length] = arg;
+                        });
+                    });
                 }
                 else if (command === "else") {
                     opCode = 0xfe;
