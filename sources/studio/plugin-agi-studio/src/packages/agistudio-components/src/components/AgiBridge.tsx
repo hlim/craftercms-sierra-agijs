@@ -12,35 +12,35 @@ export class AgiBridge {
   }
 
   static gameIsLoaded() {
-    let gameIsLoaded = false;
+    let gameIsLoaded = false
 
     let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
     if (roomValue) {
-      gameIsLoaded = true;
+      gameIsLoaded = true
     }
 
-    return gameIsLoaded;
+    return gameIsLoaded
   }
   static currentRoom = () => {
     let roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
     let roomInt = (parseInt(roomValue)) ? roomValue : -1
     return roomValue
-  };
+  }
 
   static agiExecute(intent: string, command: string) {
-    let frameElPath = "document.getElementById('crafterCMSPreviewIframe')";
+    let frameElPath = "document.getElementById('crafterCMSPreviewIframe')"
     let previewFrameEl = eval(frameElPath);
 
     if (previewFrameEl) {
-      const agiPath = frameElPath + '.contentWindow.Agi';
-      const resourcesPath = frameElPath + '.contentWindow.Resources';
-      const fsPath = frameElPath + '.contentWindow.Fs';
+      const agiPath = frameElPath + '.contentWindow.Agi'
+      const resourcesPath = frameElPath + '.contentWindow.Resources'
+      const fsPath = frameElPath + '.contentWindow.Fs'
 
-      let agiBooted = eval(agiPath);
+      let agiBooted = eval(agiPath)
 
       if (agiBooted) {
         try {
-          var commandToSend = command;
+          var commandToSend = command
 
           if (command.startsWith('Agi')) {
             commandToSend = command.replaceAll('Agi', agiPath);
@@ -458,12 +458,14 @@ export class AgiBridge {
 
 
   static compile = (logicCode) => {
+    // this code needs to be re-built as a true parser
+
     logicCode = logicCode.replaceAll("}", "};")
     logicCode = logicCode.replaceAll("{", "{;")
 
     logicCode = logicCode.replaceAll("\n", "")
     logicCode = logicCode.replaceAll("\t", "")
-    
+  
     let messageTableStr =  logicCode.substring(logicCode.indexOf("#"))
     let messageTable = messageTableStr.split("#")
     let msgIdx = 0
@@ -500,6 +502,30 @@ export class AgiBridge {
         }  
         else if(command === "if") {
           opCode = 0xff
+          let testStr = lineToParse.replace("if(","").replace(") {", "")
+          let testStrArray = testStr.split(/\|\||\&\&/)
+
+          testStrArray.forEach(function(testStr) {
+            // 0xFC OR
+            // 0xFD AND
+            // NEGATED?
+            let compareCommand = testStr.substring(0, testStr.indexOf("("))
+            var compOpCode = AgiBridge.testFunctions.indexOf(compareCommand)
+            let compareArgsStr = testStr.substring(testStr.indexOf("(")+1, testStr.indexOf(")"))
+            
+            compareArgsStr = compareArgsStr.replaceAll("f","")
+            compareArgsStr = compareArgsStr.replaceAll("v","")
+            let compareArgs = compareArgsStr.split(",")
+            args[args.length] = compOpCode
+
+            compareArgs.forEach(function(arg){
+              args[args.length] = arg
+            })
+          })
+
+
+
+
         }
         else if(command === "else") {
           opCode = 0xfe
@@ -514,12 +540,11 @@ export class AgiBridge {
           // message table item
         }
         else {
-          opCode = AgiBridge.statementFunctions.indexOf(command);
+          opCode = AgiBridge.statementFunctions.indexOf(command)
           let argsStr = lineToParse.replaceAll(command, "")
           argsStr = argsStr.replace("(","").replace(")", "")
           argsStr = argsStr.replaceAll("f","")
           argsStr = argsStr.replaceAll("v","")
-
           args = argsStr.split(",")
 
           // convert argments that are strings to ID in message tabel
@@ -547,9 +572,8 @@ export class AgiBridge {
       catch(err) {
         console.log("err parsing command :"+line+" => "+command)
       }
-
     })
   }
 }
 
-export default AgiBridge;
+export default AgiBridge
