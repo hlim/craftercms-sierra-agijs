@@ -527,7 +527,7 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "if") {
                     opCode = 0xff;
-                    var testStr = lineToParse.replace("if (", "").replace(") {", "");
+                    var testStr = lineToParse.replace("if(", "").replace(") {", "");
                     var testStrArray = testStr.split(/\|\||\&\&/);
                     testStrArray.forEach(function (testStr) {
                         // 0xFC OR
