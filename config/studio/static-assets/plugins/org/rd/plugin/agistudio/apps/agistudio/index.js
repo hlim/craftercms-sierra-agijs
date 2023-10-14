@@ -879,7 +879,7 @@ function ShowCode(props) {
             var codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode);
             var reDecompiledForCheck = AgiBridge.decompile(codeAsLogic);
             var prettyPrinted = AgiBridge.prettyPrintCode(reDecompiledForCheck);
-            return reDecompiledForCheck;
+            return prettyPrinted;
         }
         catch (err) {
             return "" + err;
