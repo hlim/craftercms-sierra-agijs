@@ -902,7 +902,7 @@ function ShowCode(props) {
             React.createElement(IconButton, { onClick: handleCompileClick },
                 React.createElement(DataObjectRoundedIcon, null)),
             React.createElement(DialogContent, null,
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: roomCode }),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: roomCode }),
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleCommandUpdate }),
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: compiledCode }))),
         React.createElement(Tooltip, { title: 'Show Code' },
