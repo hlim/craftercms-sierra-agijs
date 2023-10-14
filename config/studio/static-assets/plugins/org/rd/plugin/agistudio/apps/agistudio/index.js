@@ -618,7 +618,7 @@ var AgiBridge = /** @class */ (function () {
         }
         // set the message offset
         messageOffset = (messageOffset != -1) ? messageOffset : position;
-        rightSizedBuffer[0] = messageOffset;
+        rightSizedBuffer[1] = messageOffset;
         //    rightSizedBuffer[1] = messageOffset << 16
         var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
         var bStreamBuffer = new Fs.ByteStream(rightSizedBuffer, 0);
