@@ -10,6 +10,7 @@ export function ShowCode(props) {
   const open = Boolean(anchorEl);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [roomCode, setRoomCode] = React.useState(null);
+  const [compiledCode, setCompiledCode] = React.useState("");
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -17,7 +18,11 @@ export function ShowCode(props) {
     let currentRoom = AgiBridge.currentRoom();
     let Agi = AgiBridge.agiExecute('Get Logic Array', 'Agi');
     let code = new Agi.LogicParser(Agi.interpreter, currentRoom);
-    setRoomCode(AgiBridge.prettyPrintCode(AgiBridge.decompile(code)))
+    
+    let codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + currentRoom + ')');
+    let decompiledCode = AgiBridge.decompile(codeData, code)
+    let prettyPrintedCode = AgiBridge.prettyPrintCode(decompiledCode)
+    setRoomCode(prettyPrintedCode)
 
     setDialogOpen(true);
   };
@@ -31,6 +36,27 @@ export function ShowCode(props) {
     setAnchorEl(null);
   };
 
+ 
+
+  const handleCompileClick = (event: React.MouseEvent<HTMLElement>) => {
+
+    try {
+      let compiledCode = AgiBridge.compile(roomCode)
+      let codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode)
+      let reDecompiledForCheck = AgiBridge.decompile(compiledCode, codeAsLogic)
+      let prettyPrinted = AgiBridge.prettyPrintCode(reDecompiledForCheck)
+
+      setCompiledCode(prettyPrinted)
+    }
+    catch(err) {
+      setCompiledCode("Error compiling and re-decompiling for check failed :"+err)
+      console.log(err)
+    }
+  }
+
+  const handleCommandUpdate = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setRoomCode(event.target.value);
+  }
 
   return (
     <>
@@ -48,14 +74,35 @@ export function ShowCode(props) {
           <DataObjectRoundedIcon />
         </IconButton>
 
+        <IconButton onClick={handleCompileClick}>
+          <DataObjectRoundedIcon />
+        </IconButton>
+
         <DialogContent>
           <TextField
             id="outlined-textarea"
             sx={{ width: '100%' }}
             multiline
-            rows={20}
-            defaultValue={roomCode}
+            rows={10}
+            value={roomCode}
           />
+
+
+          <TextField
+            id="outlined-textarea"
+            sx={{ width: '100%' }}
+            multiline
+            rows={1}
+            onChange={handleCommandUpdate} />
+
+          <TextField
+            id="outlined-textarea"
+            sx={{ width: '100%' }}
+            multiline
+            rows={10}
+            defaultValue={compiledCode}
+          />
+
         </DialogContent>
       </Dialog>
 

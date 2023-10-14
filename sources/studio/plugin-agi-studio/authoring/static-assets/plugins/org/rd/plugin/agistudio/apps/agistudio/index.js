@@ -340,12 +340,41 @@ var AgiBridge = /** @class */ (function () {
         });
         return code;
     };
-    AgiBridge.decompile = function (logic) {
+    AgiBridge.newLogicFromBuffer = function (buffer) {
+        var Agi = AgiBridge.agiExecute('Get Agi', 'Agi');
+        // load room 1 logic and manipulate it into a "new" logic
+        var logic = new Agi.LogicParser(Agi.interpreter, 1);
+        var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
+        new Fs.ByteStream(buffer, 0);
+        logic.logic.data = buffer; //bStreamBuffer
+        logic.messages = [];
+        logic.logic.messages = [];
+        logic.messagesStartOffset = buffer.buffer[1];
+        logic.logic.data.position = 0;
+        // create the message array
+        var numMessages = buffer.buffer[logic.messagesStartOffset];
+        buffer.buffer[logic.messagesStartOffset + 1];
+        for (var i = 0; i < numMessages; i++) {
+            var msgPtr = buffer.buffer[logic.messagesStartOffset + 2 + i];
+            var msgByte = -1;
+            var msg = "";
+            var msgByteIdx = 0;
+            while (msgByte != 0) {
+                msgByte = buffer.buffer[msgPtr + msgByteIdx++];
+                if (msgByte != 0)
+                    msg += String.fromCharCode(msgByte);
+            }
+            logic.logic.messages[logic.logic.messages.length] = msg;
+            logic.messages[logic.messages.length] = msg;
+        }
+        logic.decompile();
+        return logic;
+    };
+    AgiBridge.decompile = function (binary, logic) {
         var lines = [];
         if (logic) {
-            var codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + logic.no + ')');
             var program = logic.decompile();
-            AgiBridge.decompileScope(codeData, logic.logic.messages, program, lines, 0);
+            AgiBridge.decompileScope(binary, logic.logic.messages, program, lines, 0);
             var m = 1;
             logic.logic.messages.forEach(function (msg) {
                 lines.push('#message ' + m + ' "' + msg + '"');
@@ -493,6 +522,9 @@ var AgiBridge = /** @class */ (function () {
     };
     AgiBridge.compile = function (logicCode) {
         // this code needs to be re-built as a true parser
+        var buffer = new Uint8Array(8000);
+        var position = 2;
+        var messageOffset = -1;
         logicCode = logicCode.replaceAll("}", "};");
         logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
@@ -556,6 +588,9 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command.indexOf("#") != -1) {
                     // message table item
+                    if (messageOffset === -1) {
+                        messageOffset = position;
+                    }
                 }
                 else {
                     opCode = AgiBridge.statementFunctions.indexOf(command);
@@ -563,7 +598,7 @@ var AgiBridge = /** @class */ (function () {
                     argsStr = argsStr.replace("(", "").replace(")", "");
                     argsStr = argsStr.replaceAll("f", "");
                     argsStr = argsStr.replaceAll("v", "");
-                    args_1 = argsStr.split(",");
+                    args_1 = (argsStr != "") ? argsStr.split(",") : [];
                     // convert argments that are strings to ID in message tabel
                     var argIdx_1 = 0;
                     args_1.forEach(function (arg) {
@@ -571,16 +606,22 @@ var AgiBridge = /** @class */ (function () {
                             var msg = arg.replaceAll("\"", "");
                             var msgId = messageTable.indexOf(msg);
                             if (msgId != -1) {
-                                args_1[argIdx_1] = msgId;
+                                args_1[argIdx_1++] = msgId;
                             }
                         }
                         else {
                             var argAsNum = parseInt(arg);
-                            args_1[argIdx_1] = isNaN(argAsNum) ? arg : argAsNum;
+                            args_1[argIdx_1++] = isNaN(argAsNum) ? arg : argAsNum;
                         }
                     });
                 }
                 if (opCode != -1) {
+                    buffer[position] = opCode;
+                    position++;
+                    args_1.forEach(function (arg) {
+                        buffer[position] = arg;
+                        position++;
+                    });
                     console.log("opcode :" + command + " => " + opCode + " | " + args_1);
                 }
             }
@@ -588,6 +629,37 @@ var AgiBridge = /** @class */ (function () {
                 console.log("err parsing command :" + line + " => " + command);
             }
         });
+        // encode messages
+        messageOffset = position;
+        var messages = ["         Intro/Opening screen", "ABC"];
+        buffer[position++] = messages.length;
+        var ptrMsgsEndPos = position;
+        // create a space for message pointers
+        position = position + messages.length;
+        // now add the messages to the buffer
+        for (var k = 0; k < messages.length; k++) {
+            buffer[position++] = k; // message index
+            buffer[ptrMsgsEndPos + 1 + k] = position; // message position
+            var message = messages[k];
+            for (var j = 0; j < message.length; j++) {
+                buffer[position++] = message.charCodeAt(j);
+            }
+            buffer[position++] = 0;
+        }
+        // note where message structure ends
+        buffer[ptrMsgsEndPos] = position;
+        // create a final buffer of the correct size and populate it
+        var rightSizedBuffer = new Uint8Array(position);
+        for (var i = 0; i < position; i++) {
+            rightSizedBuffer[i] = buffer[i];
+        }
+        // set the message offset
+        messageOffset = (messageOffset != -1) ? messageOffset : position;
+        rightSizedBuffer[1] = messageOffset;
+        //    rightSizedBuffer[1] = messageOffset << 16
+        var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
+        var bStreamBuffer = new Fs.ByteStream(rightSizedBuffer, 0);
+        return bStreamBuffer;
     };
     return AgiBridge;
 }());
@@ -847,25 +919,49 @@ function ShowCode(props) {
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
     var _c = React.useState(null), roomCode = _c[0], setRoomCode = _c[1];
+    var _d = React.useState(""), compiledCode = _d[0], setCompiledCode = _d[1];
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         var currentRoom = AgiBridge.currentRoom();
         var Agi = AgiBridge.agiExecute('Get Logic Array', 'Agi');
         var code = new Agi.LogicParser(Agi.interpreter, currentRoom);
-        setRoomCode(AgiBridge.prettyPrintCode(AgiBridge.decompile(code)));
+        var codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + currentRoom + ')');
+        var decompiledCode = AgiBridge.decompile(codeData, code);
+        var prettyPrintedCode = AgiBridge.prettyPrintCode(decompiledCode);
+        setRoomCode(prettyPrintedCode);
         setDialogOpen(true);
     };
     var handleSaveClick = function (event) {
         setAnchorEl(event.currentTarget);
         AgiBridge.compile(roomCode);
     };
+    var handleCompileClick = function (event) {
+        try {
+            var compiledCode_1 = AgiBridge.compile(roomCode);
+            var codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode_1);
+            var reDecompiledForCheck = AgiBridge.decompile(compiledCode_1, codeAsLogic);
+            var prettyPrinted = AgiBridge.prettyPrintCode(reDecompiledForCheck);
+            setCompiledCode(prettyPrinted);
+        }
+        catch (err) {
+            setCompiledCode("Error compiling and re-decompiling for check failed :" + err);
+            console.log(err);
+        }
+    };
+    var handleCommandUpdate = function (event) {
+        setRoomCode(event.target.value);
+    };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Logic Listing"),
             React.createElement(IconButton, { onClick: handleSaveClick },
                 React.createElement(DataObjectRoundedIcon, null)),
+            React.createElement(IconButton, { onClick: handleCompileClick },
+                React.createElement(DataObjectRoundedIcon, null)),
             React.createElement(DialogContent, null,
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: roomCode }))),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: roomCode }),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleCommandUpdate }),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: compiledCode }))),
         React.createElement(Tooltip, { title: 'Show Code' },
             React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DataObjectRoundedIcon, null)))));

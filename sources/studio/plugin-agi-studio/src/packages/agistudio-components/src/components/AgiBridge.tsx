@@ -293,16 +293,51 @@ export class AgiBridge {
     return code;
   };
 
-  static decompile = (logic: any) => {
+  static newLogicFromBuffer = (buffer: any) => {
+    let Agi = AgiBridge.agiExecute('Get Agi', 'Agi')
+
+    // load room 1 logic and manipulate it into a "new" logic
+    let logic = new Agi.LogicParser(Agi.interpreter, 1);
+
+    let Fs = AgiBridge.agiExecute("Get Fs", "Fs")
+    let bStreamBuffer = new Fs.ByteStream(buffer, 0);
+    logic.logic.data =buffer //bStreamBuffer
+
+    logic.messages = []
+    logic.logic.messages = []
+    logic.messagesStartOffset = buffer.buffer[1]
+    logic.logic.data.position = 0
+
+    // create the message array
+    var numMessages = buffer.buffer[logic.messagesStartOffset]
+    var ptrMessagesEnd = buffer.buffer[logic.messagesStartOffset+1]
+    var decryptionIndex = 0;
+    for (var i = 0; i < numMessages; i++) {
+        var msgPtr = buffer.buffer[logic.messagesStartOffset+2+i]
+        var msgByte = -1
+        var msg = ""
+        var msgByteIdx = 0
+        while(msgByte !=0) {
+          msgByte = buffer.buffer[msgPtr+msgByteIdx++]
+          if(msgByte!=0) msg+=String.fromCharCode(msgByte)
+        }
+        logic.logic.messages[logic.logic.messages.length] = msg
+        logic.messages[logic.messages.length] = msg
+
+      }
+
+
+    logic.decompile()
+    
+ 
+    return logic
+  }
+
+  static decompile = (binary:any, logic: any) => {
     var lines = [];
     if (logic) {
-      let codeData = AgiBridge.agiExecute(
-        'Get Binary',
-        'Resources.readAgiResource(Resources.AgiResource.Logic, ' + logic.no + ')'
-      );
-
       var program = logic.decompile();
-      AgiBridge.decompileScope(codeData, logic.logic.messages, program, lines, 0);
+      AgiBridge.decompileScope(binary, logic.logic.messages, program, lines, 0);
 
       var m = 1;
       logic.logic.messages.forEach(function (msg) {
@@ -460,6 +495,9 @@ export class AgiBridge {
   static compile = (logicCode) => {
     // this code needs to be re-built as a true parser
 
+    let buffer = new Uint8Array(8000);
+    let position = 2
+    let messageOffset = -1
     logicCode = logicCode.replaceAll("}", "};")
     logicCode = logicCode.replaceAll("{", "{;")
 
@@ -522,10 +560,6 @@ export class AgiBridge {
               args[args.length] = arg
             })
           })
-
-
-
-
         }
         else if(command === "else") {
           opCode = 0xfe
@@ -538,6 +572,9 @@ export class AgiBridge {
         }
         else if(command.indexOf("#") != -1) {
           // message table item
+          if(messageOffset === -1) {
+            messageOffset = position
+          }
         }
         else {
           opCode = AgiBridge.statementFunctions.indexOf(command)
@@ -545,7 +582,7 @@ export class AgiBridge {
           argsStr = argsStr.replace("(","").replace(")", "")
           argsStr = argsStr.replaceAll("f","")
           argsStr = argsStr.replaceAll("v","")
-          args = argsStr.split(",")
+          args = (argsStr!="") ? argsStr.split(",") : []
 
           // convert argments that are strings to ID in message tabel
           let argIdx = 0
@@ -555,17 +592,23 @@ export class AgiBridge {
               let msgId = messageTable.indexOf(msg)
 
               if(msgId != -1) {
-                args[argIdx] = msgId 
+                args[argIdx++] = msgId 
               }
             }
             else {
               let argAsNum = parseInt(arg)
-              args[argIdx] = isNaN(argAsNum) ? arg : argAsNum              
+              args[argIdx++] = isNaN(argAsNum) ? arg : argAsNum              
             }
           })
         }
 
         if(opCode != -1) {
+          buffer[position] = opCode; 
+          position++
+          args.forEach(function (arg) { 
+            buffer[position] = arg; 
+            position++
+          })
           console.log("opcode :"+command+" => "+opCode+" | "+args)
         }
       }
@@ -573,7 +616,50 @@ export class AgiBridge {
         console.log("err parsing command :"+line+" => "+command)
       }
     })
+
+    // encode messages
+    messageOffset =  position 
+    let messages =["         Intro/Opening screen", "ABC"] 
+    
+    buffer[position++] = messages.length
+    let ptrMsgsEndPos = position
+    
+    // create a space for message pointers
+    position = position + messages.length
+
+    // now add the messages to the buffer
+    for (var k = 0; k<messages.length; k++) {
+      buffer[position++] = k                // message index
+      buffer[ptrMsgsEndPos+1+k] = position  // message position
+
+      let message = messages[k]
+      for(let j=0; j<message.length; j++) {
+        buffer[position++] = message.charCodeAt(j)
+      }
+      buffer[position++] = 0
+    }
+
+    // note where message structure ends
+    buffer[ptrMsgsEndPos] = position
+    
+    
+    // create a final buffer of the correct size and populate it
+    let rightSizedBuffer = new Uint8Array(position);
+    for(let i=0; i<position; i++) {
+      rightSizedBuffer[i] = buffer[i]
+    }
+
+    // set the message offset
+    messageOffset = (messageOffset != -1) ? messageOffset : position
+    rightSizedBuffer[1] = messageOffset
+//    rightSizedBuffer[1] = messageOffset << 16
+
+    let Fs = AgiBridge.agiExecute("Get Fs", "Fs")
+    let bStreamBuffer = new Fs.ByteStream(rightSizedBuffer, 0);
+    return bStreamBuffer
   }
+
+ 
 }
 
 export default AgiBridge
