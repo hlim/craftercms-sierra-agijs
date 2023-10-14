@@ -349,7 +349,7 @@ var AgiBridge = /** @class */ (function () {
         logic.logic.data = buffer; //bStreamBuffer
         logic.messages = [];
         logic.logic.messages = [];
-        logic.messagesStartOffset = buffer[1];
+        logic.messagesStartOffset = buffer.buffer[1];
         logic.logic.data.position = 0;
         logic.decompile();
         return logic;
