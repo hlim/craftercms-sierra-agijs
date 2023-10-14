@@ -878,6 +878,7 @@ function ShowCode(props) {
             var compiledCode = AgiBridge.compile(roomCode);
             var codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode);
             var reDecompiledForCheck = AgiBridge.decompile(codeAsLogic);
+            var prettyPrinted = AgiBridge.prettyPrintCode(reDecompiledForCheck);
             return reDecompiledForCheck;
         }
         catch (err) {
