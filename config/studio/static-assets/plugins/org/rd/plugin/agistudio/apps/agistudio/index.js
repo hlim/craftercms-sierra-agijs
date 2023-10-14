@@ -613,7 +613,8 @@ var AgiBridge = /** @class */ (function () {
                 console.log("err parsing command :" + line + " => " + command);
             }
         });
-        // encode messages    
+        // encode messages
+        messageOffset = position;
         var messages = ["         Intro/Opening screen", "ABC"];
         buffer[position++] = messages.length;
         var ptrMsgsEndPos = position;
