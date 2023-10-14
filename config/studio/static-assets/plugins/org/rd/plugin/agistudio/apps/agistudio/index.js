@@ -342,10 +342,12 @@ var AgiBridge = /** @class */ (function () {
     };
     AgiBridge.newLogicFromBuffer = function (buffer) {
         var Agi = AgiBridge.agiExecute('Get Agi', 'Agi');
+        // load room 1 logic and manipulate it into a "new" logic
         var logic = new Agi.LogicParser(Agi.interpreter, 1);
         var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
         new Fs.ByteStream(buffer, 0);
         logic.logic.data = buffer; //bStreamBuffer
+        logic.messages = [];
         logic.decompile();
         return logic;
     };
