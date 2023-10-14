@@ -601,7 +601,9 @@ var AgiBridge = /** @class */ (function () {
                 console.log("err parsing command :" + line + " => " + command);
             }
         });
-        return buffer;
+        var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
+        var bStreamBuffer = new Fs.ByteStream(buffer, 0);
+        return bStreamBuffer;
     };
     return AgiBridge;
 }());
