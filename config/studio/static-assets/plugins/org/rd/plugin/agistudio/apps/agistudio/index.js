@@ -606,12 +606,12 @@ var AgiBridge = /** @class */ (function () {
                             var msg = arg.replaceAll("\"", "");
                             var msgId = messageTable.indexOf(msg);
                             if (msgId != -1) {
-                                args_1[argIdx_1] = msgId;
+                                args_1[argIdx_1++] = msgId;
                             }
                         }
                         else {
                             var argAsNum = parseInt(arg);
-                            args_1[argIdx_1] = isNaN(argAsNum) ? arg : argAsNum;
+                            args_1[argIdx_1++] = isNaN(argAsNum) ? arg : argAsNum;
                         }
                     });
                 }
