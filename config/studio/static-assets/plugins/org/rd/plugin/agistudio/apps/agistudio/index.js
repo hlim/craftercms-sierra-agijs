@@ -340,6 +340,10 @@ var AgiBridge = /** @class */ (function () {
         });
         return code;
     };
+    AgiBridge.newLogicFromBuffer = function (buffer) {
+        var logic = AgiBridge.agiExecute('Get Logic(1)', 'Agi.Logic(1, Resources.readAgiResource(Resources.AgiResource.Logic, 1))');
+        return logic;
+    };
     AgiBridge.decompile = function (logic) {
         var lines = [];
         if (logic) {
@@ -870,7 +874,7 @@ function ShowCode(props) {
     };
     var decompiledCode = function () {
         try {
-            return AgiBridge.decompile(AgiBridge.compile(roomCode));
+            return AgiBridge.decompile(AgiBridge.newLogicFromBuffer(AgiBridge.compile(roomCode)));
         }
         catch (err) {
             return "" + err;
