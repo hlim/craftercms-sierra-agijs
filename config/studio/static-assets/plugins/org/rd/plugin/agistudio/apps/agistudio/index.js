@@ -350,7 +350,7 @@ var AgiBridge = /** @class */ (function () {
         var lines = [];
         if (logic) {
             var program = logic.decompile();
-            AgiBridge.decompileScope(logic.data, logic.logic.messages, program, lines, 0);
+            AgiBridge.decompileScope(binary, logic.logic.messages, program, lines, 0);
             var m = 1;
             logic.logic.messages.forEach(function (msg) {
                 lines.push('#message ' + m + ' "' + msg + '"');
