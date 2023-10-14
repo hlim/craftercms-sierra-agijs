@@ -351,6 +351,20 @@ var AgiBridge = /** @class */ (function () {
         logic.logic.messages = [];
         logic.messagesStartOffset = buffer.buffer[1];
         logic.logic.data.position = 0;
+        // create the message array
+        var numMessages = buffer.buffer[logic.messagesStartOffset];
+        buffer.buffer[logic.messagesStartOffset + 1];
+        for (var i = 0; i < numMessages; i++) {
+            var msgPtr = buffer.buffer[logic.messagesStartOffset + 2 + i];
+            var msgByte = -1;
+            var msg = "";
+            var msgByteIdx = 0;
+            while (msgByte != 0) {
+                msgByte = buffer.buffer[msgPtr + msgByteIdx++];
+                msg += String.fromCharCode(msgByte);
+            }
+            logic.logic.messages[logic.logic.messages.length] = msg;
+        }
         logic.decompile();
         return logic;
     };
