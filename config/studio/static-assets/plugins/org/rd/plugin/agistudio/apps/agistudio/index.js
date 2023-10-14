@@ -502,7 +502,7 @@ var AgiBridge = /** @class */ (function () {
     AgiBridge.compile = function (logicCode) {
         // this code needs to be re-built as a true parser
         var buffer = new Uint8Array(8000);
-        var position = 3;
+        var position = 2;
         logicCode = logicCode.replaceAll("}", "};");
         logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
@@ -604,6 +604,10 @@ var AgiBridge = /** @class */ (function () {
                 console.log("err parsing command :" + line + " => " + command);
             }
         });
+        var rightSizedBuffer = new Uint8Array(position);
+        for (var i = 0; i < position; i++) {
+            rightSizedBuffer[i] = buffer[0];
+        }
         var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
         var bStreamBuffer = new Fs.ByteStream(buffer, 0);
         return bStreamBuffer;
