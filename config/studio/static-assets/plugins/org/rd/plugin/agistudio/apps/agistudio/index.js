@@ -493,6 +493,8 @@ var AgiBridge = /** @class */ (function () {
     };
     AgiBridge.compile = function (logicCode) {
         // this code needs to be re-built as a true parser
+        var buffer = new Uint8Array(8000);
+        var position = 0;
         logicCode = logicCode.replaceAll("}", "};");
         logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
@@ -581,6 +583,12 @@ var AgiBridge = /** @class */ (function () {
                     });
                 }
                 if (opCode != -1) {
+                    buffer[position] = opCode;
+                    position++;
+                    args_1.forEach(function (arg) {
+                        buffer[position] = arg;
+                        position++;
+                    });
                     console.log("opcode :" + command + " => " + opCode + " | " + args_1);
                 }
             }
@@ -588,6 +596,7 @@ var AgiBridge = /** @class */ (function () {
                 console.log("err parsing command :" + line + " => " + command);
             }
         });
+        return buffer;
     };
     return AgiBridge;
 }());
