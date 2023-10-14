@@ -502,7 +502,7 @@ var AgiBridge = /** @class */ (function () {
     AgiBridge.compile = function (logicCode) {
         // this code needs to be re-built as a true parser
         var buffer = new Uint8Array(8000);
-        var position = 2;
+        var position = 3;
         logicCode = logicCode.replaceAll("}", "};");
         logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
