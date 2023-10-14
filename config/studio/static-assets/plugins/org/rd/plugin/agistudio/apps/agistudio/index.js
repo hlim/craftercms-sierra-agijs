@@ -349,9 +349,12 @@ var AgiBridge = /** @class */ (function () {
     AgiBridge.decompile = function (logic) {
         var lines = [];
         if (logic) {
-            var codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + logic.no + ')');
+            // let codeData = AgiBridge.agiExecute(
+            //   'Get Binary',
+            //   'Resources.readAgiResource(Resources.AgiResource.Logic, ' + logic.no + ')'
+            // );
             var program = logic.decompile();
-            AgiBridge.decompileScope(codeData, logic.logic.messages, program, lines, 0);
+            AgiBridge.decompileScope(logic.data, logic.logic.messages, program, lines, 0);
             var m = 1;
             logic.logic.messages.forEach(function (msg) {
                 lines.push('#message ' + m + ' "' + msg + '"');
