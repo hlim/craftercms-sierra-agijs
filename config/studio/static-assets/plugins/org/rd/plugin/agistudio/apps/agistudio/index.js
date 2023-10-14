@@ -598,7 +598,7 @@ var AgiBridge = /** @class */ (function () {
                     argsStr = argsStr.replace("(", "").replace(")", "");
                     argsStr = argsStr.replaceAll("f", "");
                     argsStr = argsStr.replaceAll("v", "");
-                    args_1 = argsStr.split(",");
+                    args_1 = (argsStr != "") ? argsStr.split(",") : [];
                     // convert argments that are strings to ID in message tabel
                     var argIdx_1 = 0;
                     args_1.forEach(function (arg) {
