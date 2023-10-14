@@ -605,8 +605,8 @@ var AgiBridge = /** @class */ (function () {
             }
         });
         var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
-        var bStreamBuffer = new Fs.ByteStream(buffer, 0);
-        return bStreamBuffer;
+        new Fs.ByteStream(buffer, 0);
+        return buffer; //bStreamBuffer
     };
     return AgiBridge;
 }());
