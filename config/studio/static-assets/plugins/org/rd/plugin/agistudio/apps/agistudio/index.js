@@ -343,6 +343,7 @@ var AgiBridge = /** @class */ (function () {
     AgiBridge.newLogicFromBuffer = function (buffer) {
         var Agi = AgiBridge.agiExecute('Get Agi', 'Agi');
         var logic = new Agi.LogicParser(Agi.interpreter, 1);
+        logic.decompile();
         logic.data = buffer;
         return logic;
     };
