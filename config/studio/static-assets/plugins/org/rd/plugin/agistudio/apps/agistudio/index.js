@@ -346,13 +346,9 @@ var AgiBridge = /** @class */ (function () {
         logic.data = buffer;
         return logic;
     };
-    AgiBridge.decompile = function (logic) {
+    AgiBridge.decompile = function (binary, logic) {
         var lines = [];
         if (logic) {
-            // let codeData = AgiBridge.agiExecute(
-            //   'Get Binary',
-            //   'Resources.readAgiResource(Resources.AgiResource.Logic, ' + logic.no + ')'
-            // );
             var program = logic.decompile();
             AgiBridge.decompileScope(logic.data, logic.logic.messages, program, lines, 0);
             var m = 1;
@@ -871,7 +867,10 @@ function ShowCode(props) {
         var currentRoom = AgiBridge.currentRoom();
         var Agi = AgiBridge.agiExecute('Get Logic Array', 'Agi');
         var code = new Agi.LogicParser(Agi.interpreter, currentRoom);
-        setRoomCode(AgiBridge.prettyPrintCode(AgiBridge.decompile(code)));
+        var codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + currentRoom + ')');
+        var decompiledCode = AgiBridge.decompile(codeData, code);
+        var prettyPrintedCode = AgiBridge.prettyPrintCode(decompiledCode);
+        setRoomCode(prettyPrintedCode);
         setDialogOpen(true);
     };
     var handleSaveClick = function (event) {
@@ -882,7 +881,7 @@ function ShowCode(props) {
         try {
             var compiledCode_1 = AgiBridge.compile(roomCode);
             var codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode_1);
-            var reDecompiledForCheck = AgiBridge.decompile(codeAsLogic);
+            var reDecompiledForCheck = AgiBridge.decompile(codeAsLogic.data, codeAsLogic);
             var prettyPrinted = AgiBridge.prettyPrintCode(reDecompiledForCheck);
             setCompiledCode(prettyPrinted);
         }
