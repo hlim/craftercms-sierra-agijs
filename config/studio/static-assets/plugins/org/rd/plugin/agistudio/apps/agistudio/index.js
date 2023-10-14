@@ -859,6 +859,14 @@ function ShowCode(props) {
         setAnchorEl(event.currentTarget);
         AgiBridge.compile(roomCode);
     };
+    var decompiledCode = function () {
+        try {
+            return AgiBridge.decompile(AgiBridge.compile(roomCode));
+        }
+        catch (err) {
+            return "" + err;
+        }
+    };
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Logic Listing"),
@@ -866,7 +874,7 @@ function ShowCode(props) {
                 React.createElement(DataObjectRoundedIcon, null)),
             React.createElement(DialogContent, null,
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: roomCode }),
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: AgiBridge.decompile(AgiBridge.compile(roomCode)) }))),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 20, defaultValue: decompiledCode() }))),
         React.createElement(Tooltip, { title: 'Show Code' },
             React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DataObjectRoundedIcon, null)))));
