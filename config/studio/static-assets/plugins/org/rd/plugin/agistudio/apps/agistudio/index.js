@@ -348,6 +348,7 @@ var AgiBridge = /** @class */ (function () {
         new Fs.ByteStream(buffer, 0);
         logic.logic.data = buffer; //bStreamBuffer
         logic.messages = [];
+        logic.logic.messages = [];
         logic.decompile();
         return logic;
     };
