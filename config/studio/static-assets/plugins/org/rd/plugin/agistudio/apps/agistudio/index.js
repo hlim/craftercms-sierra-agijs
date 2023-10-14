@@ -606,7 +606,7 @@ var AgiBridge = /** @class */ (function () {
         });
         var rightSizedBuffer = new Uint8Array(position);
         for (var i = 0; i < position; i++) {
-            rightSizedBuffer[i] = buffer[0];
+            rightSizedBuffer[i] = buffer[i];
         }
         var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
         var bStreamBuffer = new Fs.ByteStream(rightSizedBuffer, 0);
