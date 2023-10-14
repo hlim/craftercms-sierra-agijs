@@ -874,7 +874,10 @@ function ShowCode(props) {
     };
     var decompiledCode = function () {
         try {
-            return AgiBridge.decompile(AgiBridge.newLogicFromBuffer(AgiBridge.compile(roomCode)));
+            var compiledCode = AgiBridge.compile(roomCode);
+            var codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode);
+            var reDecompiledForCheck = AgiBridge.decompile(codeAsLogic);
+            return reDecompiledForCheck;
         }
         catch (err) {
             return "" + err;
