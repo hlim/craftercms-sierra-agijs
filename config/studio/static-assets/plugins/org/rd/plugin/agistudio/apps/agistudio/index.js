@@ -613,6 +613,24 @@ var AgiBridge = /** @class */ (function () {
                 console.log("err parsing command :" + line + " => " + command);
             }
         });
+        // encode messages    
+        var messages = ["         Intro/Opening screen", "ABC"];
+        buffer[position++] = messages.length;
+        var ptrMsgsEndPos = position;
+        // create a space for message pointers
+        position = position + messages.length;
+        // now add the messages to the buffer
+        for (var k = 0; k < messages.length; k++) {
+            buffer[position++] = k; // message index
+            buffer[ptrMsgsEndPos + 1 + k] = position; // message position
+            var message = messages[k];
+            for (var j = 0; j < message.length; j++) {
+                buffer[position++] = message.charCodeAt(j);
+            }
+            buffer[position++] = 0;
+        }
+        // note where message structure ends
+        buffer[ptrMsgsEndPos] = position;
         // create a final buffer of the correct size and populate it
         var rightSizedBuffer = new Uint8Array(position);
         for (var i = 0; i < position; i++) {
