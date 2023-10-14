@@ -361,9 +361,11 @@ var AgiBridge = /** @class */ (function () {
             var msgByteIdx = 0;
             while (msgByte != 0) {
                 msgByte = buffer.buffer[msgPtr + msgByteIdx++];
-                msg += String.fromCharCode(msgByte);
+                if (msgByte != 0)
+                    msg += String.fromCharCode(msgByte);
             }
             logic.logic.messages[logic.logic.messages.length] = msg;
+            logic.messages[logic.messages.length] = msg;
         }
         logic.decompile();
         return logic;
