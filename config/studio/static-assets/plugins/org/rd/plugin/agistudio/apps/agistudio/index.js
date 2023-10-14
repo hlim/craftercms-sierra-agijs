@@ -891,7 +891,8 @@ function ShowCode(props) {
             setCompiledCode(prettyPrinted);
         }
         catch (err) {
-            setCompiledCode("" + err);
+            setCompiledCode("Error compiling and re-decompiling for check failed :" + err);
+            console.log(err);
         }
     };
     var handleCommandUpdate = function (event) {
