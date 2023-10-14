@@ -503,6 +503,7 @@ var AgiBridge = /** @class */ (function () {
         // this code needs to be re-built as a true parser
         var buffer = new Uint8Array(8000);
         var position = 2;
+        var messageOffset = -1;
         logicCode = logicCode.replaceAll("}", "};");
         logicCode = logicCode.replaceAll("{", "{;");
         logicCode = logicCode.replaceAll("\n", "");
@@ -566,6 +567,9 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command.indexOf("#") != -1) {
                     // message table item
+                    if (messageOffset === -1) {
+                        messageOffset = position;
+                    }
                 }
                 else {
                     opCode = AgiBridge.statementFunctions.indexOf(command);
@@ -604,10 +608,15 @@ var AgiBridge = /** @class */ (function () {
                 console.log("err parsing command :" + line + " => " + command);
             }
         });
+        // create a final buffer of the correct size and populate it
         var rightSizedBuffer = new Uint8Array(position);
         for (var i = 0; i < position; i++) {
             rightSizedBuffer[i] = buffer[i];
         }
+        // set the message offset
+        messageOffset = (messageOffset != -1) ? messageOffset : position;
+        rightSizedBuffer[0] = messageOffset >>> 8;
+        rightSizedBuffer[1] = messageOffset >>> 16;
         var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
         var bStreamBuffer = new Fs.ByteStream(rightSizedBuffer, 0);
         return bStreamBuffer;
