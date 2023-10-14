@@ -862,6 +862,7 @@ function ShowCode(props) {
     var open = Boolean(anchorEl);
     var _b = React.useState(false), dialogOpen = _b[0], setDialogOpen = _b[1];
     var _c = React.useState(null), roomCode = _c[0], setRoomCode = _c[1];
+    var _d = React.useState(""), compiledCode = _d[0], setCompiledCode = _d[1];
     var handleClick = function (event) {
         setAnchorEl(event.currentTarget);
         var currentRoom = AgiBridge.currentRoom();
@@ -874,16 +875,16 @@ function ShowCode(props) {
         setAnchorEl(event.currentTarget);
         AgiBridge.compile(roomCode);
     };
-    var decompiledCode = function () {
+    var handleCompileClick = function (event) {
         try {
-            var compiledCode = AgiBridge.compile(roomCode);
-            var codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode);
+            var compiledCode_1 = AgiBridge.compile(roomCode);
+            var codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode_1);
             var reDecompiledForCheck = AgiBridge.decompile(codeAsLogic);
             var prettyPrinted = AgiBridge.prettyPrintCode(reDecompiledForCheck);
-            return prettyPrinted;
+            setCompiledCode(prettyPrinted);
         }
         catch (err) {
-            return "" + err;
+            setCompiledCode("" + err);
         }
     };
     return (React.createElement(React.Fragment, null,
@@ -891,9 +892,11 @@ function ShowCode(props) {
             React.createElement(DialogTitle, null, "Logic Listing"),
             React.createElement(IconButton, { onClick: handleSaveClick },
                 React.createElement(DataObjectRoundedIcon, null)),
+            React.createElement(IconButton, { onClick: handleCompileClick },
+                React.createElement(DataObjectRoundedIcon, null)),
             React.createElement(DialogContent, null,
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: roomCode }),
-                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: decompiledCode() }))),
+                React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, defaultValue: compiledCode }))),
         React.createElement(Tooltip, { title: 'Show Code' },
             React.createElement(IconButton, { disabled: !AgiBridge.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": open ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": open ? 'true' : undefined, onClick: handleClick },
                 React.createElement(DataObjectRoundedIcon, null)))));
