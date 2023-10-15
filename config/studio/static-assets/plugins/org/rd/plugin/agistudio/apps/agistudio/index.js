@@ -791,6 +791,7 @@ var AgiLogic = /** @class */ (function () {
     };
     AgiLogic.compile = function (logicCode) {
         // this code needs to be re-built as a true parser
+        var messages = [];
         var buffer = new Uint8Array(8000);
         var position = 2;
         var messageOffset = -1;
@@ -847,8 +848,7 @@ var AgiLogic = /** @class */ (function () {
                         args_1[args_1.length] = compOpCode;
                         if (compOpCode === 0x0e) {
                             // said
-                            alert('compile Said');
-                            args_1[args_1.length] = 1;
+                            args_1[args_1.length] = 1; //hack
                         }
                         compareArgs.forEach(function (arg) {
                             var argAsNum = parseInt(arg);
@@ -877,6 +877,8 @@ var AgiLogic = /** @class */ (function () {
                     if (messageOffset === -1) {
                         messageOffset = position;
                     }
+                    var msg = line.substring(line.indexOf(""), line.lastIndexOf(""));
+                    messages.push(msg);
                 }
                 else {
                     opCode = AgiLogic.statementFunctions.indexOf(command);
@@ -889,8 +891,8 @@ var AgiLogic = /** @class */ (function () {
                     var argIdx_1 = 0;
                     args_1.forEach(function (arg) {
                         if (arg.indexOf('"') != -1) {
-                            var msg = arg.replaceAll('"', '');
-                            var msgId = messageTable.indexOf(msg);
+                            var msg_1 = arg.replaceAll('"', '');
+                            var msgId = messageTable.indexOf(msg_1);
                             if (msgId != -1) {
                                 args_1[argIdx_1++] = msgId;
                             }
@@ -919,7 +921,6 @@ var AgiLogic = /** @class */ (function () {
         if (messageOffset === -1) {
             messageOffset = position;
         }
-        var messages = ['         Intro/Opening screen', 'ABC'];
         buffer[position++] = messages.length;
         var ptrMsgsEndPos = position;
         // create a space for message pointers
