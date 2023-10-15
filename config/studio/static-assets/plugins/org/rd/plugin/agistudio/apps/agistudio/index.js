@@ -1368,6 +1368,105 @@ var AgiPicture = /** @class */ (function () {
     return AgiPicture;
 }());
 
+var AgiResource;
+(function (AgiResource) {
+    AgiResource[AgiResource["Logic"] = 0] = "Logic";
+    AgiResource[AgiResource["Pic"] = 1] = "Pic";
+    AgiResource[AgiResource["View"] = 2] = "View";
+    AgiResource[AgiResource["Sound"] = 3] = "Sound";
+})(AgiResource || (AgiResource = {}));
+var availableVols = [];
+function downloadAllFiles(path, files, done) {
+    files.length;
+}
+var AgiResources = /** @class */ (function () {
+    function AgiResources() {
+    }
+    AgiResources.parseDirfile = function (buffer, records) {
+        var length = buffer.length / 3;
+        for (var i = 0; i < length; i++) {
+            var val = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
+            var volNo = val >>> 20;
+            var volOffset = val & 0xfffff;
+            if (val >>> 16 == 0xff)
+                continue;
+            records[i] = { volNo: volNo, volOffset: volOffset };
+            if (availableVols[volNo] === undefined)
+                availableVols[volNo] = true;
+        }
+    };
+    AgiResources.savePicture = function (siteId, game, commands) {
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR']);
+    };
+    AgiResources.handleSaveAsNewPicture = function (siteId, game) {
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR']);
+    };
+    AgiResources.addVolumeHeader = function (picData, volume) {
+        var endMarkerPosition = picData.length; //indexOf(255) + 1
+        var sizeOfNewData = endMarkerPosition + 5;
+        var dataWithHeader = new Uint8Array(sizeOfNewData);
+        dataWithHeader[0] = 0x12; // signature
+        dataWithHeader[1] = 0x34; // signature
+        dataWithHeader[2] = volume; // volume
+        dataWithHeader[3] = endMarkerPosition & (0xffff >> 8); // resource len LO
+        dataWithHeader[4] = endMarkerPosition >> 8; // resource len HI
+        // dataWithHeader[5] = 0    // compressed resource len LO
+        // dataWithHeader[6] = 0    // compressed resource len HI
+        for (var i = 0; i < picData.length; i++) {
+            dataWithHeader[i + 5] = picData[i];
+        }
+        return dataWithHeader;
+    };
+    AgiResources.updateDirectoryOffsets = function (dirname, dirRecords, startOffset, adjustBy) {
+        // now modify the directory
+        var position = 0;
+        var recordCount = dirRecords.length;
+        var newDirEncoded = new Uint8Array(recordCount * 3);
+        for (var d = 0; d < recordCount; d++) {
+            if (dirRecords[d]) {
+                var offset = dirRecords[d].volOffset;
+                var volume = dirRecords[d].volNo;
+                if (offset > startOffset) {
+                    offset = dirRecords[d].volOffset + adjustBy;
+                }
+                newDirEncoded[position] = volume;
+                newDirEncoded[position + 1] = offset >> 8;
+                newDirEncoded[position + 2] = offset & (0xffff >> 8);
+            }
+            else {
+                newDirEncoded[position] = 255;
+                newDirEncoded[position + 1] = 255;
+                newDirEncoded[position + 2] = 255;
+            }
+            position = position + 3;
+        }
+        return newDirEncoded;
+    };
+    AgiResources.saveFile = function (siteId, path, filename, data) {
+        var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
+        var serviceUrl = API_WRITE_CONTENT +
+            "?site=".concat(siteId, "&path=").concat(path, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
+        var body = new FormData();
+        body.append('site', siteId);
+        body.append('relativePath', 'null');
+        body.append('validating', 'false');
+        body.append('path', path);
+        body.append('name', filename);
+        body.append('type', 'application/octet-stream');
+        body.append('allowed', 'true');
+        body.append('file', new Blob([data]), filename);
+        post(serviceUrl, body).subscribe({
+            next: function (response) {
+                // alert('File Saved: ' + filename);
+            },
+            error: function (e) {
+                alert('File Failed :' + filename);
+            }
+        });
+    };
+    return AgiResources;
+}());
+
 function EditPictureDialog(props) {
     var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
@@ -1486,12 +1585,14 @@ function EditPictureDialog(props) {
     };
     var handleSaveAsNewPicture = function () {
         var game = AgiActiveGame.getActiveGameId();
-        AgiPicture.handleSaveAsNewPicture(siteId, game);
+        //@ts-ignore
+        AgiResources.handleSaveAsNewPicture(siteId, game);
         alert('New Picture Add Complete'); // do better
     };
     var handleSavePicture = function () {
         var game = AgiActiveGame.getActiveGameId();
-        AgiPicture.savePicture(siteId, game, commands);
+        //@ts-ignore
+        AgiResources.savePicture(siteId, game, commands);
         alert('Save Complete'); // do better
     };
     return (React.createElement(React.Fragment, null,
