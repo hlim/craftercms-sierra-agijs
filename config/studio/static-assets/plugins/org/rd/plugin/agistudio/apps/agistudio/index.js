@@ -815,7 +815,7 @@ var AgiLogic = /** @class */ (function () {
         var openScopePosition = 0; // doing this does not allow nesting of scopes :(
         lines.forEach(function (line) {
             var lineToParse = line; //.replaceAll(" ", "")
-            lineToParse = lineToParse.toLowerCase();
+            //lineToParse = lineToParse.toLowerCase(); // don't do this. it creates ambiguity
             var command = '';
             try {
                 if (lineToParse.indexOf('(') != -1) {
