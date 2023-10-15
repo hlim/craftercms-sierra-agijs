@@ -1540,7 +1540,6 @@ var AgiResources = /** @class */ (function () {
                     AgiResources.saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
                     // save updated volume file
                     AgiResources.saveFile(siteId, gamePath, 'VOL.0', newStream);
-                    AgiActiveGame.reload();
                 });
             });
         };
@@ -1932,12 +1931,14 @@ function EditPictureDialog(props) {
         var agiResources = new AgiResources();
         agiResources.saveAsNewPicture(siteId, game);
         alert('New Picture Add Complete'); // do better
+        // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
     };
     var handleSavePicture = function () {
         var game = AgiActiveGame.getActiveGameId();
         var agiResources = new AgiResources();
         agiResources.savePicture(siteId, game, commands);
         alert('Save Complete'); // do better
+        // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
