@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tooltip } from '@mui/material';
+import { Button, DialogActions, Tooltip } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
@@ -69,15 +69,16 @@ export function ShowCode(props) {
         open={dialogOpen}
       >
         <DialogTitle>Logic Listing</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleSaveClick}>
+            Compile and Save
+          </Button>
 
-        <IconButton onClick={handleSaveClick}>
-          <DataObjectRoundedIcon />
-        </IconButton>
-
-        <IconButton onClick={handleCompileClick}>
-          <DataObjectRoundedIcon />
-        </IconButton>
-
+          <Button onClick={handleCompileClick}>
+            Compile and then Decompile
+          </Button>
+        </DialogActions>
+        
         <DialogContent>
           <TextField
             id="outlined-textarea"

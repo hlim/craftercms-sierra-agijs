@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -539,6 +539,7 @@ var AgiBridge = /** @class */ (function () {
         });
         var lines = [];
         lines = logicCode.split(";");
+        var openScopePosition = 0; // doing this does not allow nesting of scopes :(
         lines.forEach(function (line) {
             var lineToParse = line; //.replaceAll(" ", "")
             lineToParse = lineToParse.toLowerCase();
@@ -573,9 +574,15 @@ var AgiBridge = /** @class */ (function () {
                         var compareArgs = compareArgsStr.split(",");
                         args_1[args_1.length] = compOpCode;
                         compareArgs.forEach(function (arg) {
+                            var argAsNum = parseInt(arg);
+                            arg = isNaN(argAsNum) ? arg : argAsNum;
                             args_1[args_1.length] = arg;
                         });
                     });
+                    args_1[args_1.length] = 0xff; // close the if clause if(....)
+                    args_1[args_1.length] = 0x00; // length of scope
+                    args_1[args_1.length] = 0x00; // length of scope
+                    openScopePosition = position + 1 /* op code */ + args_1.length;
                 }
                 else if (command === "else") {
                     opCode = 0xfe;
@@ -585,6 +592,8 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "}") {
                     // close of scope, nothng to do
+                    var byteCount = position - openScopePosition;
+                    buffer[openScopePosition - 2] = byteCount;
                 }
                 else if (command.indexOf("#") != -1) {
                     // message table item
@@ -630,7 +639,9 @@ var AgiBridge = /** @class */ (function () {
             }
         });
         // encode messages
-        messageOffset = position;
+        if (messageOffset === -1) {
+            messageOffset = position;
+        }
         var messages = ["         Intro/Opening screen", "ABC"];
         buffer[position++] = messages.length;
         var ptrMsgsEndPos = position;
@@ -954,10 +965,9 @@ function ShowCode(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Logic Listing"),
-            React.createElement(IconButton, { onClick: handleSaveClick },
-                React.createElement(DataObjectRoundedIcon, null)),
-            React.createElement(IconButton, { onClick: handleCompileClick },
-                React.createElement(DataObjectRoundedIcon, null)),
+            React.createElement(DialogActions, null,
+                React.createElement(Button, { onClick: handleSaveClick }, "Compile and Save"),
+                React.createElement(Button, { onClick: handleCompileClick }, "Compile and then Decompile")),
             React.createElement(DialogContent, null,
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: roomCode }),
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleCommandUpdate }),

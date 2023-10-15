@@ -515,7 +515,7 @@ export class AgiBridge {
 
     let lines = []
     lines = logicCode.split(";")
-
+    let openScopePosition = 0 // doing this does not allow nesting of scopes :(
 
     lines.forEach(function (line) {
         var lineToParse = line //.replaceAll(" ", "")
@@ -557,9 +557,15 @@ export class AgiBridge {
             args[args.length] = compOpCode
 
             compareArgs.forEach(function(arg){
+              let argAsNum = parseInt(arg)
+              arg = isNaN(argAsNum) ? arg : argAsNum                
               args[args.length] = arg
             })
           })
+          args[args.length] = 0xff // close the if clause if(....)
+          args[args.length] = 0x00 // length of scope
+          args[args.length] = 0x00 // length of scope
+          openScopePosition = position + 1 /* op code */ + args.length
         }
         else if(command === "else") {
           opCode = 0xfe
@@ -569,6 +575,8 @@ export class AgiBridge {
         }
         else if(command ===  "}") {
           // close of scope, nothng to do
+          let byteCount = position - openScopePosition
+          buffer[openScopePosition - 2] = byteCount
         }
         else if(command.indexOf("#") != -1) {
           // message table item
@@ -618,7 +626,11 @@ export class AgiBridge {
     })
 
     // encode messages
-    messageOffset =  position 
+
+    if(messageOffset === -1) {
+      messageOffset = position
+    }
+
     let messages =["         Intro/Opening screen", "ABC"] 
     
     buffer[position++] = messages.length
@@ -641,7 +653,6 @@ export class AgiBridge {
 
     // note where message structure ends
     buffer[ptrMsgsEndPos] = position
-    
     
     // create a final buffer of the correct size and populate it
     let rightSizedBuffer = new Uint8Array(position);
