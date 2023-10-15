@@ -4,6 +4,7 @@ const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
 const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
+const { post } = craftercms.utils.ajax;
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
 const MenuList = craftercms.libs.MaterialUI.MenuList && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.MenuList, 'default') ? craftercms.libs.MaterialUI.MenuList['default'] : craftercms.libs.MaterialUI.MenuList;
 const MenuItem = craftercms.libs.MaterialUI.MenuItem && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.MenuItem, 'default') ? craftercms.libs.MaterialUI.MenuItem['default'] : craftercms.libs.MaterialUI.MenuItem;
@@ -17,7 +18,6 @@ const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/ic
 const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AddRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AddRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AddRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AddRounded');
 const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
-const { post } = craftercms.utils.ajax;
 const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
 
 /*
@@ -344,7 +344,7 @@ var AgiBridge = /** @class */ (function () {
         var Agi = AgiBridge.agiExecute('Get Agi', 'Agi');
         // load room 1 logic and manipulate it into a "new" logic
         var logic = new Agi.LogicParser(Agi.interpreter, 1);
-        var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
+        var Fs = AgiBridge.agiExecute('Get Fs', 'Fs');
         new Fs.ByteStream(buffer, 0);
         logic.logic.data = buffer; //bStreamBuffer
         logic.messages = [];
@@ -357,7 +357,7 @@ var AgiBridge = /** @class */ (function () {
         for (var i = 0; i < numMessages; i++) {
             var msgPtr = buffer.buffer[logic.messagesStartOffset + 2 + i];
             var msgByte = -1;
-            var msg = "";
+            var msg = '';
             var msgByteIdx = 0;
             while (msgByte != 0) {
                 msgByte = buffer.buffer[msgPtr + msgByteIdx++];
@@ -525,29 +525,32 @@ var AgiBridge = /** @class */ (function () {
         var buffer = new Uint8Array(8000);
         var position = 2;
         var messageOffset = -1;
-        logicCode = logicCode.replaceAll("}", "};");
-        logicCode = logicCode.replaceAll("{", "{;");
-        logicCode = logicCode.replaceAll("\n", "");
-        logicCode = logicCode.replaceAll("\t", "");
-        var messageTableStr = logicCode.substring(logicCode.indexOf("#"));
-        var messageTable = messageTableStr.split("#");
+        logicCode = logicCode.replaceAll('}', '};');
+        logicCode = logicCode.replaceAll('{', '{;');
+        logicCode = logicCode.replaceAll('\n', '');
+        logicCode = logicCode.replaceAll('\t', '');
+        var messageTableStr = logicCode.substring(logicCode.indexOf('#'));
+        var messageTable = messageTableStr.split('#');
         var msgIdx = 0;
         messageTable.forEach(function (msg) {
-            msg = (msg.substring(msg.indexOf("\""), msg.lastIndexOf("\"") + 1)).replaceAll("\"", "").toLowerCase();
+            msg = msg
+                .substring(msg.indexOf('"'), msg.lastIndexOf('"') + 1)
+                .replaceAll('"', '')
+                .toLowerCase();
             messageTable[msgIdx] = msg;
             msgIdx++;
         });
         var lines = [];
-        lines = logicCode.split(";");
+        lines = logicCode.split(';');
         var openScopePosition = 0; // doing this does not allow nesting of scopes :(
         lines.forEach(function (line) {
             var lineToParse = line; //.replaceAll(" ", "")
             lineToParse = lineToParse.toLowerCase();
-            var command = "";
+            var command = '';
             try {
-                if (lineToParse.indexOf("(") != -1) {
+                if (lineToParse.indexOf('(') != -1) {
                     // function or if statement
-                    command = lineToParse.substring(0, lineToParse.indexOf("("));
+                    command = lineToParse.substring(0, lineToParse.indexOf('('));
                 }
                 else {
                     // other
@@ -555,23 +558,23 @@ var AgiBridge = /** @class */ (function () {
                 }
                 var opCode = -1;
                 var args_1 = [];
-                if (command === "return") {
+                if (command === 'return') {
                     opCode = 0x00;
                 }
-                else if (command === "if") {
+                else if (command === 'if') {
                     opCode = 0xff;
-                    var testStr = lineToParse.replace("if(", "").replace(") {", "");
+                    var testStr = lineToParse.replace('if(', '').replace(') {', '');
                     var testStrArray = testStr.split(/\|\||\&\&/);
                     testStrArray.forEach(function (testStr) {
                         // 0xFC OR
                         // 0xFD AND
                         // NEGATED?
-                        var compareCommand = testStr.substring(0, testStr.indexOf("("));
+                        var compareCommand = testStr.substring(0, testStr.indexOf('('));
                         var compOpCode = AgiBridge.testFunctions.indexOf(compareCommand);
-                        var compareArgsStr = testStr.substring(testStr.indexOf("(") + 1, testStr.indexOf(")"));
-                        compareArgsStr = compareArgsStr.replaceAll("f", "");
-                        compareArgsStr = compareArgsStr.replaceAll("v", "");
-                        var compareArgs = compareArgsStr.split(",");
+                        var compareArgsStr = testStr.substring(testStr.indexOf('(') + 1, testStr.indexOf(')'));
+                        compareArgsStr = compareArgsStr.replaceAll('f', '');
+                        compareArgsStr = compareArgsStr.replaceAll('v', '');
+                        var compareArgs = compareArgsStr.split(',');
                         args_1[args_1.length] = compOpCode;
                         compareArgs.forEach(function (arg) {
                             var argAsNum = parseInt(arg);
@@ -584,18 +587,18 @@ var AgiBridge = /** @class */ (function () {
                     args_1[args_1.length] = 0x00; // length of scope
                     openScopePosition = position + 1 /* op code */ + args_1.length;
                 }
-                else if (command === "else") {
+                else if (command === 'else') {
                     opCode = 0xfe;
                 }
-                else if (command === "said") {
+                else if (command === 'said') {
                     opCode = 0x0e;
                 }
-                else if (command === "}") {
+                else if (command === '}') {
                     // close of scope, nothng to do
                     var byteCount = position - openScopePosition;
                     buffer[openScopePosition - 2] = byteCount;
                 }
-                else if (command.indexOf("#") != -1) {
+                else if (command.indexOf('#') != -1) {
                     // message table item
                     if (messageOffset === -1) {
                         messageOffset = position;
@@ -603,16 +606,16 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else {
                     opCode = AgiBridge.statementFunctions.indexOf(command);
-                    var argsStr = lineToParse.replaceAll(command, "");
-                    argsStr = argsStr.replace("(", "").replace(")", "");
-                    argsStr = argsStr.replaceAll("f", "");
-                    argsStr = argsStr.replaceAll("v", "");
-                    args_1 = (argsStr != "") ? argsStr.split(",") : [];
+                    var argsStr = lineToParse.replaceAll(command, '');
+                    argsStr = argsStr.replace('(', '').replace(')', '');
+                    argsStr = argsStr.replaceAll('f', '');
+                    argsStr = argsStr.replaceAll('v', '');
+                    args_1 = argsStr != '' ? argsStr.split(',') : [];
                     // convert argments that are strings to ID in message tabel
                     var argIdx_1 = 0;
                     args_1.forEach(function (arg) {
-                        if (arg.indexOf("\"") != -1) {
-                            var msg = arg.replaceAll("\"", "");
+                        if (arg.indexOf('"') != -1) {
+                            var msg = arg.replaceAll('"', '');
                             var msgId = messageTable.indexOf(msg);
                             if (msgId != -1) {
                                 args_1[argIdx_1++] = msgId;
@@ -631,18 +634,18 @@ var AgiBridge = /** @class */ (function () {
                         buffer[position] = arg;
                         position++;
                     });
-                    console.log("opcode :" + command + " => " + opCode + " | " + args_1);
+                    console.log('opcode :' + command + ' => ' + opCode + ' | ' + args_1);
                 }
             }
             catch (err) {
-                console.log("err parsing command :" + line + " => " + command);
+                console.log('err parsing command :' + line + ' => ' + command);
             }
         });
         // encode messages
         if (messageOffset === -1) {
             messageOffset = position;
         }
-        var messages = ["         Intro/Opening screen", "ABC"];
+        var messages = ['         Intro/Opening screen', 'ABC'];
         buffer[position++] = messages.length;
         var ptrMsgsEndPos = position;
         // create a space for message pointers
@@ -665,15 +668,648 @@ var AgiBridge = /** @class */ (function () {
             rightSizedBuffer[i] = buffer[i];
         }
         // set the message offset
-        messageOffset = (messageOffset != -1) ? messageOffset : position;
+        messageOffset = messageOffset != -1 ? messageOffset : position;
         rightSizedBuffer[1] = messageOffset;
         //    rightSizedBuffer[1] = messageOffset << 16
-        var Fs = AgiBridge.agiExecute("Get Fs", "Fs");
+        var Fs = AgiBridge.agiExecute('Get Fs', 'Fs');
         var bStreamBuffer = new Fs.ByteStream(rightSizedBuffer, 0);
         return bStreamBuffer;
     };
+    /* Pic Drawing */
+    /* ============================================================================================================= */
+    AgiBridge.prettyPrintPictureCommands = function (commands) {
+        var code = '';
+        commands.forEach(function (command) {
+            code += command + '\n';
+        });
+        return code;
+    };
+    AgiBridge.encodePictureCommands = function (commandsToEncode) {
+        var encodedBuffer = new Uint8Array(100000);
+        var parsedCommands = commandsToEncode.replaceAll('\n', '').split(';');
+        var i = 0;
+        var skip = false;
+        parsedCommands.forEach(function (command) {
+            var commandName = command.substring(0, command.indexOf('('));
+            var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
+            var opCode = 0; // End
+            if (commandName.startsWith('/*'))
+                skip = true;
+            else if (commandName.startsWith('//'))
+                skip = true;
+            else if ((skip = commandName.startsWith('*/')))
+                skip = false;
+            if (!skip) {
+                //console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
+                switch (commandName) {
+                    case 'PicSetColor':
+                        opCode = 240;
+                        break;
+                    case 'PicDisable':
+                        opCode = 241;
+                        break;
+                    case 'PriSetcolor':
+                        opCode = 242;
+                        break;
+                    case 'PriDisable':
+                        opCode = 243;
+                        break;
+                    case 'DrawYCorner':
+                        opCode = 244;
+                        break;
+                    case 'DrawXCorner':
+                        opCode = 245;
+                        break;
+                    case 'DrawAbs':
+                        opCode = 246;
+                        break;
+                    case 'DrawRel':
+                        opCode = 247;
+                        break;
+                    case 'DrawFill':
+                        opCode = 248;
+                        break;
+                    case 'SetPen':
+                        opCode = 249;
+                        break;
+                    case 'DrawPen':
+                        opCode = 250;
+                        break;
+                    case 'End':
+                        opCode = 255;
+                        break;
+                }
+                if (opCode != 0) {
+                    encodedBuffer[i] = opCode;
+                    {
+                        i++;
+                        if (opCode != 255)
+                            for (var a = 0; a < args.length; a++) {
+                                var value = args[a];
+                                encodedBuffer[i] = parseInt(value);
+                                i++;
+                            }
+                    }
+                }
+            }
+        });
+        var rightsizedBuffer = new Uint8Array(i);
+        for (var l = 0; l < i; l++) {
+            rightsizedBuffer[l] = encodedBuffer[l];
+        }
+        return rightsizedBuffer;
+    };
+    AgiBridge.getFunctionArgsFromPictureStream = function (stream) {
+        var args = [];
+        while (true) {
+            var arg = stream.readUint8();
+            if (arg >= 0xf0)
+                break;
+            args.push(arg);
+        }
+        stream.position--;
+        return args;
+    };
+    AgiBridge.decodePictureStream = function (stream) {
+        var decodedCommands = [];
+        stream.position = 0;
+        var processing = true;
+        while (processing) {
+            var opCode = stream.readUint8();
+            if (opCode >= 0xf0) {
+                switch (opCode) {
+                    case 240: // PicSetColor
+                        var picColor = stream.readUint8();
+                        decodedCommands.push('PicSetColor(' + picColor + ');');
+                        break;
+                    case 241: // PicDisable
+                        decodedCommands.push('PicDisable();');
+                        break;
+                    case 242: // PriSetcolor
+                        var priColor = stream.readUint8();
+                        decodedCommands.push('PriSetcolor(' + priColor + ');');
+                        break;
+                    case 243: // PriDisable
+                        decodedCommands.push('PriDisable();');
+                        break;
+                    case 244: // DrawYCorner
+                        var args = AgiBridge.getFunctionArgsFromPictureStream(stream);
+                        decodedCommands.push('DrawYCorner(' + args.join(',') + ');');
+                        break;
+                    case 245: // DrawXCorner
+                        var args = AgiBridge.getFunctionArgsFromPictureStream(stream);
+                        decodedCommands.push('DrawXCorner(' + args.join(',') + ');');
+                        break;
+                    case 246: // DrawAbs
+                        var args = AgiBridge.getFunctionArgsFromPictureStream(stream);
+                        decodedCommands.push('DrawAbs(' + args.join(',') + ');');
+                        break;
+                    case 247: // DrawRel
+                        var args = AgiBridge.getFunctionArgsFromPictureStream(stream);
+                        decodedCommands.push('DrawRel(' + args.join(',') + ');');
+                        break;
+                    case 248: // DrawFill
+                        var args = AgiBridge.getFunctionArgsFromPictureStream(stream);
+                        decodedCommands.push('DrawFill(' + args.join(',') + ');');
+                        break;
+                    case 249: // SetPen
+                        var value = stream.readUint8();
+                        decodedCommands.push('SetPen(' + value + ');');
+                        break;
+                    case 250: // DrawPen
+                        var args = AgiBridge.getFunctionArgsFromPictureStream(stream);
+                        decodedCommands.push('DrawPen(' + args.join(',') + ');');
+                        break;
+                    case 255: // End
+                        decodedCommands.push('End();');
+                        processing = false;
+                        break;
+                }
+            }
+        }
+        return decodedCommands;
+    };
+    AgiBridge.renderCommands = function (commandsToRender) {
+        var encodedBuffer = AgiBridge.encodePictureCommands(commandsToRender);
+        var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
+        var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
+        var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
+        var picNo = agiInterpreter.variables[0];
+        agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
+        agiInterpreter.agi_draw_pic(0);
+        agiInterpreter.agi_show_pic(0);
+    };
+    AgiBridge.createPictureDrawModeCommand = function (mode) {
+        var value = 1 & 0x10 & 0x07;
+        return "PicSetPen(".concat(value, ");");
+    };
+    AgiBridge.createPictureDrawCommand = function (mode, x, y, scale) {
+        var newCommand = '';
+        if (mode == 'Abs') {
+            newCommand = "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ");");
+        }
+        else if (mode == 'Pen') {
+            newCommand = "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");");
+        }
+        else if (mode == 'Fill') {
+            newCommand = "DrawFill(".concat(x, ",").concat(y, ");");
+        }
+        else {
+            console.log('unknown tool -> ' + mode);
+        }
+        return newCommand;
+    };
+    AgiBridge.createPictureSetColorCommand = function (color) {
+        return "PicSetColor(".concat(color, ");");
+    };
+    AgiBridge.getCurrentPictureCommands = function () {
+        try {
+            var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+            var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
+            var decodedPictureCommands = AgiBridge.decodePictureStream(currentPictureStream);
+            return AgiBridge.prettyPrintPictureCommands(decodedPictureCommands);
+        }
+        catch (err) { }
+    };
+    AgiBridge.switchPictureBuffer = function () {
+        AgiBridge.agiExecute('Get buffer mode', 'Agi.interpreter.gbm = (Agi.interpreter.gbm && Agi.interpreter.gbm==1) ? 0 : 1');
+        AgiBridge.agiExecute('Keep Orig Visual Buffer', 'Agi.interpreter.gvb = (!Agi.interpreter.gvb) ? Agi.interpreter.visualBuffer : Agi.interpreter.gvb');
+        AgiBridge.agiExecute('Set Visual Buffer', 'Agi.interpreter.visualBuffer = (Agi.interpreter.gbm==1) ? Agi.interpreter.priorityBuffer : Agi.interpreter.gvb');
+        AgiBridge.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
+    };
+    AgiBridge.undoPictureCommand = function (commands) {
+        //@ts-ignore
+        var commandsAsArray = existingCommands.split(';');
+        var lastCommandPosition = -1;
+        var i = commandsAsArray.length - 1;
+        // find last command position
+        while (lastCommandPosition == -1 && i != 0) {
+            var command = commandsAsArray[i];
+            if (command != '' && command != '\n' && command != '\nEnd()') {
+                lastCommandPosition = i;
+            }
+            i--;
+        }
+        var numberOfElementsToRemove = commandsAsArray.length - lastCommandPosition;
+        commandsAsArray.splice(lastCommandPosition, numberOfElementsToRemove);
+        var commandsAsText = commandsAsArray.join(';');
+        commandsAsText += ';\nEnd();';
+        return commandsAsText;
+    };
+    AgiBridge.appendPictureCommandToTail = function (commands, command) {
+        var newCommands = commands.replace('End();', '');
+        newCommands = newCommands + "".concat(command, "\nEnd();");
+        return newCommands;
+    };
+    AgiBridge.addVolumeHeader = function (picData, volume) {
+        var endMarkerPosition = picData.length; //indexOf(255) + 1
+        var sizeOfNewData = endMarkerPosition + 5;
+        var dataWithHeader = new Uint8Array(sizeOfNewData);
+        dataWithHeader[0] = 0x12; // signature
+        dataWithHeader[1] = 0x34; // signature
+        dataWithHeader[2] = volume; // volume
+        dataWithHeader[3] = endMarkerPosition & (0xffff >> 8); // resource len LO
+        dataWithHeader[4] = endMarkerPosition >> 8; // resource len HI
+        // dataWithHeader[5] = 0    // compressed resource len LO
+        // dataWithHeader[6] = 0    // compressed resource len HI
+        for (var i = 0; i < picData.length; i++) {
+            dataWithHeader[i + 5] = picData[i];
+        }
+        return dataWithHeader;
+    };
+    AgiBridge.updateDirectoryOffsets = function (dirname, dirRecords, startOffset, adjustBy) {
+        // now modify the directory
+        var position = 0;
+        var recordCount = dirRecords.length;
+        var newDirEncoded = new Uint8Array(recordCount * 3);
+        for (var d = 0; d < recordCount; d++) {
+            if (dirRecords[d]) {
+                var offset = dirRecords[d].volOffset;
+                var volume = dirRecords[d].volNo;
+                if (offset > startOffset) {
+                    offset = dirRecords[d].volOffset + adjustBy;
+                }
+                newDirEncoded[position] = volume;
+                newDirEncoded[position + 1] = offset >> 8;
+                newDirEncoded[position + 2] = offset & (0xffff >> 8);
+            }
+            else {
+                newDirEncoded[position] = 255;
+                newDirEncoded[position + 1] = 255;
+                newDirEncoded[position + 2] = 255;
+            }
+            position = position + 3;
+        }
+        return newDirEncoded;
+    };
+    AgiBridge.saveFile = function (siteId, path, filename, data) {
+        var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
+        var serviceUrl = API_WRITE_CONTENT +
+            "?site=".concat(siteId, "&path=").concat(path, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
+        var body = new FormData();
+        body.append('site', siteId);
+        body.append('relativePath', 'null');
+        body.append('validating', 'false');
+        body.append('path', path);
+        body.append('name', filename);
+        body.append('type', 'application/octet-stream');
+        body.append('allowed', 'true');
+        body.append('file', new Blob([data]), filename);
+        post(serviceUrl, body).subscribe({
+            next: function (response) {
+                // alert('File Saved: ' + filename);
+            },
+            error: function (e) {
+                alert('File Failed :' + filename);
+            }
+        });
+    };
+    AgiBridge.handleSaveAsNewPicture = function (siteId, game) {
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+            console.log('Directory files downloaded.');
+            parseDirfile(buffers['LOGDIR'], logdirRecords);
+            parseDirfile(buffers['PICDIR'], picdirRecords);
+            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+            parseDirfile(buffers['SNDDIR'], snddirRecords);
+            var volNames = [];
+            for (var i = 0; i < availableVols.length; i++) {
+                if (availableVols[i] === true) {
+                    volNames.push('VOL.' + i);
+                }
+            }
+            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
+                console.log('Resource volumes downloaded.');
+                for (var j = 0; j < volNames.length; j++) {
+                    volBuffers[j] = buffers[volNames[j]];
+                }
+                var newPicData = new Uint8Array(6);
+                newPicData[0] = 240; // set pic color
+                newPicData[1] = 0; // ard: black
+                newPicData[2] = 0; // draw fill
+                newPicData[3] = 10; // arg: x
+                newPicData[4] = 0; // arg: y
+                newPicData[5] = 255; // end
+                newPicData = AgiBridge.addVolumeHeader(newPicData, 0);
+                var volNum = 0;
+                var picsStream = volBuffers[0].buffer;
+                var offset = picsStream.length;
+                var roomValue = picdirRecords.length;
+                var picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
+                var newStreamLength = picsStream.length + newPicData.length;
+                var newStream = new Uint8Array(newStreamLength);
+                for (var n = 0; n < newStreamLength; n++) {
+                    if (n < picsStream.length) {
+                        // copy in the existing resources
+                        newStream[n] = picsStream[n];
+                    }
+                    else {
+                        // copy in new resource
+                        newStream[n] = newPicData[n - picsStream.length];
+                    }
+                }
+                var newPicDirEncoded = AgiBridge.updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
+                // Every room has a logic file. Add logic file
+                var roomLogic = [
+                    12,
+                    34,
+                    0,
+                    112,
+                    84,
+                    82,
+                    0,
+                    255,
+                    7,
+                    5,
+                    255,
+                    29,
+                    0,
+                    24,
+                    0,
+                    25,
+                    0,
+                    27,
+                    0,
+                    63,
+                    50,
+                    255,
+                    252,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    252,
+                    255,
+                    6,
+                    0,
+                    37,
+                    0,
+                    120,
+                    140,
+                    112,
+                    120,
+                    35,
+                    0,
+                    26,
+                    255,
+                    14,
+                    1,
+                    20,
+                    0,
+                    255,
+                    2,
+                    0,
+                    101,
+                    1,
+                    255,
+                    1,
+                    2,
+                    1,
+                    255,
+                    2,
+                    0,
+                    18,
+                    99,
+                    255,
+                    1,
+                    2,
+                    2,
+                    255,
+                    2,
+                    0,
+                    18,
+                    99,
+                    255,
+                    1,
+                    2,
+                    3,
+                    255,
+                    2,
+                    0,
+                    18,
+                    2,
+                    255,
+                    1,
+                    2,
+                    4,
+                    255,
+                    2,
+                    0,
+                    18,
+                    99,
+                    0,
+                    1,
+                    27,
+                    0,
+                    4,
+                    0,
+                    21,
+                    30,
+                    0,
+                    0,
+                    0,
+                    45,
+                    6,
+                    82,
+                    6,
+                    15,
+                    78,
+                    36,
+                    27,
+                    25,
+                    7,
+                    89,
+                    100,
+                    7,
+                    29,
+                    8,
+                    12,
+                    64,
+                    65
+                ];
+                var volStream = new Uint8Array(newStreamLength + 117);
+                for (var n = 0; n < volStream.length; n++) {
+                    if (n < newStream.length) {
+                        // copy in the existing resources
+                        volStream[n] = newStream[n];
+                    }
+                    else {
+                        // copy in new resource
+                        volStream[n] = roomLogic[n - newStream.length];
+                    }
+                }
+                var logRecord = (logdirRecords[roomValue] = { volNo: volNum, volOffset: newStream.length });
+                var newLogDirEncoded = AgiBridge.updateDirectoryOffsets('L', logdirRecords, logRecord.volOffset, 0);
+                //@ts-ignore
+                var gamePath = '/static-assets/games/' + game + '/';
+                AgiBridge.saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+                AgiBridge.saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
+                // save updated volume file
+                AgiBridge.saveFile(siteId, gamePath, 'VOL.0', volStream);
+                AgiBridge.reload();
+            });
+        });
+    };
+    AgiBridge.savePicture = function (siteId, game, commands) {
+        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+            console.log('Directory files downloaded.');
+            parseDirfile(buffers['LOGDIR'], logdirRecords);
+            parseDirfile(buffers['PICDIR'], picdirRecords);
+            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
+            parseDirfile(buffers['SNDDIR'], snddirRecords);
+            var volNames = [];
+            for (var i = 0; i < availableVols.length; i++) {
+                if (availableVols[i] === true) {
+                    volNames.push('VOL.' + i);
+                }
+            }
+            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
+                console.log('Resource volumes downloaded.');
+                for (var j = 0; j < volNames.length; j++) {
+                    volBuffers[j] = buffers[volNames[j]];
+                }
+                var newPicData = AgiBridge.encodePictureCommands(commands);
+                newPicData = AgiBridge.addVolumeHeader(newPicData, 0);
+                var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+                var picRecord = picdirRecords[roomValue];
+                var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
+                var picsStream = volBuffers[picRecord.volNo].buffer;
+                var lengthOfOldPic = 0;
+                if (nextPicRecord) {
+                    lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+                }
+                var newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
+                // now that we know how the new picture relates to the old one we can re-size the stream
+                // up or down accordingly.
+                var newStreamLength = picsStream.length + newPicSizeDiff;
+                var newStream = new Uint8Array(newStreamLength);
+                for (var n = 0; n < newStream.length; n++) {
+                    if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
+                        // copy the original buffer to the new buffer
+                        if (n < picRecord.volOffset) {
+                            // before the new resource
+                            newStream[n] = picsStream[n];
+                        }
+                        else {
+                            // after our resource, we have to account for 'overlap'
+                            newStream[n] = picsStream[n - newPicSizeDiff];
+                        }
+                    }
+                    else {
+                        // copy the new picture into the new stream
+                        newStream[n] = newPicData[n - picRecord.volOffset];
+                    }
+                }
+                var newPicDirEncoded = AgiBridge.updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newLogDirEncoded = AgiBridge.updateDirectoryOffsets('L', logdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newViewDirEncoded = AgiBridge.updateDirectoryOffsets('V', viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                var newSndDirEncoded = AgiBridge.updateDirectoryOffsets('S', snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                var gamePath = '/static-assets/games/' + game + '/';
+                AgiBridge.saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+                AgiBridge.saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
+                AgiBridge.saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
+                AgiBridge.saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
+                // save updated volume file
+                AgiBridge.saveFile(siteId, gamePath, 'VOL.0', newStream);
+                AgiBridge.reload();
+            });
+        });
+    };
     return AgiBridge;
 }());
+var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
+var volBuffers = [];
+var availableVols = [];
+function parseDirfile(buffer, records) {
+    var length = buffer.length / 3;
+    for (var i = 0; i < length; i++) {
+        var val = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
+        var volNo = val >>> 20;
+        var volOffset = val & 0xfffff;
+        if (val >>> 16 == 0xff)
+            continue;
+        records[i] = { volNo: volNo, volOffset: volOffset };
+        if (availableVols[volNo] === undefined)
+            availableVols[volNo] = true;
+    }
+}
+var AgiResource;
+(function (AgiResource) {
+    AgiResource[AgiResource["Logic"] = 0] = "Logic";
+    AgiResource[AgiResource["Pic"] = 1] = "Pic";
+    AgiResource[AgiResource["View"] = 2] = "View";
+    AgiResource[AgiResource["Sound"] = 3] = "Sound";
+})(AgiResource || (AgiResource = {}));
+var ByteStream = /** @class */ (function () {
+    function ByteStream(buffer, startPosition, end) {
+        if (startPosition === void 0) { startPosition = 0; }
+        if (end === void 0) { end = 0; }
+        this.buffer = buffer;
+        this.startPosition = startPosition;
+        this.end = end;
+        this.position = 0;
+        this.length = 0;
+        if (end == 0)
+            this.end = this.buffer.byteLength;
+        this.length = this.end - this.startPosition;
+    }
+    ByteStream.prototype.readUint8 = function () {
+        return this.buffer[this.startPosition + this.position++];
+    };
+    ByteStream.prototype.readUint16 = function (littleEndian) {
+        if (littleEndian === void 0) { littleEndian = true; }
+        var b1 = this.buffer[this.startPosition + this.position++];
+        var b2 = this.buffer[this.startPosition + this.position++];
+        if (littleEndian) {
+            return (b2 << 8) + b1;
+        }
+        return (b1 << 8) + b2;
+    };
+    ByteStream.prototype.readInt16 = function (littleEndian) {
+        if (littleEndian === void 0) { littleEndian = true; }
+        var b1 = this.buffer[this.startPosition + this.position++];
+        var b2 = this.buffer[this.startPosition + this.position++];
+        if (littleEndian) {
+            return (((b2 << 8) | b1) << 16) >> 16;
+        }
+        return (((b1 << 8) | b2) << 16) >> 16;
+    };
+    return ByteStream;
+}());
+function downloadAllFiles(path, files, done) {
+    var buffers = {};
+    var leftToDownload = files.length;
+    function getBinary(url, success) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url + '?crafterSite=agi-crafter', true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.response === null) {
+                    throw "Fatal error downloading '" + url + "'";
+                }
+                else {
+                    console.log("Successfully downloaded '" + url + "'");
+                    success(xhr.response);
+                }
+            }
+        };
+        xhr.send();
+    }
+    function handleFile(num) {
+        getBinary(path + files[num], function (buffer) {
+            buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
+            leftToDownload--;
+            if (leftToDownload === 0) {
+                done(buffers);
+            }
+        });
+    }
+    for (var i = 0; i < files.length; i++) {
+        handleFile(i);
+    }
+}
 
 function AllowInput(props) {
     useDispatch();
@@ -1132,250 +1768,9 @@ function AddGame(props) {
 function EditPictureDialog(props) {
     var siteId = useActiveSiteId();
     var _a = React.useState(''), commands = _a[0], setCommands = _a[1];
-    var _b = React.useState(''); _b[0]; _b[1];
-    var _c = useState(false), mouseTrapped = _c[0], setMouseTrapped = _c[1];
-    var _d = useState(10), scaleFactor = _d[0]; _d[1];
-    var _e = useState('Abs'), drawMode = _e[0], setDrawMode = _e[1];
-    var prettyPrintCommands = function (commands) {
-        var code = '';
-        commands.forEach(function (command) {
-            code += command + '\n';
-        });
-        return code;
-    };
-    var encodeCommands = function (commandsToEncode) {
-        var encodedBuffer = new Uint8Array(100000);
-        var parsedCommands = commandsToEncode.replaceAll('\n', '').split(';');
-        var i = 0;
-        var skip = false;
-        parsedCommands.forEach(function (command) {
-            var commandName = command.substring(0, command.indexOf('('));
-            var args = command.replace(commandName, '').replaceAll(' ', '').replace('(', '').replace(')', '').split(',');
-            var opCode = 0; // End
-            if (commandName.startsWith('/*'))
-                skip = true;
-            else if (commandName.startsWith('//'))
-                skip = true;
-            else if ((skip = commandName.startsWith('*/')))
-                skip = false;
-            if (!skip) {
-                //console.log('Executing Command:' + commandName + '(' + args.join(',') + ');');
-                switch (commandName) {
-                    case 'PicSetColor':
-                        opCode = 240;
-                        break;
-                    case 'PicDisable':
-                        opCode = 241;
-                        break;
-                    case 'PriSetcolor':
-                        opCode = 242;
-                        break;
-                    case 'PriDisable':
-                        opCode = 243;
-                        break;
-                    case 'DrawYCorner':
-                        opCode = 244;
-                        break;
-                    case 'DrawXCorner':
-                        opCode = 245;
-                        break;
-                    case 'DrawAbs':
-                        opCode = 246;
-                        break;
-                    case 'DrawRel':
-                        opCode = 247;
-                        break;
-                    case 'DrawFill':
-                        opCode = 248;
-                        break;
-                    case 'SetPen':
-                        opCode = 249;
-                        break;
-                    case 'DrawPen':
-                        opCode = 250;
-                        break;
-                    case 'End':
-                        opCode = 255;
-                        break;
-                }
-                if (opCode != 0) {
-                    encodedBuffer[i] = opCode;
-                    {
-                        i++;
-                        if (opCode != 255)
-                            for (var a = 0; a < args.length; a++) {
-                                var value = args[a];
-                                encodedBuffer[i] = parseInt(value);
-                                i++;
-                            }
-                    }
-                }
-            }
-        });
-        var rightsizedBuffer = new Uint8Array(i);
-        for (var l = 0; l < i; l++) {
-            rightsizedBuffer[l] = encodedBuffer[l];
-        }
-        return rightsizedBuffer;
-    };
-    var getFunctionArgsFromPicStream = function (stream) {
-        var args = [];
-        while (true) {
-            var arg = stream.readUint8();
-            if (arg >= 0xf0)
-                break;
-            args.push(arg);
-        }
-        stream.position--;
-        return args;
-    };
-    var decodePictureStream = function (stream) {
-        var decodedCommands = [];
-        stream.position = 0;
-        var processing = true;
-        while (processing) {
-            var opCode = stream.readUint8();
-            if (opCode >= 0xf0) {
-                switch (opCode) {
-                    case 240: // PicSetColor
-                        var picColor = stream.readUint8();
-                        decodedCommands.push('PicSetColor(' + picColor + ');');
-                        break;
-                    case 241: // PicDisable
-                        decodedCommands.push('PicDisable();');
-                        break;
-                    case 242: // PriSetcolor
-                        var priColor = stream.readUint8();
-                        decodedCommands.push('PriSetcolor(' + priColor + ');');
-                        break;
-                    case 243: // PriDisable
-                        decodedCommands.push('PriDisable();');
-                        break;
-                    case 244: // DrawYCorner
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawYCorner(' + args.join(',') + ');');
-                        break;
-                    case 245: // DrawXCorner
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawXCorner(' + args.join(',') + ');');
-                        break;
-                    case 246: // DrawAbs
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawAbs(' + args.join(',') + ');');
-                        break;
-                    case 247: // DrawRel
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawRel(' + args.join(',') + ');');
-                        break;
-                    case 248: // DrawFill
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawFill(' + args.join(',') + ');');
-                        break;
-                    case 249: // SetPen
-                        var value = stream.readUint8();
-                        decodedCommands.push('SetPen(' + value + ');');
-                        break;
-                    case 250: // DrawPen
-                        var args = getFunctionArgsFromPicStream(stream);
-                        decodedCommands.push('DrawPen(' + args.join(',') + ');');
-                        break;
-                    case 255: // End
-                        decodedCommands.push('End();');
-                        processing = false;
-                        break;
-                }
-            }
-        }
-        return decodedCommands;
-    };
-    var renderCommands = function (commandsToRender) {
-        var encodedBuffer = encodeCommands(commandsToRender);
-        var agiInterpreter = AgiBridge.agiExecute('Get interpreter', 'Agi.interpreter');
-        var AgiPic = AgiBridge.agiExecute('Get Agi.Pic', 'Agi.Pic');
-        var FsByteStream = AgiBridge.agiExecute('Get Fs', 'Fs.ByteStream');
-        var picNo = agiInterpreter.variables[0];
-        agiInterpreter.loadedPics[picNo] = new AgiPic(new FsByteStream(encodedBuffer));
-        agiInterpreter.agi_draw_pic(0);
-        agiInterpreter.agi_show_pic(0);
-    };
-    var handleCommandUpdate = function (event) {
-        var updatedCommands = event.target.value;
-        var commandsAsArray = [];
-        var optimizedArray = [];
-        commandsAsArray = updatedCommands.split(';');
-        for (var i = 0; i < commandsAsArray.length; i++) {
-            if (commandsAsArray[i] != commandsAsArray[i + 1]) {
-                optimizedArray[optimizedArray.length] = commandsAsArray[i];
-                if (commandsAsArray[i].indexOf('End()') != -1) {
-                    break;
-                }
-            }
-        }
-        var newCommands = optimizedArray.join(';') + ';';
-        //@ts-ignore
-        window.agistudioPicCommands = newCommands;
-        setCommands(newCommands);
-        renderCommands(newCommands);
-    };
-    var mouseDraw = function (clientX, clientY) {
-        // something is wrong with getting commands from inside this event :-/
-        //@ts-ignore
-        var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
-        var canvas = previewDocument.getElementById('canvas');
-        var rect = canvas.getBoundingClientRect();
-        // the bit map is 160 x 200 so we need to scale the mouse input
-        var ratioOfX = clientX / rect.width;
-        var ratioOfY = clientY / rect.height;
-        var x = Math.round(160 * ratioOfX);
-        var y = Math.round(200 * ratioOfY);
-        var scale = scaleFactor;
-        handleMouseDraw(x, y, scale);
-    };
-    var handleMouseDraw = function (x, y, scale) {
-        //@ts-ignore
-        var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
-        var newCommand = '';
-        if (existingDrawMode == 'Abs') {
-            newCommand = "DrawAbs(".concat(x, ",").concat(y, ",").concat(x + 1, ",").concat(y, ");");
-        }
-        else if (existingDrawMode == 'Pen') {
-            newCommand = "DrawPen(".concat(x, ",").concat(y, ",").concat(x + scale, ",").concat(y, ",").concat(x, ",").concat(y + scale, ",").concat(x + scale, ",").concat(y + scale, ");");
-        }
-        else if (existingDrawMode == 'Fill') {
-            newCommand = "DrawFill(".concat(x, ",").concat(y, ");");
-        }
-        else {
-            alert('unknown tool');
-        }
-        //@ts-ignore
-        window.agistudioDrawMode = existingDrawMode;
-        appendCommand(newCommand);
-    };
-    var handleDrawModeUpdate = function (mode) {
-        setDrawMode(mode);
-        //@ts-ignore
-        window.agistudioDrawMode = mode;
-        var value = 1 & 0x10 & 0x07;
-        appendCommand("PicSetPen(".concat(value, ");"));
-    };
-    var setColor = function (color) {
-        appendCommand("PicSetColor(".concat(color, ");"));
-    };
-    var getCurrentPictureCommands = function () {
-        try {
-            var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-            var currentPictureStream = AgiBridge.agiExecute('Get Pic Stream', 'Resources.readAgiResource(Resources.AgiResource.Pic, ' + roomValue + ')');
-            var decodedPictureCommands = decodePictureStream(currentPictureStream);
-            return prettyPrintCommands(decodedPictureCommands);
-        }
-        catch (err) { }
-    };
-    var handleSwitchBuffer = function () {
-        AgiBridge.agiExecute('Get buffer mode', 'Agi.interpreter.gbm = (Agi.interpreter.gbm && Agi.interpreter.gbm==1) ? 0 : 1');
-        AgiBridge.agiExecute('Keep Orig Visual Buffer', 'Agi.interpreter.gvb = (!Agi.interpreter.gvb) ? Agi.interpreter.visualBuffer : Agi.interpreter.gvb');
-        AgiBridge.agiExecute('Set Visual Buffer', 'Agi.interpreter.visualBuffer = (Agi.interpreter.gbm==1) ? Agi.interpreter.priorityBuffer : Agi.interpreter.gvb');
-        AgiBridge.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
-    };
+    var _b = useState(false), mouseTrapped = _b[0], setMouseTrapped = _b[1];
+    var _c = useState(10), scaleFactor = _c[0]; _c[1];
+    var _d = useState('Abs'), drawMode = _d[0], setDrawMode = _d[1];
     useEffect(function () {
         // load the current picture into the commands listing
         if (!mouseTrapped) {
@@ -1406,350 +1801,96 @@ function EditPictureDialog(props) {
             canvas.addEventListener('mousemove', handleMouseMove);
             setMouseTrapped(true);
         }
-        var currentPictureCommands = getCurrentPictureCommands();
+        var currentPictureCommands = AgiBridge.getCurrentPictureCommands();
         setCommands(currentPictureCommands);
         //@ts-ignore
         window.agistudioPicCommands = currentPictureCommands;
     }, []);
-    var undoCommand = function () {
-        //@ts-ignore
-        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
-        var commandsAsArray = existingCommands.split(';');
-        var lastCommandPosition = -1;
-        var i = commandsAsArray.length - 1;
-        // find last command position
-        while (lastCommandPosition == -1 && i != 0) {
-            var command = commandsAsArray[i];
-            if (command != '' && command != '\n' && command != '\nEnd()') {
-                lastCommandPosition = i;
-            }
-            i--;
-        }
-        var numberOfElementsToRemove = commandsAsArray.length - lastCommandPosition;
-        commandsAsArray.splice(lastCommandPosition, numberOfElementsToRemove);
-        var commandsAsText = commandsAsArray.join(';');
-        commandsAsText += ';\nEnd();';
-        //@ts-ignore
-        window.agistudioPicCommands = commandsAsText;
-        setCommands(commandsAsText);
-        renderCommands(commandsAsText);
-    };
-    var appendCommand = function (command) {
+    var appendCommandAndRender = function (command) {
         //@ts-ignore
         if (command != window.agistudioLastCommand) {
             //@ts-ignore
             window.agistudioLastCommand = command;
             //@ts-ignore
             var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+            var newCommands = AgiBridge.appendPictureCommandToTail(existingCommands, command);
             var newCommands = existingCommands.replace('End();', '');
             newCommands = newCommands + "".concat(command, "\nEnd();");
             setCommands(newCommands);
             //@ts-ignore
             window.agistudioPicCommands = newCommands;
-            renderCommands(newCommands);
+            AgiBridge.renderCommands(newCommands);
         }
     };
-    var addVolumeHeader = function (picData, volume) {
-        var endMarkerPosition = picData.length; //indexOf(255) + 1
-        var sizeOfNewData = endMarkerPosition + 5;
-        var dataWithHeader = new Uint8Array(sizeOfNewData);
-        dataWithHeader[0] = 0x12; // signature
-        dataWithHeader[1] = 0x34; // signature
-        dataWithHeader[2] = volume; // volume
-        dataWithHeader[3] = endMarkerPosition & (0xffff >> 8); // resource len LO
-        dataWithHeader[4] = endMarkerPosition >> 8; // resource len HI
-        // dataWithHeader[5] = 0    // compressed resource len LO
-        // dataWithHeader[6] = 0    // compressed resource len HI
-        for (var i = 0; i < picData.length; i++) {
-            dataWithHeader[i + 5] = picData[i];
-        }
-        return dataWithHeader;
+    var mouseDraw = function (clientX, clientY) {
+        // something is wrong with getting commands from inside this event :-/
+        //@ts-ignore
+        var previewDocument = document.getElementById('crafterCMSPreviewIframe').contentWindow.document;
+        var canvas = previewDocument.getElementById('canvas');
+        var rect = canvas.getBoundingClientRect();
+        // the bit map is 160 x 200 so we need to scale the mouse input
+        var ratioOfX = clientX / rect.width;
+        var ratioOfY = clientY / rect.height;
+        var x = Math.round(160 * ratioOfX);
+        var y = Math.round(200 * ratioOfY);
+        var scale = scaleFactor;
+        //@ts-ignore
+        var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
+        var newCommand = AgiBridge.createPictureDrawCommand(existingDrawMode, x, y, scale);
+        appendCommandAndRender(newCommand);
     };
-    var updateDirectoryOffsets = function (dirname, dirRecords, startOffset, adjustBy) {
-        // now modify the directory
-        var position = 0;
-        var recordCount = dirRecords.length;
-        var newDirEncoded = new Uint8Array(recordCount * 3);
-        for (var d = 0; d < recordCount; d++) {
-            if (dirRecords[d]) {
-                var offset = dirRecords[d].volOffset;
-                var volume = dirRecords[d].volNo;
-                if (offset > startOffset) {
-                    offset = dirRecords[d].volOffset + adjustBy;
+    var handleUndoCommand = function () {
+        //@ts-ignore
+        var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
+        var newCommands = AgiBridge.undoPictureCommand(existingCommands);
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
+        setCommands(newCommands);
+        AgiBridge.renderCommands(newCommands);
+    };
+    var handleSwitchBuffer = function () {
+        AgiBridge.switchPictureBuffer();
+    };
+    var handleDrawModeUpdate = function (mode) {
+        setDrawMode(mode);
+        //@ts-ignore
+        window.agistudioDrawMode = mode;
+        var newCommand = AgiBridge.createPictureDrawModeCommand(mode);
+        appendCommandAndRender(newCommand);
+    };
+    var handleCommandUpdate = function (event) {
+        var updatedCommands = event.target.value;
+        var commandsAsArray = [];
+        var optimizedArray = [];
+        commandsAsArray = updatedCommands.split(';');
+        for (var i = 0; i < commandsAsArray.length; i++) {
+            if (commandsAsArray[i] != commandsAsArray[i + 1]) {
+                optimizedArray[optimizedArray.length] = commandsAsArray[i];
+                if (commandsAsArray[i].indexOf('End()') != -1) {
+                    break;
                 }
-                newDirEncoded[position] = volume;
-                newDirEncoded[position + 1] = offset >> 8;
-                newDirEncoded[position + 2] = offset & (0xffff >> 8);
             }
-            else {
-                newDirEncoded[position] = 255;
-                newDirEncoded[position + 1] = 255;
-                newDirEncoded[position + 2] = 255;
-            }
-            position = position + 3;
         }
-        return newDirEncoded;
+        var newCommands = optimizedArray.join(';') + ';';
+        //@ts-ignore
+        window.agistudioPicCommands = newCommands;
+        setCommands(newCommands);
+        AgiBridge.renderCommands(newCommands);
     };
-    var saveFile = function (siteId, path, filename, data) {
-        var API_WRITE_CONTENT = '/studio/api/1/services/api/1/content/write-content.json';
-        var serviceUrl = API_WRITE_CONTENT +
-            "?site=".concat(siteId, "&path=").concat(path, "&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true");
-        var body = new FormData();
-        body.append('site', siteId);
-        body.append('relativePath', 'null');
-        body.append('validating', 'false');
-        body.append('path', path);
-        body.append('name', filename);
-        body.append('type', 'application/octet-stream');
-        body.append('allowed', 'true');
-        body.append('file', new Blob([data]), filename);
-        post(serviceUrl, body).subscribe({
-            next: function (response) {
-                // alert('File Saved: ' + filename);
-            },
-            error: function (e) {
-                alert('File Failed :' + filename);
-            }
-        });
+    var handleSetColor = function (color) {
+        var newCommand = AgiBridge.createPictureSetColorCommand(color);
+        appendCommandAndRender(newCommand);
     };
     var handleSaveAsNewPicture = function () {
-        //@ts-ignore
-        var game = document.getElementById('crafterCMSPreviewIframe').contentWindow.location.pathname.replace('/games/', '');
-        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
-            console.log('Directory files downloaded.');
-            parseDirfile(buffers['LOGDIR'], logdirRecords);
-            parseDirfile(buffers['PICDIR'], picdirRecords);
-            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
-            parseDirfile(buffers['SNDDIR'], snddirRecords);
-            var volNames = [];
-            for (var i = 0; i < availableVols.length; i++) {
-                if (availableVols[i] === true) {
-                    volNames.push('VOL.' + i);
-                }
-            }
-            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
-                console.log('Resource volumes downloaded.');
-                for (var j = 0; j < volNames.length; j++) {
-                    volBuffers[j] = buffers[volNames[j]];
-                }
-                var newPicData = new Uint8Array(6);
-                newPicData[0] = 240; // set pic color
-                newPicData[1] = 0; // ard: black
-                newPicData[2] = 0; // draw fill
-                newPicData[3] = 10; // arg: x
-                newPicData[4] = 0; // arg: y
-                newPicData[5] = 255; // end
-                newPicData = addVolumeHeader(newPicData, 0);
-                var volNum = 0;
-                var picsStream = volBuffers[0].buffer;
-                var offset = picsStream.length;
-                var roomValue = picdirRecords.length;
-                var picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
-                var newStreamLength = picsStream.length + newPicData.length;
-                var newStream = new Uint8Array(newStreamLength);
-                for (var n = 0; n < newStreamLength; n++) {
-                    if (n < picsStream.length) {
-                        // copy in the existing resources
-                        newStream[n] = picsStream[n];
-                    }
-                    else {
-                        // copy in new resource
-                        newStream[n] = newPicData[n - picsStream.length];
-                    }
-                }
-                var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
-                // Every room has a logic file. Add logic file
-                var roomLogic = [
-                    12, 34,
-                    0,
-                    112,
-                    84,
-                    82, 0, 255, 7, 5, 255, 29, 0, 24, 0, 25, 0, 27, 0, 63, 50, 255, 252, 1, 1, 1, 1, 1, 0, 252, 255, 6, 0, 37,
-                    0, 120, 140, 112, 120, 35, 0, 26, 255, 14, 1, 20, 0, 255, 2, 0, 101, 1, 255, 1, 2, 1, 255, 2, 0, 18, 99, 255,
-                    1, 2, 2, 255, 2, 0, 18, 99, 255, 1, 2, 3, 255, 2, 0, 18, 2, 255, 1, 2, 4, 255, 2, 0, 18, 99, 0, 1, 27, 0, 4,
-                    0, 21, 30, 0, 0, 0, 45, 6, 82, 6, 15, 78, 36, 27, 25, 7, 89, 100, 7, 29, 8, 12, 64, 65
-                ];
-                var volStream = new Uint8Array(newStreamLength + 117);
-                for (var n = 0; n < volStream.length; n++) {
-                    if (n < newStream.length) {
-                        // copy in the existing resources
-                        volStream[n] = newStream[n];
-                    }
-                    else {
-                        // copy in new resource
-                        volStream[n] = roomLogic[n - newStream.length];
-                    }
-                }
-                var logRecord = (logdirRecords[roomValue] = { volNo: volNum, volOffset: newStream.length });
-                var newLogDirEncoded = updateDirectoryOffsets('L', logdirRecords, logRecord.volOffset, 0);
-                //@ts-ignore
-                var gamePath = '/static-assets/games/' + game + '/';
-                saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
-                saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
-                // save updated volume file
-                saveFile(siteId, gamePath, 'VOL.0', volStream);
-                AgiBridge.reload();
-            });
-        });
+        var game = AgiBridge.getActiveGameId();
+        AgiBridge.handleSaveAsNewPicture(siteId, game);
+        alert('New Picture Add Complete'); // do better
     };
     var handleSavePicture = function () {
         var game = AgiBridge.getActiveGameId();
-        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
-            console.log('Directory files downloaded.');
-            parseDirfile(buffers['LOGDIR'], logdirRecords);
-            parseDirfile(buffers['PICDIR'], picdirRecords);
-            parseDirfile(buffers['VIEWDIR'], viewdirRecords);
-            parseDirfile(buffers['SNDDIR'], snddirRecords);
-            var volNames = [];
-            for (var i = 0; i < availableVols.length; i++) {
-                if (availableVols[i] === true) {
-                    volNames.push('VOL.' + i);
-                }
-            }
-            downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
-                console.log('Resource volumes downloaded.');
-                for (var j = 0; j < volNames.length; j++) {
-                    volBuffers[j] = buffers[volNames[j]];
-                }
-                var newPicData = encodeCommands(commands);
-                newPicData = addVolumeHeader(newPicData, 0);
-                var roomValue = AgiBridge.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-                var picRecord = picdirRecords[roomValue];
-                var nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
-                var picsStream = volBuffers[picRecord.volNo].buffer;
-                var lengthOfOldPic = 0;
-                if (nextPicRecord) {
-                    lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
-                }
-                var newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
-                // now that we know how the new picture relates to the old one we can re-size the stream
-                // up or down accordingly.
-                var newStreamLength = picsStream.length + newPicSizeDiff;
-                var newStream = new Uint8Array(newStreamLength);
-                for (var n = 0; n < newStream.length; n++) {
-                    if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
-                        // copy the original buffer to the new buffer
-                        if (n < picRecord.volOffset) {
-                            // before the new resource
-                            newStream[n] = picsStream[n];
-                        }
-                        else {
-                            // after our resource, we have to account for 'overlap'
-                            newStream[n] = picsStream[n - newPicSizeDiff];
-                        }
-                    }
-                    else {
-                        // copy the new picture into the new stream
-                        newStream[n] = newPicData[n - picRecord.volOffset];
-                    }
-                }
-                var newPicDirEncoded = updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newLogDirEncoded = updateDirectoryOffsets('L', logdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newViewDirEncoded = updateDirectoryOffsets('V', viewdirRecords, picRecord.volOffset, newPicSizeDiff);
-                var newSndDirEncoded = updateDirectoryOffsets('S', snddirRecords, picRecord.volOffset, newPicSizeDiff);
-                var gamePath = '/static-assets/games/' + game + '/';
-                saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
-                saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
-                saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
-                saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
-                // save updated volume file
-                saveFile(siteId, gamePath, 'VOL.0', newStream);
-                AgiBridge.reload();
-            });
-        });
+        AgiBridge.savePicture(siteId, game, commands);
+        alert('Save Complete'); // do better
     };
-    var logdirRecords = [], picdirRecords = [], viewdirRecords = [], snddirRecords = [];
-    var volBuffers = [];
-    var availableVols = [];
-    function parseDirfile(buffer, records) {
-        var length = buffer.length / 3;
-        for (var i = 0; i < length; i++) {
-            var val = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
-            var volNo = val >>> 20;
-            var volOffset = val & 0xfffff;
-            if (val >>> 16 == 0xff)
-                continue;
-            records[i] = { volNo: volNo, volOffset: volOffset };
-            if (availableVols[volNo] === undefined)
-                availableVols[volNo] = true;
-        }
-    }
-    var AgiResource;
-    (function (AgiResource) {
-        AgiResource[AgiResource["Logic"] = 0] = "Logic";
-        AgiResource[AgiResource["Pic"] = 1] = "Pic";
-        AgiResource[AgiResource["View"] = 2] = "View";
-        AgiResource[AgiResource["Sound"] = 3] = "Sound";
-    })(AgiResource || (AgiResource = {}));
-    var ByteStream = /** @class */ (function () {
-        function ByteStream(buffer, startPosition, end) {
-            if (startPosition === void 0) { startPosition = 0; }
-            if (end === void 0) { end = 0; }
-            this.buffer = buffer;
-            this.startPosition = startPosition;
-            this.end = end;
-            this.position = 0;
-            this.length = 0;
-            if (end == 0)
-                this.end = this.buffer.byteLength;
-            this.length = this.end - this.startPosition;
-        }
-        ByteStream.prototype.readUint8 = function () {
-            return this.buffer[this.startPosition + this.position++];
-        };
-        ByteStream.prototype.readUint16 = function (littleEndian) {
-            if (littleEndian === void 0) { littleEndian = true; }
-            var b1 = this.buffer[this.startPosition + this.position++];
-            var b2 = this.buffer[this.startPosition + this.position++];
-            if (littleEndian) {
-                return (b2 << 8) + b1;
-            }
-            return (b1 << 8) + b2;
-        };
-        ByteStream.prototype.readInt16 = function (littleEndian) {
-            if (littleEndian === void 0) { littleEndian = true; }
-            var b1 = this.buffer[this.startPosition + this.position++];
-            var b2 = this.buffer[this.startPosition + this.position++];
-            if (littleEndian) {
-                return (((b2 << 8) | b1) << 16) >> 16;
-            }
-            return (((b1 << 8) | b2) << 16) >> 16;
-        };
-        return ByteStream;
-    }());
-    function downloadAllFiles(path, files, done) {
-        var buffers = {};
-        var leftToDownload = files.length;
-        function getBinary(url, success) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url + '?crafterSite=agi-crafter', true);
-            xhr.responseType = 'arraybuffer';
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    if (xhr.response === null) {
-                        throw "Fatal error downloading '" + url + "'";
-                    }
-                    else {
-                        console.log("Successfully downloaded '" + url + "'");
-                        success(xhr.response);
-                    }
-                }
-            };
-            xhr.send();
-        }
-        function handleFile(num) {
-            getBinary(path + files[num], function (buffer) {
-                buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
-                leftToDownload--;
-                if (leftToDownload === 0) {
-                    done(buffers);
-                }
-            });
-        }
-        for (var i = 0; i < files.length; i++) {
-            handleFile(i);
-        }
-    }
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: handleSaveAsNewPicture, variant: "outlined", sx: { mr: 1 } }, "Add New Picture"),
@@ -1757,7 +1898,7 @@ function EditPictureDialog(props) {
         React.createElement(DialogContent, null,
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(Button, { onClick: function () {
-                        undoCommand();
+                        handleUndoCommand();
                     } }, "Undo")),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: commands }),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleCommandUpdate }),
@@ -1785,53 +1926,53 @@ function EditPictureDialog(props) {
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { onClick: function () {
-                            setColor(0);
+                            handleSetColor(0);
                         }, sx: { height: '35px', 'background-color': 'black' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(1);
+                            handleSetColor(1);
                         }, sx: { height: '35px', 'background-color': 'blue' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(2);
+                            handleSetColor(2);
                         }, sx: { height: '35px', 'background-color': 'green' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(3);
+                            handleSetColor(3);
                         }, sx: { height: '35px', 'background-color': 'Teal' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(4);
+                            handleSetColor(4);
                         }, sx: { height: '35px', 'background-color': 'red' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(5);
+                            handleSetColor(5);
                         }, sx: { height: '35px', 'background-color': 'purple' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(6);
+                            handleSetColor(6);
                         }, sx: { height: '35px', 'background-color': 'brown' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(7);
+                            handleSetColor(7);
                         }, sx: { height: '35px', 'background-color': 'lightgray' } })),
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { onClick: function () {
-                            setColor(8);
+                            handleSetColor(8);
                         }, sx: { height: '35px', 'background-color': 'gray' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(9);
+                            handleSetColor(9);
                         }, sx: { height: '35px', 'background-color': 'RoyalBlue' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(10);
+                            handleSetColor(10);
                         }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(11);
+                            handleSetColor(11);
                         }, sx: { height: '35px', 'background-color': 'Aqua' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(12);
+                            handleSetColor(12);
                         }, sx: { height: '35px', 'background-color': 'Salmon' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(13);
+                            handleSetColor(13);
                         }, sx: { height: '35px', 'background-color': 'magenta' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(14);
+                            handleSetColor(14);
                         }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
                     React.createElement(Button, { onClick: function () {
-                            setColor(15);
+                            handleSetColor(15);
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture")))));
