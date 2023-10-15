@@ -638,7 +638,9 @@ var AgiBridge = /** @class */ (function () {
             }
         });
         // encode messages
-        messageOffset = position;
+        if (messageOffset === -1) {
+            messageOffset = position;
+        }
         var messages = ["         Intro/Opening screen", "ABC"];
         buffer[position++] = messages.length;
         var ptrMsgsEndPos = position;
