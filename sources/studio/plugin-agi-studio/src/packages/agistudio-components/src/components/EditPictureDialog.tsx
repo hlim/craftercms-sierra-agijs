@@ -163,19 +163,21 @@ export function EditPictureDialog(props) {
   const handleSaveAsNewPicture = () => {
     var game = AgiActiveGame.getActiveGameId();
 
-    //@ts-ignore
-    AgiResources.handleSaveAsNewPicture(siteId, game);
+    let agiResources = new AgiResources()
+    agiResources.saveAsNewPicture(siteId, game);
 
     alert('New Picture Add Complete'); // do better
+    // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
   };
 
   const handleSavePicture = () => {
     var game = AgiActiveGame.getActiveGameId();
 
-    //@ts-ignore
-    AgiResources.savePicture(siteId, game, commands);
-    
+    let agiResources = new AgiResources()
+    agiResources.savePicture(siteId, game, commands);
+
     alert('Save Complete'); // do better
+    // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
   };
 
   return (

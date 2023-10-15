@@ -1375,14 +1375,363 @@ var AgiResource;
     AgiResource[AgiResource["View"] = 2] = "View";
     AgiResource[AgiResource["Sound"] = 3] = "Sound";
 })(AgiResource || (AgiResource = {}));
-var availableVols = [];
-function downloadAllFiles(path, files, done) {
-    files.length;
-}
+var ByteStream = /** @class */ (function () {
+    function ByteStream(buffer, startPosition, end) {
+        if (startPosition === void 0) { startPosition = 0; }
+        if (end === void 0) { end = 0; }
+        this.buffer = buffer;
+        this.startPosition = startPosition;
+        this.end = end;
+        this.position = 0;
+        this.length = 0;
+        if (end == 0)
+            this.end = this.buffer.byteLength;
+        this.length = this.end - this.startPosition;
+    }
+    ByteStream.prototype.readUint8 = function () {
+        return this.buffer[this.startPosition + this.position++];
+    };
+    ByteStream.prototype.readUint16 = function (littleEndian) {
+        if (littleEndian === void 0) { littleEndian = true; }
+        var b1 = this.buffer[this.startPosition + this.position++];
+        var b2 = this.buffer[this.startPosition + this.position++];
+        if (littleEndian) {
+            return (b2 << 8) + b1;
+        }
+        return (b1 << 8) + b2;
+    };
+    ByteStream.prototype.readInt16 = function (littleEndian) {
+        if (littleEndian === void 0) { littleEndian = true; }
+        var b1 = this.buffer[this.startPosition + this.position++];
+        var b2 = this.buffer[this.startPosition + this.position++];
+        if (littleEndian) {
+            return (((b2 << 8) | b1) << 16) >> 16;
+        }
+        return (((b1 << 8) | b2) << 16) >> 16;
+    };
+    return ByteStream;
+}());
 var AgiResources = /** @class */ (function () {
     function AgiResources() {
+        var _this = this;
+        this.logdirRecords = [];
+        this.picdirRecords = [];
+        this.viewdirRecords = [];
+        this.snddirRecords = [];
+        this.volBuffers = [];
+        this.availableVols = [];
+        this.AgiResources = function () { };
+        this.readAgiResource = function (type, num) {
+            var record = null;
+            switch (type) {
+                case AgiResource.Logic:
+                    record = _this.logdirRecords[num];
+                    break;
+                case AgiResource.Pic:
+                    record = _this.picdirRecords[num];
+                    break;
+                case AgiResource.View:
+                    record = _this.viewdirRecords[num];
+                    break;
+                case AgiResource.Sound:
+                    record = _this.snddirRecords[num];
+                    break;
+                default:
+                    throw 'Undefined resource type: ' + type;
+            }
+            var volstream = new ByteStream(_this.volBuffers[record.volNo].buffer, record.volOffset);
+            volstream.readUint16();
+            volstream.readUint8();
+            var resLength = volstream.readUint16();
+            var volPart = new ByteStream(volstream.buffer, record.volOffset + 5, record.volOffset + 5 + resLength);
+            return volPart;
+        };
+        this.downloadAllFiles = function (path, files, done) {
+            var buffers = {};
+            var leftToDownload = files.length;
+            for (var i = 0; i < files.length; i++) {
+                handleFile(i);
+            }
+            function getBinary(url, success) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url + '?crafterSite=agi-crafter', true);
+                xhr.responseType = 'arraybuffer';
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.response === null) {
+                            throw "Fatal error downloading '" + url + "'";
+                        }
+                        else {
+                            console.log("Successfully downloaded '" + url + "'");
+                            success(xhr.response);
+                        }
+                    }
+                };
+                xhr.send();
+            }
+            function handleFile(num) {
+                getBinary(path + files[num], function (buffer) {
+                    buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
+                    leftToDownload--;
+                    if (leftToDownload === 0) {
+                        done(buffers);
+                    }
+                });
+            }
+        };
+        this.savePicture = function (siteId, game, commands) {
+            _this.downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+                console.log('Directory files downloaded.');
+                _this.parseDirfile(buffers['LOGDIR'], _this.logdirRecords);
+                _this.parseDirfile(buffers['PICDIR'], _this.picdirRecords);
+                _this.parseDirfile(buffers['VIEWDIR'], _this.viewdirRecords);
+                _this.parseDirfile(buffers['SNDDIR'], _this.snddirRecords);
+                var volNames = [];
+                for (var i = 0; i < _this.availableVols.length; i++) {
+                    if (_this.availableVols[i] === true) {
+                        volNames.push('VOL.' + i);
+                    }
+                }
+                _this.downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
+                    console.log('Resource volumes downloaded.');
+                    for (var j = 0; j < volNames.length; j++) {
+                        _this.volBuffers[j] = buffers[volNames[j]];
+                    }
+                    var newPicData = AgiPicture.encodePictureCommands(commands);
+                    newPicData = AgiResources.addVolumeHeader(newPicData, 0);
+                    var roomValue = AgiActiveGame.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
+                    var picRecord = _this.picdirRecords[roomValue];
+                    var nextPicRecord = _this.picdirRecords[roomValue + 1]; // assuption: not the last picture
+                    var picsStream = _this.volBuffers[picRecord.volNo].buffer;
+                    var lengthOfOldPic = 0;
+                    if (nextPicRecord) {
+                        lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+                    }
+                    var newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
+                    // now that we know how the new picture relates to the old one we can re-size the stream
+                    // up or down accordingly.
+                    var newStreamLength = picsStream.length + newPicSizeDiff;
+                    var newStream = new Uint8Array(newStreamLength);
+                    for (var n = 0; n < newStream.length; n++) {
+                        if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
+                            // copy the original buffer to the new buffer
+                            if (n < picRecord.volOffset) {
+                                // before the new resource
+                                newStream[n] = picsStream[n];
+                            }
+                            else {
+                                // after our resource, we have to account for 'overlap'
+                                newStream[n] = picsStream[n - newPicSizeDiff];
+                            }
+                        }
+                        else {
+                            // copy the new picture into the new stream
+                            newStream[n] = newPicData[n - picRecord.volOffset];
+                        }
+                    }
+                    var newPicDirEncoded = AgiResources.updateDirectoryOffsets('P', _this.picdirRecords, picRecord.volOffset, newPicSizeDiff);
+                    var newLogDirEncoded = AgiResources.updateDirectoryOffsets('L', _this.logdirRecords, picRecord.volOffset, newPicSizeDiff);
+                    var newViewDirEncoded = AgiResources.updateDirectoryOffsets('V', _this.viewdirRecords, picRecord.volOffset, newPicSizeDiff);
+                    var newSndDirEncoded = AgiResources.updateDirectoryOffsets('S', _this.snddirRecords, picRecord.volOffset, newPicSizeDiff);
+                    var gamePath = '/static-assets/games/' + game + '/';
+                    AgiResources.saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+                    AgiResources.saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
+                    AgiResources.saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
+                    AgiResources.saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
+                    // save updated volume file
+                    AgiResources.saveFile(siteId, gamePath, 'VOL.0', newStream);
+                });
+            });
+        };
+        this.saveAsNewPicture = function (siteId, game) {
+            _this.downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
+                console.log('Directory files downloaded.');
+                _this.parseDirfile(buffers['LOGDIR'], _this.logdirRecords);
+                _this.parseDirfile(buffers['PICDIR'], _this.picdirRecords);
+                _this.parseDirfile(buffers['VIEWDIR'], _this.viewdirRecords);
+                _this.parseDirfile(buffers['SNDDIR'], _this.snddirRecords);
+                var volNames = [];
+                for (var i = 0; i < _this.availableVols.length; i++) {
+                    if (_this.availableVols[i] === true) {
+                        volNames.push('VOL.' + i);
+                    }
+                }
+                _this.downloadAllFiles('/static-assets/games/' + game + '/', volNames, function (buffers) {
+                    console.log('Resource volumes downloaded.');
+                    for (var j = 0; j < volNames.length; j++) {
+                        _this.volBuffers[j] = buffers[volNames[j]];
+                    }
+                    var newPicData = new Uint8Array(6);
+                    newPicData[0] = 240; // set pic color
+                    newPicData[1] = 0; // ard: black
+                    newPicData[2] = 0; // draw fill
+                    newPicData[3] = 10; // arg: x
+                    newPicData[4] = 0; // arg: y
+                    newPicData[5] = 255; // end
+                    newPicData = AgiResources.addVolumeHeader(newPicData, 0);
+                    var volNum = 0;
+                    var picsStream = _this.volBuffers[0].buffer;
+                    var offset = picsStream.length;
+                    var roomValue = _this.picdirRecords.length;
+                    var picRecord = (_this.picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
+                    var newStreamLength = picsStream.length + newPicData.length;
+                    var newStream = new Uint8Array(newStreamLength);
+                    for (var n = 0; n < newStreamLength; n++) {
+                        if (n < picsStream.length) {
+                            // copy in the existing resources
+                            newStream[n] = picsStream[n];
+                        }
+                        else {
+                            // copy in new resource
+                            newStream[n] = newPicData[n - picsStream.length];
+                        }
+                    }
+                    var newPicDirEncoded = AgiResources.updateDirectoryOffsets('P', _this.picdirRecords, picRecord.volOffset, 0);
+                    // Every room has a logic file. Add logic file
+                    var roomLogic = [
+                        12,
+                        34,
+                        0,
+                        112,
+                        84,
+                        82,
+                        0,
+                        255,
+                        7,
+                        5,
+                        255,
+                        29,
+                        0,
+                        24,
+                        0,
+                        25,
+                        0,
+                        27,
+                        0,
+                        63,
+                        50,
+                        255,
+                        252,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        0,
+                        252,
+                        255,
+                        6,
+                        0,
+                        37,
+                        0,
+                        120,
+                        140,
+                        112,
+                        120,
+                        35,
+                        0,
+                        26,
+                        255,
+                        14,
+                        1,
+                        20,
+                        0,
+                        255,
+                        2,
+                        0,
+                        101,
+                        1,
+                        255,
+                        1,
+                        2,
+                        1,
+                        255,
+                        2,
+                        0,
+                        18,
+                        99,
+                        255,
+                        1,
+                        2,
+                        2,
+                        255,
+                        2,
+                        0,
+                        18,
+                        99,
+                        255,
+                        1,
+                        2,
+                        3,
+                        255,
+                        2,
+                        0,
+                        18,
+                        2,
+                        255,
+                        1,
+                        2,
+                        4,
+                        255,
+                        2,
+                        0,
+                        18,
+                        99,
+                        0,
+                        1,
+                        27,
+                        0,
+                        4,
+                        0,
+                        21,
+                        30,
+                        0,
+                        0,
+                        0,
+                        45,
+                        6,
+                        82,
+                        6,
+                        15,
+                        78,
+                        36,
+                        27,
+                        25,
+                        7,
+                        89,
+                        100,
+                        7,
+                        29,
+                        8,
+                        12,
+                        64,
+                        65
+                    ];
+                    var volStream = new Uint8Array(newStreamLength + 117);
+                    for (var n = 0; n < volStream.length; n++) {
+                        if (n < newStream.length) {
+                            // copy in the existing resources
+                            volStream[n] = newStream[n];
+                        }
+                        else {
+                            // copy in new resource
+                            volStream[n] = roomLogic[n - newStream.length];
+                        }
+                    }
+                    var logRecord = (_this.logdirRecords[roomValue] = { volNo: volNum, volOffset: newStream.length });
+                    var newLogDirEncoded = AgiResources.updateDirectoryOffsets('L', _this.logdirRecords, logRecord.volOffset, 0);
+                    //@ts-ignore
+                    var gamePath = '/static-assets/games/' + game + '/';
+                    AgiResources.saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+                    AgiResources.saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
+                    // save updated volume file
+                    AgiResources.saveFile(siteId, gamePath, 'VOL.0', volStream);
+                    AgiActiveGame.reload();
+                });
+            });
+        };
     }
-    AgiResources.parseDirfile = function (buffer, records) {
+    AgiResources.prototype.parseDirfile = function (buffer, records) {
         var length = buffer.length / 3;
         for (var i = 0; i < length; i++) {
             var val = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
@@ -1391,15 +1740,9 @@ var AgiResources = /** @class */ (function () {
             if (val >>> 16 == 0xff)
                 continue;
             records[i] = { volNo: volNo, volOffset: volOffset };
-            if (availableVols[volNo] === undefined)
-                availableVols[volNo] = true;
+            if (this.availableVols[volNo] === undefined)
+                this.availableVols[volNo] = true;
         }
-    };
-    AgiResources.savePicture = function (siteId, game, commands) {
-        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR']);
-    };
-    AgiResources.handleSaveAsNewPicture = function (siteId, game) {
-        downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR']);
     };
     AgiResources.addVolumeHeader = function (picData, volume) {
         var endMarkerPosition = picData.length; //indexOf(255) + 1
@@ -1585,15 +1928,17 @@ function EditPictureDialog(props) {
     };
     var handleSaveAsNewPicture = function () {
         var game = AgiActiveGame.getActiveGameId();
-        //@ts-ignore
-        AgiResources.handleSaveAsNewPicture(siteId, game);
+        var agiResources = new AgiResources();
+        agiResources.saveAsNewPicture(siteId, game);
         alert('New Picture Add Complete'); // do better
+        // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
     };
     var handleSavePicture = function () {
         var game = AgiActiveGame.getActiveGameId();
-        //@ts-ignore
-        AgiResources.savePicture(siteId, game, commands);
+        var agiResources = new AgiResources();
+        agiResources.savePicture(siteId, game, commands);
         alert('Save Complete'); // do better
+        // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,

@@ -2,90 +2,11 @@ import { post } from '@craftercms/studio-ui/utils/ajax';
 import AgiActiveGame from './AgiActiveGame';
 import AgiPicture from './AgiPicture';
 
-
 enum AgiResource {
   Logic,
   Pic,
   View,
   Sound
-}
-
-/* globals */
-var logdirRecords: IDirectoryEntry[] = [];
-var picdirRecords: IDirectoryEntry[] = [];
-var viewdirRecords: IDirectoryEntry[] = [];
-var snddirRecords: IDirectoryEntry[] = [];
-var volBuffers: ByteStream[] = [];
-var availableVols: boolean[] = [];
-
-function readAgiResource(type: AgiResource, num: number): ByteStream {
-  var record = null;
-  switch (type) {
-    case AgiResource.Logic:
-      record = logdirRecords[num];
-      break;
-    case AgiResource.Pic:
-      record = picdirRecords[num];
-      break;
-    case AgiResource.View:
-      record = viewdirRecords[num];
-      break;
-    case AgiResource.Sound:
-      record = snddirRecords[num];
-      break;
-    default:
-      throw 'Undefined resource type: ' + type;
-  }
-
-  var volstream = new ByteStream(volBuffers[record.volNo].buffer, record.volOffset);
-
-  var sig: number = volstream.readUint16();
-  var volNo: number = volstream.readUint8();
-  var resLength = volstream.readUint16();
-
-  var volPart = new ByteStream(volstream.buffer, record.volOffset + 5, record.volOffset + 5 + resLength);
-
-  return volPart;
-}
-
-function downloadAllFiles(path: string, files: string[], done: (buffers: IByteStreamDict) => void) {
-  var buffers: IByteStreamDict = {};
-  var leftToDownload: number = files.length;
-
-  function getBinary(url: string, success: (data: ArrayBuffer) => void): void {
-    var xhr = new XMLHttpRequest();
-
-    xhr.open('GET', url + '?crafterSite=agi-crafter', true);
-
-    xhr.responseType = 'arraybuffer';
-
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState == 4) {
-        if (xhr.response === null) {
-          throw "Fatal error downloading '" + url + "'";
-        } else {
-          console.log("Successfully downloaded '" + url + "'");
-          success(xhr.response);
-        }
-      }
-    };
-    xhr.send();
-  }
-
-  function handleFile(num: number) {
-    getBinary(path + files[num], (buffer: ArrayBuffer) => {
-      buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
-      leftToDownload--;
-
-      if (leftToDownload === 0) {
-        done(buffers);
-      }
-    });
-
-    for (var i = 0; i < files.length; i++) {
-      handleFile(i);
-    }
-  }
 }
 
 interface IDirectoryEntry {
@@ -129,38 +50,116 @@ interface IByteStreamDict {
 }
 
 export class AgiResources {
-  
-  static savePicture = (siteId, game, commands) => {
-    downloadAllFiles(
+  logdirRecords: Array<IDirectoryEntry> = [];
+  picdirRecords: Array<IDirectoryEntry> = [];
+  viewdirRecords: Array<IDirectoryEntry> = [];
+  snddirRecords: Array<IDirectoryEntry> = [];
+  volBuffers: Array<ByteStream> = [];
+  availableVols: Array<Boolean> = [];
+
+  AgiResources = () => {};
+
+  readAgiResource = (type: AgiResource, num: number): ByteStream => {
+    var record = null;
+    switch (type) {
+      case AgiResource.Logic:
+        record = this.logdirRecords[num];
+        break;
+      case AgiResource.Pic:
+        record = this.picdirRecords[num];
+        break;
+      case AgiResource.View:
+        record = this.viewdirRecords[num];
+        break;
+      case AgiResource.Sound:
+        record = this.snddirRecords[num];
+        break;
+      default:
+        throw 'Undefined resource type: ' + type;
+    }
+
+    var volstream = new ByteStream(this.volBuffers[record.volNo].buffer, record.volOffset);
+
+    var sig: number = volstream.readUint16();
+    var volNo: number = volstream.readUint8();
+    var resLength = volstream.readUint16();
+
+    var volPart = new ByteStream(volstream.buffer, record.volOffset + 5, record.volOffset + 5 + resLength);
+
+    return volPart;
+  };
+
+  downloadAllFiles = (path: string, files: string[], done: (buffers: IByteStreamDict) => void) => {
+    var buffers: IByteStreamDict = {};
+    var leftToDownload: number = files.length;
+
+    for (var i = 0; i < files.length; i++) {
+      handleFile(i);
+    }
+
+    function getBinary(url: string, success: (data: ArrayBuffer) => void): void {
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url + '?crafterSite=agi-crafter', true);
+
+      xhr.responseType = 'arraybuffer';
+
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState == 4) {
+          if (xhr.response === null) {
+            throw "Fatal error downloading '" + url + "'";
+          } else {
+            console.log("Successfully downloaded '" + url + "'");
+            success(xhr.response);
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    function handleFile(num: number) {
+      getBinary(path + files[num], (buffer: ArrayBuffer) => {
+        buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
+        leftToDownload--;
+
+        if (leftToDownload === 0) {
+          done(buffers);
+        }
+      });
+    }
+  };
+
+  savePicture = (siteId, game, commands) => {
+    this.downloadAllFiles(
       '/static-assets/games/' + game + '/',
       ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
       (buffers: IByteStreamDict) => {
         console.log('Directory files downloaded.');
-        AgiResources.parseDirfile(buffers['LOGDIR'], logdirRecords);
-        AgiResources.parseDirfile(buffers['PICDIR'], picdirRecords);
-        AgiResources.parseDirfile(buffers['VIEWDIR'], viewdirRecords);
-        AgiResources.parseDirfile(buffers['SNDDIR'], snddirRecords);
+        this.parseDirfile(buffers['LOGDIR'], this.logdirRecords);
+        this.parseDirfile(buffers['PICDIR'], this.picdirRecords);
+        this.parseDirfile(buffers['VIEWDIR'], this.viewdirRecords);
+        this.parseDirfile(buffers['SNDDIR'], this.snddirRecords);
         var volNames: string[] = [];
-        for (var i = 0; i < availableVols.length; i++) {
-          if (availableVols[i] === true) {
+        for (var i = 0; i < this.availableVols.length; i++) {
+          if (this.availableVols[i] === true) {
             volNames.push('VOL.' + i);
           }
         }
 
-        downloadAllFiles('/static-assets/games/' + game + '/', volNames, (buffers: IByteStreamDict) => {
+        this.downloadAllFiles('/static-assets/games/' + game + '/', volNames, (buffers: IByteStreamDict) => {
           console.log('Resource volumes downloaded.');
           for (var j: number = 0; j < volNames.length; j++) {
-            volBuffers[j] = buffers[volNames[j]];
+            this.volBuffers[j] = buffers[volNames[j]];
           }
 
           let newPicData = AgiPicture.encodePictureCommands(commands);
           newPicData = AgiResources.addVolumeHeader(newPicData, 0);
 
           let roomValue = AgiActiveGame.agiExecute('Get CurrentRoom', 'Agi.interpreter.variables[0]');
-          let picRecord = picdirRecords[roomValue];
-          let nextPicRecord = picdirRecords[roomValue + 1]; // assuption: not the last picture
+          let picRecord = this.picdirRecords[roomValue];
+          let nextPicRecord = this.picdirRecords[roomValue + 1]; // assuption: not the last picture
 
-          let picsStream = volBuffers[picRecord.volNo].buffer;
+          let picsStream = this.volBuffers[picRecord.volNo].buffer;
 
           let lengthOfOldPic = 0;
           if (nextPicRecord) {
@@ -192,25 +191,25 @@ export class AgiResources {
 
           let newPicDirEncoded = AgiResources.updateDirectoryOffsets(
             'P',
-            picdirRecords,
+            this.picdirRecords,
             picRecord.volOffset,
             newPicSizeDiff
           );
           let newLogDirEncoded = AgiResources.updateDirectoryOffsets(
             'L',
-            logdirRecords,
+            this.logdirRecords,
             picRecord.volOffset,
             newPicSizeDiff
           );
           let newViewDirEncoded = AgiResources.updateDirectoryOffsets(
             'V',
-            viewdirRecords,
+            this.viewdirRecords,
             picRecord.volOffset,
             newPicSizeDiff
           );
           let newSndDirEncoded = AgiResources.updateDirectoryOffsets(
             'S',
-            snddirRecords,
+            this.snddirRecords,
             picRecord.volOffset,
             newPicSizeDiff
           );
@@ -223,33 +222,33 @@ export class AgiResources {
 
           // save updated volume file
           AgiResources.saveFile(siteId, gamePath, 'VOL.0', newStream);
-          AgiActiveGame.reload();
         });
       }
     );
-  }
+  };
 
-  static handleSaveAsNewPicture = (siteId, game) => {
-    downloadAllFiles(
+  saveAsNewPicture = (siteId, game) => {
+    this.downloadAllFiles(
       '/static-assets/games/' + game + '/',
       ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
       (buffers: IByteStreamDict) => {
         console.log('Directory files downloaded.');
-        AgiResources.parseDirfile(buffers['LOGDIR'], logdirRecords);
-        AgiResources.parseDirfile(buffers['PICDIR'], picdirRecords);
-        AgiResources.parseDirfile(buffers['VIEWDIR'], viewdirRecords);
-        AgiResources.parseDirfile(buffers['SNDDIR'], snddirRecords);
+        this.parseDirfile(buffers['LOGDIR'], this.logdirRecords);
+        this.parseDirfile(buffers['PICDIR'], this.picdirRecords);
+        this.parseDirfile(buffers['VIEWDIR'], this.viewdirRecords);
+        this.parseDirfile(buffers['SNDDIR'], this.snddirRecords);
         var volNames: string[] = [];
-        for (var i = 0; i < availableVols.length; i++) {
-          if (availableVols[i] === true) {
+
+        for (var i = 0; i < this.availableVols.length; i++) {
+          if (this.availableVols[i] === true) {
             volNames.push('VOL.' + i);
           }
         }
 
-        downloadAllFiles('/static-assets/games/' + game + '/', volNames, (buffers: IByteStreamDict) => {
+        this.downloadAllFiles('/static-assets/games/' + game + '/', volNames, (buffers: IByteStreamDict) => {
           console.log('Resource volumes downloaded.');
           for (var j: number = 0; j < volNames.length; j++) {
-            volBuffers[j] = buffers[volNames[j]];
+            this.volBuffers[j] = buffers[volNames[j]];
           }
 
           let newPicData = new Uint8Array(6);
@@ -263,10 +262,10 @@ export class AgiResources {
           newPicData = AgiResources.addVolumeHeader(newPicData, 0);
 
           let volNum = 0;
-          let picsStream = volBuffers[0].buffer;
+          let picsStream = this.volBuffers[0].buffer;
           let offset = picsStream.length;
-          let roomValue = picdirRecords.length;
-          let picRecord = (picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
+          let roomValue = this.picdirRecords.length;
+          let picRecord = (this.picdirRecords[roomValue] = { volNo: volNum, volOffset: offset });
           let newStreamLength = picsStream.length + newPicData.length;
 
           let newStream = new Uint8Array(newStreamLength);
@@ -281,7 +280,7 @@ export class AgiResources {
             }
           }
 
-          let newPicDirEncoded = AgiResources.updateDirectoryOffsets('P', picdirRecords, picRecord.volOffset, 0);
+          let newPicDirEncoded = AgiResources.updateDirectoryOffsets('P', this.picdirRecords, picRecord.volOffset, 0);
 
           // Every room has a logic file. Add logic file
           let roomLogic = [
@@ -417,8 +416,8 @@ export class AgiResources {
             }
           }
 
-          let logRecord = (logdirRecords[roomValue] = { volNo: volNum, volOffset: newStream.length });
-          let newLogDirEncoded = AgiResources.updateDirectoryOffsets('L', logdirRecords, logRecord.volOffset, 0);
+          let logRecord = (this.logdirRecords[roomValue] = { volNo: volNum, volOffset: newStream.length });
+          let newLogDirEncoded = AgiResources.updateDirectoryOffsets('L', this.logdirRecords, logRecord.volOffset, 0);
 
           //@ts-ignore
           let gamePath = '/static-assets/games/' + game + '/';
@@ -515,7 +514,7 @@ export class AgiResources {
     });
   };
 
-  static parseDirfile(buffer: ByteStream, records: IDirectoryEntry[]): void {
+  parseDirfile(buffer: ByteStream, records: IDirectoryEntry[]): void {
     var length: number = buffer.length / 3;
     for (var i: number = 0; i < length; i++) {
       var val: number = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
@@ -523,9 +522,10 @@ export class AgiResources {
       var volOffset: number = val & 0xfffff;
       if (val >>> 16 == 0xff) continue;
       records[i] = { volNo: volNo, volOffset: volOffset };
-      if (availableVols[volNo] === undefined) availableVols[volNo] = true;
+             
+      if (this.availableVols[volNo] === undefined) this.availableVols[volNo] = true;
     }
   }
 }
 
-export default AgiResources
+export default AgiResources;
