@@ -1447,7 +1447,37 @@ var AgiResources = /** @class */ (function () {
             return volPart;
         };
         this.downloadAllFiles = function (path, files, done) {
-            files.length;
+            var buffers = {};
+            var leftToDownload = files.length;
+            for (var i = 0; i < files.length; i++) {
+                handleFile(i);
+            }
+            function getBinary(url, success) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url + '?crafterSite=agi-crafter', true);
+                xhr.responseType = 'arraybuffer';
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.response === null) {
+                            throw "Fatal error downloading '" + url + "'";
+                        }
+                        else {
+                            console.log("Successfully downloaded '" + url + "'");
+                            success(xhr.response);
+                        }
+                    }
+                };
+                xhr.send();
+            }
+            function handleFile(num) {
+                getBinary(path + files[num], function (buffer) {
+                    buffers[files[num]] = new ByteStream(new Uint8Array(buffer));
+                    leftToDownload--;
+                    if (leftToDownload === 0) {
+                        done(buffers);
+                    }
+                });
+            }
         };
         this.savePicture = function (siteId, game, commands) {
             _this.downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
@@ -1514,7 +1544,7 @@ var AgiResources = /** @class */ (function () {
                 });
             });
         };
-        this.handleSaveAsNewPicture = function (siteId, game) {
+        this.saveAsNewPicture = function (siteId, game) {
             _this.downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
                 console.log('Directory files downloaded.');
                 AgiResources.parseDirfile(buffers['LOGDIR'], _this.logdirRecords);
@@ -1903,7 +1933,7 @@ function EditPictureDialog(props) {
     var handleSaveAsNewPicture = function () {
         var game = AgiActiveGame.getActiveGameId();
         var agiResources = new AgiResources();
-        agiResources.handleSaveAsNewPicture(siteId, game);
+        agiResources.saveAsNewPicture(siteId, game);
         alert('New Picture Add Complete'); // do better
     };
     var handleSavePicture = function () {
