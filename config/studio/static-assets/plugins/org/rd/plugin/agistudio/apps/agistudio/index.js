@@ -560,7 +560,7 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "if") {
                     opCode = 0xff;
-                    openScopePosition = 0;
+                    openScopePosition = position;
                     position++; // create space to store byte count in scope
                     var testStr = lineToParse.replace("if(", "").replace(") {", "");
                     var testStrArray = testStr.split(/\|\||\&\&/);
