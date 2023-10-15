@@ -1902,14 +1902,14 @@ function EditPictureDialog(props) {
     };
     var handleSaveAsNewPicture = function () {
         var game = AgiActiveGame.getActiveGameId();
-        //@ts-ignore
-        AgiResources.handleSaveAsNewPicture(siteId, game);
+        var agiResources = new AgiResources();
+        agiResources.handleSaveAsNewPicture(siteId, game);
         alert('New Picture Add Complete'); // do better
     };
     var handleSavePicture = function () {
         var game = AgiActiveGame.getActiveGameId();
-        //@ts-ignore
-        AgiResources.savePicture(siteId, game, commands);
+        var agiResources = new AgiResources();
+        agiResources.savePicture(siteId, game, commands);
         alert('Save Complete'); // do better
     };
     return (React.createElement(React.Fragment, null,
