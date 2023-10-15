@@ -560,8 +560,6 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "if") {
                     opCode = 0xff;
-                    openScopePosition = position;
-                    position++; // create space to store byte count in scope
                     var testStr = lineToParse.replace("if(", "").replace(") {", "");
                     var testStrArray = testStr.split(/\|\||\&\&/);
                     testStrArray.forEach(function (testStr) {
@@ -582,6 +580,7 @@ var AgiBridge = /** @class */ (function () {
                         });
                     });
                     args_1[args_1.length] = 0xff; // close the if clause if(....)
+                    openScopePosition = position + args_1.length;
                 }
                 else if (command === "else") {
                     opCode = 0xfe;
