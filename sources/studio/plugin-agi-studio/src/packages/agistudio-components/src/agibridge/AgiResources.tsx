@@ -426,8 +426,6 @@ export class AgiResources {
 
           // save updated volume file
           AgiResources.saveFile(siteId, gamePath, 'VOL.0', volStream);
-
-          AgiActiveGame.reload();
         });
       }
     );

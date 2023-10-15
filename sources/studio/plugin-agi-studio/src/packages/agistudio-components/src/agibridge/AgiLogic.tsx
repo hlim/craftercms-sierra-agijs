@@ -307,16 +307,20 @@ export class AgiLogic {
       line += left.constructor.name == 'AndNode' ? ' && ' : ' || ';
       line += AgiLogic.decompileExpression(right);
     } else {
-      var funcName = AgiLogic.testFunctions[opCode];
+      var funcName = AgiLogic.testFunctions[opCode - 1];
       line = (negate ? '!' : '') + funcName + '(';
 
-      if (args) {
-        var testVars = AgiLogic.processArgNames(funcName, true, args, []);
+      if (opCode === 13) {
+        line += expression.byteOffset;
+      } else {
+        if (args) {
+          var testVars = AgiLogic.processArgNames(funcName, true, args, []);
 
-        for (var a = 0; a < testVars.length; a++) {
-          var arg = testVars[a];
-          if (a > 0) line += ', ';
-          line += arg;
+          for (var a = 0; a < testVars.length; a++) {
+            var arg = testVars[a];
+            if (a > 0) line += ', ';
+            line += arg;
+          }
         }
       }
       line += ')';
@@ -381,6 +385,8 @@ export class AgiLogic {
       }
     } else if (opCode == 0x0e) {
       line = 'said';
+      // this does not seem to get called because
+      // it's getting addressed in the if logic
     } else {
       var funcName = AgiLogic.statementFunctions[opCode];
       line += funcName;
@@ -471,7 +477,7 @@ export class AgiLogic {
             // 0xFD AND
             // NEGATED?
             let compareCommand = testStr.substring(0, testStr.indexOf('('));
-            var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand);
+            var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand) + 1;
             let compareArgsStr = testStr.substring(testStr.indexOf('(') + 1, testStr.indexOf(')'));
 
             compareArgsStr = compareArgsStr.replaceAll('f', '');
@@ -479,6 +485,11 @@ export class AgiLogic {
             let compareArgs = compareArgsStr.split(',');
             args[args.length] = compOpCode;
 
+            if (compOpCode === 0x0e) {
+              // said
+              alert('compile Said');
+              args[args.length] = 1;
+            }
             compareArgs.forEach(function (arg) {
               let argAsNum = parseInt(arg);
               arg = isNaN(argAsNum) ? arg : argAsNum;

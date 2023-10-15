@@ -675,15 +675,20 @@ var AgiLogic = /** @class */ (function () {
             line += AgiLogic.decompileExpression(right);
         }
         else {
-            var funcName = AgiLogic.testFunctions[opCode];
+            var funcName = AgiLogic.testFunctions[opCode - 1];
             line = (negate ? '!' : '') + funcName + '(';
-            if (args) {
-                var testVars = AgiLogic.processArgNames(funcName, true, args, []);
-                for (var a = 0; a < testVars.length; a++) {
-                    var arg = testVars[a];
-                    if (a > 0)
-                        line += ', ';
-                    line += arg;
+            if (opCode === 13) {
+                line += expression.byteOffset;
+            }
+            else {
+                if (args) {
+                    var testVars = AgiLogic.processArgNames(funcName, true, args, []);
+                    for (var a = 0; a < testVars.length; a++) {
+                        var arg = testVars[a];
+                        if (a > 0)
+                            line += ', ';
+                        line += arg;
+                    }
                 }
             }
             line += ')';
@@ -753,6 +758,8 @@ var AgiLogic = /** @class */ (function () {
         }
         else if (opCode == 0x0e) {
             line = 'said';
+            // this does not seem to get called because
+            // it's getting addressed in the if logic
         }
         else {
             var funcName = AgiLogic.statementFunctions[opCode];
@@ -832,12 +839,17 @@ var AgiLogic = /** @class */ (function () {
                         // 0xFD AND
                         // NEGATED?
                         var compareCommand = testStr.substring(0, testStr.indexOf('('));
-                        var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand);
+                        var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand) + 1;
                         var compareArgsStr = testStr.substring(testStr.indexOf('(') + 1, testStr.indexOf(')'));
                         compareArgsStr = compareArgsStr.replaceAll('f', '');
                         compareArgsStr = compareArgsStr.replaceAll('v', '');
                         var compareArgs = compareArgsStr.split(',');
                         args_1[args_1.length] = compOpCode;
+                        if (compOpCode === 0x0e) {
+                            // said
+                            alert('compile Said');
+                            args_1[args_1.length] = 1;
+                        }
                         compareArgs.forEach(function (arg) {
                             var argAsNum = parseInt(arg);
                             arg = isNaN(argAsNum) ? arg : argAsNum;
@@ -1726,7 +1738,6 @@ var AgiResources = /** @class */ (function () {
                     AgiResources.saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
                     // save updated volume file
                     AgiResources.saveFile(siteId, gamePath, 'VOL.0', volStream);
-                    AgiActiveGame.reload();
                 });
             });
         };
