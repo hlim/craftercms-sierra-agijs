@@ -805,8 +805,7 @@ var AgiLogic = /** @class */ (function () {
         messageTable.forEach(function (msg) {
             msg = msg
                 .substring(msg.indexOf('"'), msg.lastIndexOf('"') + 1)
-                .replaceAll('"', '')
-                .toLowerCase();
+                .replaceAll('"', '');
             messageTable[msgIdx] = msg;
             msgIdx++;
         });
