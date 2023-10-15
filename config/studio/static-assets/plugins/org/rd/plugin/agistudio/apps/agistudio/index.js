@@ -675,7 +675,7 @@ var AgiLogic = /** @class */ (function () {
             line += AgiLogic.decompileExpression(right);
         }
         else {
-            var funcName = AgiLogic.testFunctions[opCode];
+            var funcName = AgiLogic.testFunctions[opCode - 1];
             line = (negate ? '!' : '') + funcName + '(';
             if (opCode === 13) {
                 line += expression.byteOffset;
