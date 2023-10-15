@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Tooltip } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import CopyAllRoundedIcon from '@mui/icons-material/CopyAllRounded';
-import { AgiBridge } from '../agi/AgiBridge';
+import AgiActiveGame from '../agibridge/AgiActiveGame';
 
 export function ShowPriorityBuffer(props) {
   const dispatch = useDispatch();
@@ -13,19 +13,19 @@ export function ShowPriorityBuffer(props) {
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    AgiBridge.agiExecute(
+    AgiActiveGame.agiExecute(
       'Get buffer mode',
       'Agi.interpreter.gbm = (Agi.interpreter.gbm && Agi.interpreter.gbm==1) ? 0 : 1'
     );
-    AgiBridge.agiExecute(
+    AgiActiveGame.agiExecute(
       'Keep Orig Visual Buffer',
       'Agi.interpreter.gvb = (!Agi.interpreter.gvb) ? Agi.interpreter.visualBuffer : Agi.interpreter.gvb'
     );
-    AgiBridge.agiExecute(
+    AgiActiveGame.agiExecute(
       'Set Visual Buffer',
       'Agi.interpreter.visualBuffer = (Agi.interpreter.gbm==1) ? Agi.interpreter.priorityBuffer : Agi.interpreter.gvb'
     );
-    AgiBridge.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
+    AgiActiveGame.agiExecute('Re-Render the room', 'Agi.interpreter.newroom = Agi.interpreter.variables[0]');
   };
 
   const handleClose = () => {
@@ -36,7 +36,7 @@ export function ShowPriorityBuffer(props) {
     <>
       <Tooltip title={'Show Priority Buffer'}>
         <IconButton
-          disabled={!AgiBridge.gameIsLoaded()}
+          disabled={!AgiActiveGame.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

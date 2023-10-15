@@ -3,7 +3,8 @@ import { Button, DialogActions, Tooltip } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
-import { AgiBridge } from '../agi/AgiBridge';
+import AgiActiveGame from '../agibridge/AgiActiveGame';
+import AgiLogic from '../agibridge/AgiLogic';
 
 export function ShowCode(props) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -15,13 +16,13 @@ export function ShowCode(props) {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
 
-    let currentRoom = AgiBridge.currentRoom();
-    let Agi = AgiBridge.agiExecute('Get Logic Array', 'Agi');
+    let currentRoom = AgiActiveGame.currentRoom();
+    let Agi = AgiActiveGame.agiExecute('Get Logic Array', 'Agi');
     let code = new Agi.LogicParser(Agi.interpreter, currentRoom);
     
-    let codeData = AgiBridge.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + currentRoom + ')');
-    let decompiledCode = AgiBridge.decompile(codeData, code)
-    let prettyPrintedCode = AgiBridge.prettyPrintCode(decompiledCode)
+    let codeData = AgiActiveGame.agiExecute('Get Binary', 'Resources.readAgiResource(Resources.AgiResource.Logic, ' + currentRoom + ')');
+    let decompiledCode = AgiLogic.decompile(codeData, code)
+    let prettyPrintedCode = AgiLogic.prettyPrintCode(decompiledCode)
     setRoomCode(prettyPrintedCode)
 
     setDialogOpen(true);
@@ -29,7 +30,7 @@ export function ShowCode(props) {
 
   const handleSaveClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    let currentRoom = AgiBridge.compile(roomCode);
+    let currentRoom = AgiLogic.compile(roomCode);
   };
 
   const handleClose = () => {
@@ -41,10 +42,10 @@ export function ShowCode(props) {
   const handleCompileClick = (event: React.MouseEvent<HTMLElement>) => {
 
     try {
-      let compiledCode = AgiBridge.compile(roomCode)
-      let codeAsLogic = AgiBridge.newLogicFromBuffer(compiledCode)
-      let reDecompiledForCheck = AgiBridge.decompile(compiledCode, codeAsLogic)
-      let prettyPrinted = AgiBridge.prettyPrintCode(reDecompiledForCheck)
+      let compiledCode = AgiLogic.compile(roomCode)
+      let codeAsLogic = AgiLogic.newLogicFromBuffer(compiledCode)
+      let reDecompiledForCheck = AgiLogic.decompile(compiledCode, codeAsLogic)
+      let prettyPrinted = AgiLogic.prettyPrintCode(reDecompiledForCheck)
 
       setCompiledCode(prettyPrinted)
     }
@@ -109,7 +110,7 @@ export function ShowCode(props) {
 
       <Tooltip title={'Show Code'}>
         <IconButton
-          disabled={!AgiBridge.gameIsLoaded()}
+          disabled={!AgiActiveGame.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

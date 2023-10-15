@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { Button, ButtonGroup, DialogActions, Paper } from '@mui/material';
 import { DialogContent, TextField } from '@mui/material';
-import { AgiBridge } from '../agi/AgiBridge';
 import { useState, useEffect } from 'react';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
+import  AgiPicture  from "../agibridge/AgiPicture"
+import  AgiResources  from "../agibridge/AgiResources"
+import  AgiActiveGame  from "../agibridge/AgiActiveGame"
 
 export function EditPictureDialog(props) {
   const siteId = useActiveSiteId();
@@ -46,7 +48,7 @@ export function EditPictureDialog(props) {
       setMouseTrapped(true);
     }
 
-    let currentPictureCommands = AgiBridge.getCurrentPictureCommands();
+    let currentPictureCommands = AgiPicture.getCurrentPictureCommands();
 
     setCommands(currentPictureCommands);
 
@@ -62,7 +64,7 @@ export function EditPictureDialog(props) {
       //@ts-ignore
       var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
 
-      var newCommands = AgiBridge.appendPictureCommandToTail(existingCommands, command);
+      var newCommands = AgiPicture.appendPictureCommandToTail(existingCommands, command);
 
       var newCommands = existingCommands.replace('End();', '');
       newCommands = newCommands + `${command}\nEnd();`;
@@ -72,7 +74,7 @@ export function EditPictureDialog(props) {
       //@ts-ignore
       window.agistudioPicCommands = newCommands;
 
-      AgiBridge.renderCommands(newCommands);
+      AgiPicture.renderPictureCommands(newCommands);
     }
   };
 
@@ -96,7 +98,7 @@ export function EditPictureDialog(props) {
     //@ts-ignore
     var existingDrawMode = window.agistudioDrawMode ? window.agistudioDrawMode : drawMode;
 
-    var newCommand = AgiBridge.createPictureDrawCommand(existingDrawMode, x, y, scale);
+    var newCommand = AgiPicture.createPictureDrawCommand(existingDrawMode, x, y, scale);
 
     appendCommandAndRender(newCommand);
   };
@@ -105,17 +107,17 @@ export function EditPictureDialog(props) {
     //@ts-ignore
     var existingCommands = window.agistudioPicCommands ? window.agistudioPicCommands : commands;
 
-    var newCommands = AgiBridge.undoPictureCommand(existingCommands);
+    var newCommands = AgiPicture.undoPictureCommand(existingCommands);
 
     //@ts-ignore
     window.agistudioPicCommands = newCommands;
     setCommands(newCommands);
 
-    AgiBridge.renderCommands(newCommands);
+    AgiPicture.renderPictureCommands(newCommands);
   };
 
   const handleSwitchBuffer = () => {
-    AgiBridge.switchPictureBuffer();
+    AgiActiveGame.switchPictureBuffer();
   };
 
   const handleDrawModeUpdate = (mode) => {
@@ -124,7 +126,7 @@ export function EditPictureDialog(props) {
     //@ts-ignore
     window.agistudioDrawMode = mode;
 
-    var newCommand = AgiBridge.createPictureDrawModeCommand(mode);
+    var newCommand = AgiPicture.createPictureDrawModeCommand(mode);
     appendCommandAndRender(newCommand);
   };
 
@@ -150,25 +152,29 @@ export function EditPictureDialog(props) {
     //@ts-ignore
     window.agistudioPicCommands = newCommands;
     setCommands(newCommands);
-    AgiBridge.renderCommands(newCommands);
+    AgiPicture.renderPictureCommands(newCommands);
   };
 
   const handleSetColor = (color: number) => {
-    var newCommand = AgiBridge.createPictureSetColorCommand(color);
+    var newCommand = AgiPicture.createPictureSetColorCommand(color);
     appendCommandAndRender(newCommand);
   };
 
   const handleSaveAsNewPicture = () => {
-    var game = AgiBridge.getActiveGameId();
+    var game = AgiActiveGame.getActiveGameId();
 
-    AgiBridge.handleSaveAsNewPicture(siteId, game);
+    //@ts-ignore
+    AgiResources.handleSaveAsNewPicture(siteId, game);
+
     alert('New Picture Add Complete'); // do better
   };
 
   const handleSavePicture = () => {
-    var game = AgiBridge.getActiveGameId();
+    var game = AgiActiveGame.getActiveGameId();
 
-    AgiBridge.savePicture(siteId, game, commands);
+    //@ts-ignore
+    AgiResources.savePicture(siteId, game, commands);
+    
     alert('Save Complete'); // do better
   };
 
@@ -354,5 +360,5 @@ export function EditPictureDialog(props) {
     </>
   );
 }
-
+export {}
 export default EditPictureDialog;

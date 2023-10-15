@@ -4,7 +4,7 @@ import { Tooltip } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import SpeakerNotesRoundedIcon from '@mui/icons-material/SpeakerNotesRounded';
-import { AgiBridge } from '../agi/AgiBridge';
+import AgiActiveGame  from '../agibridge/AgiActiveGame';
 
 export function ShowWords(props) {
   const dispatch = useDispatch();
@@ -16,7 +16,7 @@ export function ShowWords(props) {
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    let words = AgiBridge.agiExecute('Get Words', 'Resources.words');
+    let words = AgiActiveGame.agiExecute('Get Words', 'Resources.words');
     setWords(words);
     setDialogOpen(true);
   };
@@ -65,7 +65,7 @@ export function ShowWords(props) {
 
       <Tooltip title={'Show Words'}>
         <IconButton
-          disabled={!AgiBridge.gameIsLoaded()}
+          disabled={!AgiActiveGame.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

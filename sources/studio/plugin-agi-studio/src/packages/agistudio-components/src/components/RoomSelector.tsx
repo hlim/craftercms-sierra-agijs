@@ -13,8 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { usePreviewNavigation } from '@craftercms/studio-ui/hooks/usePreviewNavigation';
-
-import { AgiBridge } from '../agi/AgiBridge';
+import AgiActiveGame from '../agibridge/AgiActiveGame';
 
 export function RoomSelector(props) {
   const dispatch = useDispatch();
@@ -32,7 +31,7 @@ export function RoomSelector(props) {
 
   const loadRoomData = () => {
     let rooms = [];
-    let Resources = AgiBridge.agiExecute('Get Resources', 'Resources');
+    let Resources = AgiActiveGame.agiExecute('Get Resources', 'Resources');
 
     for (let i = 0; i < 10000; i++) {
       try {
@@ -58,14 +57,14 @@ export function RoomSelector(props) {
 
   useEffect(() => {
     loadRoomData();
-  }, [currentUrlPath, AgiBridge.currentRoom()]);
+  }, [currentUrlPath, AgiActiveGame.currentRoom()]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleClickNewRoom = (room) => {
-    AgiBridge.agiExecute('New Room', 'Agi.interpreter.newroom = ' + room);
+    AgiActiveGame.agiExecute('New Room', 'Agi.interpreter.newroom = ' + room);
   };
 
   const handleClose = () => {
@@ -84,7 +83,7 @@ export function RoomSelector(props) {
           style={{ position: 'relative' }}
         >
           <IconButton
-            disabled={!AgiBridge.gameIsLoaded()}
+            disabled={!AgiActiveGame.gameIsLoaded()}
             size="medium"
             style={{ padding: 4 }}
             id="go-positioned-button"

@@ -4,7 +4,7 @@ import { Tooltip } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import ControlCameraRoundedIcon from '@mui/icons-material/ControlCameraRounded';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
-import { AgiBridge } from '../agi/AgiBridge';
+import AgiActiveGame from '../agibridge/AgiActiveGame';
 
 export function SetEgoPosition(props) {
   const siteId = useActiveSiteId();
@@ -19,8 +19,8 @@ export function SetEgoPosition(props) {
     var y = prompt('Y coordinate');
 
     if (x && y && x != '' && y != '') {
-      AgiBridge.agiExecute('Set Ego X Coordinate', 'Agi.interpreter.gameObjects[0].x=' + x);
-      AgiBridge.agiExecute('Set Ego Y Coordinate', 'Agi.interpreter.gameObjects[0].y=' + y);
+      AgiActiveGame.agiExecute('Set Ego X Coordinate', 'Agi.interpreter.gameObjects[0].x=' + x);
+      AgiActiveGame.agiExecute('Set Ego Y Coordinate', 'Agi.interpreter.gameObjects[0].y=' + y);
     }
   };
 
@@ -32,7 +32,7 @@ export function SetEgoPosition(props) {
     <>
       <Tooltip title={'Set Ego Position'}>
         <IconButton
-          disabled={!AgiBridge.gameIsLoaded()}
+          disabled={!AgiActiveGame.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

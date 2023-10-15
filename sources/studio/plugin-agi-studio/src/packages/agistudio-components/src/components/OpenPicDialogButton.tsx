@@ -4,7 +4,7 @@ import { SwipeableDrawer, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ImageAspectRatioRoundedIcon from '@mui/icons-material/ImageAspectRatioRounded';
 import EditPictureDialog from './EditPictureDialog';
-import { AgiBridge } from './../agi/AgiBridge';
+import AgiActiveGame from '../agibridge/AgiActiveGame';
 
 
 export function OpenPicDialogButton(props) {
@@ -35,7 +35,7 @@ export function OpenPicDialogButton(props) {
 
       <Tooltip title={'Edit Current Room Picture'}>
         <IconButton
-          disabled={!AgiBridge.gameIsLoaded()}
+          disabled={!AgiActiveGame.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"

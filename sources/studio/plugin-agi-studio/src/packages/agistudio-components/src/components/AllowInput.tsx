@@ -9,7 +9,7 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { usePreviewNavigation } from '@craftercms/studio-ui/hooks/usePreviewNavigation';
-import { AgiBridge } from './../agi/AgiBridge';
+import AgiActiveGame from '../agibridge/AgiActiveGame';
 
 export function AllowInput(props) {
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ export function AllowInput(props) {
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    AgiBridge.agiExecute('Enable Input', 'Agi.interpreter.agi_accept_input()');
+    AgiActiveGame.agiExecute('Enable Input', 'Agi.interpreter.agi_accept_input()');
   };
 
   const handleClose = () => {
@@ -45,7 +45,7 @@ export function AllowInput(props) {
     <>
       <Tooltip title={'Allow Input'}>
         <IconButton
-          disabled={!AgiBridge.gameIsLoaded()}
+          disabled={!AgiActiveGame.gameIsLoaded()}
           size="medium"
           style={{ padding: 4 }}
           id="go-positioned-button"
