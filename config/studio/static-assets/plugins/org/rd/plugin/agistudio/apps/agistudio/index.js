@@ -845,17 +845,16 @@ var AgiLogic = /** @class */ (function () {
                         compareArgsStr = compareArgsStr.replaceAll('v', '');
                         var compareArgs = compareArgsStr.split(',');
                         args_1[args_1.length] = compOpCode;
-                        if (compOpCode === 0x0E) { // said
-                            alert("compile Said");
+                        if (compOpCode === 0x0e) {
+                            // said
+                            alert('compile Said');
                             args_1[args_1.length] = 1;
                         }
-                        else {
-                            compareArgs.forEach(function (arg) {
-                                var argAsNum = parseInt(arg);
-                                arg = isNaN(argAsNum) ? arg : argAsNum;
-                                args_1[args_1.length] = arg;
-                            });
-                        }
+                        compareArgs.forEach(function (arg) {
+                            var argAsNum = parseInt(arg);
+                            arg = isNaN(argAsNum) ? arg : argAsNum;
+                            args_1[args_1.length] = arg;
+                        });
                     });
                     args_1[args_1.length] = 0xff; // close the if clause if(....)
                     args_1[args_1.length] = 0x00; // length of scope
