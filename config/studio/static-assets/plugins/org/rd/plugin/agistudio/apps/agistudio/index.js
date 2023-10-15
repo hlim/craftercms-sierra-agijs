@@ -877,7 +877,7 @@ var AgiLogic = /** @class */ (function () {
                     if (messageOffset === -1) {
                         messageOffset = position;
                     }
-                    var msg = line.substring(line.indexOf(""), line.lastIndexOf(""));
+                    var msg = line.substring(line.indexOf("\""), line.lastIndexOf("\""));
                     messages.push(msg);
                 }
                 else {
