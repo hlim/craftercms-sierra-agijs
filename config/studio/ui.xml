@@ -30,17 +30,17 @@
                         <locale>en</locale>
                     </configuration>
                 </widget>
-                <!--
+
                 <widget id="craftercms.components.PathNavigatorTree">
                     <configuration>
                         <id>StaticAssets</id>
-                        <label>Game Files</label>
+                        <label>Game Files and Sources</label>
                         <icon id="@mui/icons-material/ImageOutlined"/>
                         <rootPath>/static-assets/games</rootPath>
                         <locale>en</locale>
                     </configuration>
                 </widget>
--->
+
                 <widget id="craftercms.components.ToolsPanelEmbeddedAppViewButton">
                     <permittedRoles>
                         <role>admin</role>
