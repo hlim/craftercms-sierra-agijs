@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, FormControl, DialogActions, Button, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -962,10 +962,9 @@ function ShowCode(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(Dialog, { fullWidth: true, maxWidth: "xl", sx: { paddingLeft: '30px' }, onClose: function () { return setDialogOpen(false); }, "aria-labelledby": "simple-dialog-title", open: dialogOpen },
             React.createElement(DialogTitle, null, "Logic Listing"),
-            React.createElement(IconButton, { onClick: handleSaveClick },
-                React.createElement(DataObjectRoundedIcon, null)),
-            React.createElement(IconButton, { onClick: handleCompileClick },
-                React.createElement(DataObjectRoundedIcon, null)),
+            React.createElement(DialogActions, null,
+                React.createElement(Button, { onClick: handleSaveClick }, "Compile and Save"),
+                React.createElement(Button, { onClick: handleCompileClick }, "Compile and then Decompile")),
             React.createElement(DialogContent, null,
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 10, value: roomCode }),
                 React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleCommandUpdate }),
