@@ -539,6 +539,7 @@ var AgiBridge = /** @class */ (function () {
         });
         var lines = [];
         lines = logicCode.split(";");
+        var openScopePosition = 0; // doing this does not allow nesting of scopes :(
         lines.forEach(function (line) {
             var lineToParse = line; //.replaceAll(" ", "")
             lineToParse = lineToParse.toLowerCase();
@@ -559,6 +560,8 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "if") {
                     opCode = 0xff;
+                    openScopePosition = 0;
+                    position++; // create space to store byte count in scope
                     var testStr = lineToParse.replace("if(", "").replace(") {", "");
                     var testStrArray = testStr.split(/\|\||\&\&/);
                     testStrArray.forEach(function (testStr) {
@@ -578,6 +581,7 @@ var AgiBridge = /** @class */ (function () {
                             args_1[args_1.length] = arg;
                         });
                     });
+                    args_1[args_1.length] = 0xff; // close the if clause if(....)
                 }
                 else if (command === "else") {
                     opCode = 0xfe;
@@ -587,6 +591,8 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "}") {
                     // close of scope, nothng to do
+                    var byteCount = position = openScopePosition;
+                    buffer[position] = byteCount;
                 }
                 else if (command.indexOf("#") != -1) {
                     // message table item
