@@ -879,7 +879,7 @@ var AgiBridge = /** @class */ (function () {
     };
     AgiBridge.undoPictureCommand = function (commands) {
         //@ts-ignore
-        var commandsAsArray = existingCommands.split(';');
+        var commandsAsArray = commands.split(';');
         var lastCommandPosition = -1;
         var i = commandsAsArray.length - 1;
         // find last command position
