@@ -340,8 +340,8 @@ export class AgiLogic {
           if (funcName.startsWith('isset')) value = 'f' + value;
           else value = 'v' + value;
         } else {
-          if (funcName === 'print') value = '"' + messages[parseInt(value)] + '"';
-          else if (funcName.startsWith('set_menu')) value = '"' + messages[parseInt(value)] + '"';
+          if (funcName === 'print') value = '"' + messages[parseInt(value)-1] + '"';
+          else if (funcName.startsWith('set_menu')) value = '"' + messages[parseInt(value)-1] + '"';
           else if (funcName.startsWith('set')) value = 'f' + value;
           else if (funcName.startsWith('assign')) value = 'v' + value;
         }
@@ -422,6 +422,7 @@ export class AgiLogic {
 
   static compile = (logicCode) => {
     // this code needs to be re-built as a true parser
+    let messages = [ ];
 
     let buffer = new Uint8Array(8000);
     let position = 2;
@@ -439,7 +440,6 @@ export class AgiLogic {
       msg = msg
         .substring(msg.indexOf('"'), msg.lastIndexOf('"') + 1)
         .replaceAll('"', '')
-        .toLowerCase();
       messageTable[msgIdx] = msg;
       msgIdx++;
     });
@@ -450,7 +450,7 @@ export class AgiLogic {
 
     lines.forEach(function (line) {
       var lineToParse = line; //.replaceAll(" ", "")
-      lineToParse = lineToParse.toLowerCase();
+      //lineToParse = lineToParse.toLowerCase(); // don't do this. it creates ambiguity
       var command = '';
 
       try {
@@ -487,8 +487,7 @@ export class AgiLogic {
 
             if (compOpCode === 0x0e) {
               // said
-              alert('compile Said');
-              args[args.length] = 1;
+              args[args.length] = 1; //hack
             }
             compareArgs.forEach(function (arg) {
               let argAsNum = parseInt(arg);
@@ -513,10 +512,14 @@ export class AgiLogic {
           if (messageOffset === -1) {
             messageOffset = position;
           }
+
+          var msg = line.substring(line.indexOf("\"")+1,line.lastIndexOf("\""))
+          messages.push(msg)
         } else {
           opCode = AgiLogic.statementFunctions.indexOf(command);
           let argsStr = lineToParse.replaceAll(command, '');
           argsStr = argsStr.replace('(', '').replace(')', '');
+
           argsStr = argsStr.replaceAll('f', '');
           argsStr = argsStr.replaceAll('v', '');
           args = argsStr != '' ? argsStr.split(',') : [];
@@ -558,7 +561,6 @@ export class AgiLogic {
       messageOffset = position;
     }
 
-    let messages = ['         Intro/Opening screen', 'ABC'];
 
     buffer[position++] = messages.length;
     let ptrMsgsEndPos = position;
