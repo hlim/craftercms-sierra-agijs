@@ -1482,10 +1482,10 @@ var AgiResources = /** @class */ (function () {
         this.savePicture = function (siteId, game, commands) {
             _this.downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
                 console.log('Directory files downloaded.');
-                AgiResources.parseDirfile(buffers['LOGDIR'], _this.logdirRecords);
-                AgiResources.parseDirfile(buffers['PICDIR'], _this.picdirRecords);
-                AgiResources.parseDirfile(buffers['VIEWDIR'], _this.viewdirRecords);
-                AgiResources.parseDirfile(buffers['SNDDIR'], _this.snddirRecords);
+                _this.parseDirfile(buffers['LOGDIR'], _this.logdirRecords);
+                _this.parseDirfile(buffers['PICDIR'], _this.picdirRecords);
+                _this.parseDirfile(buffers['VIEWDIR'], _this.viewdirRecords);
+                _this.parseDirfile(buffers['SNDDIR'], _this.snddirRecords);
                 var volNames = [];
                 for (var i = 0; i < _this.availableVols.length; i++) {
                     if (_this.availableVols[i] === true) {
@@ -1547,14 +1547,12 @@ var AgiResources = /** @class */ (function () {
         this.saveAsNewPicture = function (siteId, game) {
             _this.downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
                 console.log('Directory files downloaded.');
-                AgiResources.parseDirfile(buffers['LOGDIR'], _this.logdirRecords);
-                AgiResources.parseDirfile(buffers['PICDIR'], _this.picdirRecords);
-                AgiResources.parseDirfile(buffers['VIEWDIR'], _this.viewdirRecords);
-                AgiResources.parseDirfile(buffers['SNDDIR'], _this.snddirRecords);
+                _this.parseDirfile(buffers['LOGDIR'], _this.logdirRecords);
+                _this.parseDirfile(buffers['PICDIR'], _this.picdirRecords);
+                _this.parseDirfile(buffers['VIEWDIR'], _this.viewdirRecords);
+                _this.parseDirfile(buffers['SNDDIR'], _this.snddirRecords);
                 var volNames = [];
-                //@ts-ignore
                 for (var i = 0; i < _this.availableVols.length; i++) {
-                    //@ts-ignore
                     if (_this.availableVols[i] === true) {
                         volNames.push('VOL.' + i);
                     }
@@ -1734,7 +1732,7 @@ var AgiResources = /** @class */ (function () {
             });
         };
     }
-    AgiResources.parseDirfile = function (buffer, records) {
+    AgiResources.prototype.parseDirfile = function (buffer, records) {
         var length = buffer.length / 3;
         for (var i = 0; i < length; i++) {
             var val = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
@@ -1743,7 +1741,6 @@ var AgiResources = /** @class */ (function () {
             if (val >>> 16 == 0xff)
                 continue;
             records[i] = { volNo: volNo, volOffset: volOffset };
-            //@ts-ignore
             if (this.availableVols[volNo] === undefined)
                 this.availableVols[volNo] = true;
         }
