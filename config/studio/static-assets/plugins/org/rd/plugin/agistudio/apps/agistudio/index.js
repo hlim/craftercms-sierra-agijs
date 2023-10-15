@@ -839,7 +839,7 @@ var AgiLogic = /** @class */ (function () {
                         // 0xFD AND
                         // NEGATED?
                         var compareCommand = testStr.substring(0, testStr.indexOf('('));
-                        var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand);
+                        var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand) + 1;
                         var compareArgsStr = testStr.substring(testStr.indexOf('(') + 1, testStr.indexOf(')'));
                         compareArgsStr = compareArgsStr.replaceAll('f', '');
                         compareArgsStr = compareArgsStr.replaceAll('v', '');
