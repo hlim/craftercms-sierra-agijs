@@ -708,9 +708,9 @@ var AgiLogic = /** @class */ (function () {
                 }
                 else {
                     if (funcName === 'print')
-                        value = '"' + messages[parseInt(value)] + '"';
+                        value = '"' + messages[parseInt(value) - 1] + '"';
                     else if (funcName.startsWith('set_menu'))
-                        value = '"' + messages[parseInt(value)] + '"';
+                        value = '"' + messages[parseInt(value) - 1] + '"';
                     else if (funcName.startsWith('set'))
                         value = 'f' + value;
                     else if (funcName.startsWith('assign'))
