@@ -839,7 +839,7 @@ var AgiLogic = /** @class */ (function () {
                         // 0xFD AND
                         // NEGATED?
                         var compareCommand = testStr.substring(0, testStr.indexOf('('));
-                        var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand);
+                        var compOpCode = AgiLogic.testFunctions.indexOf(compareCommand) + 1;
                         var compareArgsStr = testStr.substring(testStr.indexOf('(') + 1, testStr.indexOf(')'));
                         compareArgsStr = compareArgsStr.replaceAll('f', '');
                         compareArgsStr = compareArgsStr.replaceAll('v', '');
@@ -1733,7 +1733,6 @@ var AgiResources = /** @class */ (function () {
                     AgiResources.saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
                     // save updated volume file
                     AgiResources.saveFile(siteId, gamePath, 'VOL.0', volStream);
-                    AgiActiveGame.reload();
                 });
             });
         };
