@@ -573,6 +573,8 @@ var AgiBridge = /** @class */ (function () {
                         var compareArgs = compareArgsStr.split(",");
                         args_1[args_1.length] = compOpCode;
                         compareArgs.forEach(function (arg) {
+                            var argAsNum = parseInt(arg);
+                            arg = isNaN(argAsNum) ? arg : argAsNum;
                             args_1[args_1.length] = arg;
                         });
                     });
