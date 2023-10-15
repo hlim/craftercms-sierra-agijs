@@ -677,13 +677,18 @@ var AgiLogic = /** @class */ (function () {
         else {
             var funcName = AgiLogic.testFunctions[opCode];
             line = (negate ? '!' : '') + funcName + '(';
-            if (args) {
-                var testVars = AgiLogic.processArgNames(funcName, true, args, []);
-                for (var a = 0; a < testVars.length; a++) {
-                    var arg = testVars[a];
-                    if (a > 0)
-                        line += ', ';
-                    line += arg;
+            if (opCode === 13) {
+                line += expression.byteOffset;
+            }
+            else {
+                if (args) {
+                    var testVars = AgiLogic.processArgNames(funcName, true, args, []);
+                    for (var a = 0; a < testVars.length; a++) {
+                        var arg = testVars[a];
+                        if (a > 0)
+                            line += ', ';
+                        line += arg;
+                    }
                 }
             }
             line += ')';
@@ -753,6 +758,8 @@ var AgiLogic = /** @class */ (function () {
         }
         else if (opCode == 0x0e) {
             line = 'said';
+            // this does not seem to get called because
+            // it's getting addressed in the if logic
         }
         else {
             var funcName = AgiLogic.statementFunctions[opCode];
