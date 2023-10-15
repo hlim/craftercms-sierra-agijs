@@ -591,7 +591,7 @@ var AgiBridge = /** @class */ (function () {
                 }
                 else if (command === "}") {
                     // close of scope, nothng to do
-                    var byteCount = position - openScopePosition;
+                    var byteCount = position - openScopePosition + 2;
                     buffer[position] = byteCount;
                 }
                 else if (command.indexOf("#") != -1) {
