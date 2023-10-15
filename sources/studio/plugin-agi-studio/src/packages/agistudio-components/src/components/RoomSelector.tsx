@@ -14,7 +14,7 @@ import Menu from '@mui/material/Menu';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { usePreviewNavigation } from '@craftercms/studio-ui/hooks/usePreviewNavigation';
 
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from '../agi/AgiBridge';
 
 export function RoomSelector(props) {
   const dispatch = useDispatch();

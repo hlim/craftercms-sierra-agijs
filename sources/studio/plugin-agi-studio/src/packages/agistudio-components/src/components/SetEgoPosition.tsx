@@ -4,7 +4,7 @@ import { Tooltip } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import ControlCameraRoundedIcon from '@mui/icons-material/ControlCameraRounded';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from '../agi/AgiBridge';
 
 export function SetEgoPosition(props) {
   const siteId = useActiveSiteId();

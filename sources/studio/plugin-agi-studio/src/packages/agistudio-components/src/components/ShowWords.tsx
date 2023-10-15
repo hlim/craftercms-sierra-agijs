@@ -4,7 +4,7 @@ import { Tooltip } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import SpeakerNotesRoundedIcon from '@mui/icons-material/SpeakerNotesRounded';
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from '../agi/AgiBridge';
 
 export function ShowWords(props) {
   const dispatch = useDispatch();

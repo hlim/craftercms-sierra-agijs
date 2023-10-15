@@ -9,7 +9,7 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import RoomRoundedIcon from '@mui/icons-material/RoomRounded';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { usePreviewNavigation } from '@craftercms/studio-ui/hooks/usePreviewNavigation';
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from './../agi/AgiBridge';
 
 export function CurrentRoom(props) {
   const dispatch = useDispatch();

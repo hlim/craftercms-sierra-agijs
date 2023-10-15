@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Tooltip } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import CopyAllRoundedIcon from '@mui/icons-material/CopyAllRounded';
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from '../agi/AgiBridge';
 
 export function ShowPriorityBuffer(props) {
   const dispatch = useDispatch();

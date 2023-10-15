@@ -9,7 +9,7 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 import { usePreviewNavigation } from '@craftercms/studio-ui/hooks/usePreviewNavigation';
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from './../agi/AgiBridge';
 
 export function AllowInput(props) {
   const dispatch = useDispatch();

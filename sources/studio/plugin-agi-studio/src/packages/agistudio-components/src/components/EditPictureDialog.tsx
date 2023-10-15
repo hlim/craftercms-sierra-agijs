@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, ButtonGroup, DialogActions, Paper } from '@mui/material';
 import { DialogContent, TextField } from '@mui/material';
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from '../agi/AgiBridge';
 import { useState, useEffect } from 'react';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
 

@@ -3,7 +3,7 @@ import { Button, DialogActions, Tooltip } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import DataObjectRoundedIcon from '@mui/icons-material/DataObjectRounded';
-import { AgiBridge } from './AgiBridge';
+import { AgiBridge } from '../agi/AgiBridge';
 
 export function ShowCode(props) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
