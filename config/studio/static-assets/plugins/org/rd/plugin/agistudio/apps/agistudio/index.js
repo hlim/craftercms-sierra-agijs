@@ -580,7 +580,9 @@ var AgiBridge = /** @class */ (function () {
                         });
                     });
                     args_1[args_1.length] = 0xff; // close the if clause if(....)
-                    openScopePosition = position + args_1.length + 1; // for opcode
+                    args_1[args_1.length] = 0x00; // length of scope
+                    args_1[args_1.length] = 0x00; // length of scope
+                    openScopePosition = position + 1 /* op code */ + args_1.length;
                 }
                 else if (command === "else") {
                     opCode = 0xfe;
@@ -591,7 +593,7 @@ var AgiBridge = /** @class */ (function () {
                 else if (command === "}") {
                     // close of scope, nothng to do
                     var byteCount = position - openScopePosition;
-                    buffer[openScopePosition] = byteCount;
+                    buffer[openScopePosition - 2] = byteCount;
                 }
                 else if (command.indexOf("#") != -1) {
                     // message table item
