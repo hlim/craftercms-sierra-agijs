@@ -2154,15 +2154,13 @@ function EditViewDialog(props) {
             viewData.loops[0].cels[0] &&
             viewData.loops[0].cels[0].pixelData) {
             // transform pixel data for cel into 16 color bitmap
-            var cel = viewData.loops[0].cels[0];
-            var pixelData = cel.pixelData;
-            var bitmap_1 = new [cel.celHeight][cel.celWidth];
+            var cel_1 = viewData.loops[0].cels[0];
+            var pixelData = cel_1.pixelData;
             // initialize the bitmap with trasparent color
-            for (var i = 0; i < cel.celHeight; i++) {
-                for (var j = 0; j < cel.celWidth; j++) {
-                    bitmap_1[i][j] = '0';
-                }
-            }
+            //@ts-ignore
+            var bitmap_1 = Array(cel_1.celHeight).fill().map(function () {
+                return Array(cel_1.celWidth).fill(0);
+            });
             var row_1 = 0;
             var col_1 = 0;
             pixelData.forEach(function (chunkData) {
