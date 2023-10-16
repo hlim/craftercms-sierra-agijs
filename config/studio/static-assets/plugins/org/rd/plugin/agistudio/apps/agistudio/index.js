@@ -2156,7 +2156,7 @@ function EditViewDialog(props) {
             // transform pixel data for cel into 16 color bitmap
             var cel = viewData.loops[0].cels[0];
             var pixelData = cel.pixelData;
-            var bitmap_1 = [cel.celHeight][cel.celWidth];
+            var bitmap_1 = new [cel.celHeight][cel.celWidth];
             // initialize the bitmap with trasparent color
             for (var i = 0; i < cel.celHeight; i++) {
                 for (var j = 0; j < cel.celWidth; j++) {
