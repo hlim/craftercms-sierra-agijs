@@ -317,6 +317,11 @@
                     <widget id="org.rd.plugin.agistudio.OpenPicDialogButton">
                         <plugin id="org.rd.plugin.agistudio" site="{site}" type="apps" name="agistudio" file="index.js"/>
                     </widget>
+                    <widget id="org.rd.plugin.agistudio.EditViewDialog">
+                        <plugin id="org.rd.plugin.agistudio" site="{site}" type="apps" name="agistudio" file="index.js"/>
+                    </widget>
+                    
+                    
                 </widgets>
             </middleSection>
             <rightSection>
