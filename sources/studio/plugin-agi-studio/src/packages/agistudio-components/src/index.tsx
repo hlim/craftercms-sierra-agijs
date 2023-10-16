@@ -1,16 +1,18 @@
 import { PluginDescriptor } from '@craftercms/studio-ui';
 
-import AllowInput from          './components/AllowInput';
-import RoomSelector from        './components/RoomSelector';
-import SoundSelector from       './components/SoundSelector';
-import SetEgoPosition from      './components/SetEgoPosition';
-import ShowPriorityBuffer from  './components/ShowPriorityBuffer';
-import ShowWords from           './components/ShowWords';
-import CurrentRoom from         './components/CurrentRoom';
-import ShowCode from            './components/ShowCode';
-import AddGame from             './components/AddGame';
-import EditPictureDialog from   './components/EditPictureDialog';
+import AllowInput from './components/AllowInput';
+import RoomSelector from './components/RoomSelector';
+import SoundSelector from './components/SoundSelector';
+import SetEgoPosition from './components/SetEgoPosition';
+import ShowPriorityBuffer from './components/ShowPriorityBuffer';
+import ShowWords from './components/ShowWords';
+import CurrentRoom from './components/CurrentRoom';
+import ShowCode from './components/ShowCode';
+import AddGame from './components/AddGame';
+import EditPictureDialog from './components/EditPictureDialog';
 import OpenPicDialogButton from './components/OpenPicDialogButton';
+import EditViewDialog from './components/EditViewDialog';
+import OpenViewDialogButton from './components/OpenViewDialogButton';
 
 const plugin: PluginDescriptor = {
   locales: undefined,
@@ -28,7 +30,9 @@ const plugin: PluginDescriptor = {
     'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom,
     'org.rd.plugin.agistudio.AddGame': AddGame,
     'org.rd.plugin.agistudio.EditPictureDialog': EditPictureDialog,
-    'org.rd.plugin.agistudio.OpenPicDialogButton': OpenPicDialogButton
+    'org.rd.plugin.agistudio.EditViewDialog': EditViewDialog,
+    'org.rd.plugin.agistudio.OpenPicDialogButton': OpenPicDialogButton,
+    'org.rd.plugin.agistudio.OpenViewDialogButton': OpenViewDialogButton    
   }
 };
 
@@ -42,7 +46,9 @@ export {
   ShowCode,
   AddGame,
   OpenPicDialogButton,
-  EditPictureDialog
+  EditPictureDialog,
+  EditViewDialog,
+  OpenViewDialogButton
 };
 
 export default plugin;

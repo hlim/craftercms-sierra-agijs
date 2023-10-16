@@ -19,6 +19,7 @@ const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
 const { post } = craftercms.utils.ajax;
 const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
+const TheatersRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded');
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -1491,6 +1492,91 @@ var AgiResources = /** @class */ (function () {
                 });
             }
         };
+        this.saveLogic = function (siteId, game, roomValue, buffer) {
+            //   this.downloadAllFiles(
+            //     '/static-assets/games/' + game + '/',
+            //     ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'],
+            //     (buffers: IByteStreamDict) => {
+            //       console.log('Directory files downloaded.');
+            //       this.parseDirfile(buffers['LOGDIR'], this.logdirRecords);
+            //       this.parseDirfile(buffers['PICDIR'], this.picdirRecords);
+            //       this.parseDirfile(buffers['VIEWDIR'], this.viewdirRecords);
+            //       this.parseDirfile(buffers['SNDDIR'], this.snddirRecords);
+            //       var volNames: string[] = [];
+            //       for (var i = 0; i < this.availableVols.length; i++) {
+            //         if (this.availableVols[i] === true) {
+            //           volNames.push('VOL.' + i);
+            //         }
+            //       }
+            //       this.downloadAllFiles('/static-assets/games/' + game + '/', volNames, (buffers: IByteStreamDict) => {
+            //         console.log('Resource volumes downloaded.');
+            //         for (var j: number = 0; j < volNames.length; j++) {
+            //           this.volBuffers[j] = buffers[volNames[j]];
+            //         }
+            //         let newLogicData = buffer;
+            //         newLogicData = AgiResources.addVolumeHeader(newLogicData, 0);
+            //         let logicRecord = this.logdirRecords[roomValue];
+            //         let nextPicRecord = this.logdirRecords[roomValue + 1]; // assuption: not the room
+            //         let logicsStream = this.volBuffers[logicRecord.volNo].buffer;
+            //         let lengthOfOldPic = 0;
+            //         if (nextPicRecord) {
+            //           lengthOfOldPic = nextPicRecord.volOffset - picRecord.volOffset;
+            //         }
+            //         let newPicSizeDiff = newPicData.length - lengthOfOldPic; //+ 2; // last command + 255 end marker
+            //         // now that we know how the new picture relates to the old one we can re-size the stream
+            //         // up or down accordingly.
+            //         let newStreamLength = picsStream.length + newPicSizeDiff;
+            //         let newStream = new Uint8Array(newStreamLength);
+            //         for (var n = 0; n < newStream.length; n++) {
+            //           if (n < picRecord.volOffset || n > picRecord.volOffset + (newPicData.length - 1)) {
+            //             // copy the original buffer to the new buffer
+            //             if (n < picRecord.volOffset) {
+            //               // before the new resource
+            //               newStream[n] = picsStream[n];
+            //             } else {
+            //               // after our resource, we have to account for 'overlap'
+            //               newStream[n] = picsStream[n - newPicSizeDiff];
+            //             }
+            //           } else {
+            //             // copy the new picture into the new stream
+            //             newStream[n] = newPicData[n - picRecord.volOffset];
+            //           }
+            //         }
+            //         let newPicDirEncoded = AgiResources.updateDirectoryOffsets(
+            //           'P',
+            //           this.picdirRecords,
+            //           picRecord.volOffset,
+            //           newPicSizeDiff
+            //         );
+            //         let newLogDirEncoded = AgiResources.updateDirectoryOffsets(
+            //           'L',
+            //           this.logdirRecords,
+            //           picRecord.volOffset,
+            //           newPicSizeDiff
+            //         );
+            //         let newViewDirEncoded = AgiResources.updateDirectoryOffsets(
+            //           'V',
+            //           this.viewdirRecords,
+            //           picRecord.volOffset,
+            //           newPicSizeDiff
+            //         );
+            //         let newSndDirEncoded = AgiResources.updateDirectoryOffsets(
+            //           'S',
+            //           this.snddirRecords,
+            //           picRecord.volOffset,
+            //           newPicSizeDiff
+            //         );
+            //         let gamePath = '/static-assets/games/' + game + '/';
+            //         AgiResources.saveFile(siteId, gamePath, 'PICDIR', newPicDirEncoded);
+            //         AgiResources.saveFile(siteId, gamePath, 'LOGDIR', newLogDirEncoded);
+            //         AgiResources.saveFile(siteId, gamePath, 'VIEWDIR', newViewDirEncoded);
+            //         AgiResources.saveFile(siteId, gamePath, 'SNDDIR', newSndDirEncoded);
+            //         // save updated volume file
+            //         AgiResources.saveFile(siteId, gamePath, 'VOL.0', newStream);
+            //       });
+            //     }
+            //   );
+        };
         this.savePicture = function (siteId, game, commands) {
             _this.downloadAllFiles('/static-assets/games/' + game + '/', ['LOGDIR', 'PICDIR', 'VIEWDIR', 'SNDDIR'], function (buffers) {
                 console.log('Directory files downloaded.');
@@ -2054,6 +2140,72 @@ function OpenPicDialogButton(props) {
                 React.createElement(ImageAspectRatioRoundedIcon, null)))));
 }
 
+function EditViewDialog(props) {
+    useActiveSiteId();
+    var _a = React.useState(''), viewData = _a[0]; _a[1];
+    var handleViewDataUpdate = function (event) {
+        event.target.value;
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(DialogActions, null),
+        React.createElement(DialogContent, null,
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } }),
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: viewData }),
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'black' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'blue' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'green' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'Teal' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'red' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'purple' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'brown' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'lightgray' } })),
+                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'gray' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'RoyalBlue' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'Aqua' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'Salmon' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'magenta' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
+                    React.createElement(Button, { onClick: function () {
+                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
+            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } }))));
+}
+
+function OpenViewDialogButton(props) {
+    useDispatch();
+    var _a = React.useState(false), drawerOpen = _a[0], setDrawerOpen = _a[1];
+    var handleClick = function () {
+        var drawerState = drawerOpen ? false : true;
+        setDrawerOpen(drawerState);
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(SwipeableDrawer, { anchor: 'left', variant: "persistent", ModalProps: {
+                keepMounted: false
+            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } }, drawerOpen ? (React.createElement(EditViewDialog, { props: true })) : ""),
+        React.createElement(Tooltip, { title: 'Open View Editor' },
+            React.createElement(IconButton, { disabled: !AgiActiveGame.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
+                React.createElement(TheatersRoundedIcon, null)))));
+}
+
 var plugin = {
     locales: undefined,
     scripts: undefined,
@@ -2070,8 +2222,10 @@ var plugin = {
         'org.rd.plugin.agistudio.CurrentRoom': CurrentRoom,
         'org.rd.plugin.agistudio.AddGame': AddGame,
         'org.rd.plugin.agistudio.EditPictureDialog': EditPictureDialog,
-        'org.rd.plugin.agistudio.OpenPicDialogButton': OpenPicDialogButton
+        'org.rd.plugin.agistudio.EditViewDialog': EditViewDialog,
+        'org.rd.plugin.agistudio.OpenPicDialogButton': OpenPicDialogButton,
+        'org.rd.plugin.agistudio.OpenViewDialogButton': OpenViewDialogButton
     }
 };
 
-export { AddGame, AllowInput, CurrentRoom, EditPictureDialog, OpenPicDialogButton, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
+export { AddGame, AllowInput, CurrentRoom, EditPictureDialog, EditViewDialog, OpenPicDialogButton, OpenViewDialogButton, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
