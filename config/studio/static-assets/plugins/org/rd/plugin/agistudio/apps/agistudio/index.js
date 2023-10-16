@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, Table, TableBody, TableRow, TableCell, SwipeableDrawer } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -2037,6 +2037,13 @@ function EditPictureDialog(props) {
         alert('Save Complete'); // do better
         // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
     };
+    var rows = [
+        ["black", "black", "black", "black", "black"],
+        ["black", "blue", "blue", "blue", "black"],
+        ["black", "blue", "yellow", "blue", "black"],
+        ["black", "blue", "blue", "blue", "black"],
+        ["black", "black", "black", "black", "black"],
+    ];
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null,
             React.createElement(Button, { onClick: handleSaveAsNewPicture, variant: "outlined", sx: { mr: 1 } }, "Add New Picture"),
@@ -2121,7 +2128,9 @@ function EditPictureDialog(props) {
                             handleSetColor(15);
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
-                React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture")))));
+                React.createElement(Button, { onClick: handleSavePicture, variant: "outlined", sx: { mr: 1 } }, "Save Picture"),
+                React.createElement(Table, { "aria-label": "simple table" },
+                    React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { backgroundColor: value } })); }))); })))))));
 }
 
 function OpenPicDialogButton(props) {
