@@ -2197,7 +2197,7 @@ function EditViewDialog(props) {
             'magenta',
             'white'
         ];
-        var colorName = colors[colorNo - 1];
+        var colorName = colors[colorNo];
         return colorName;
     };
     // const rows = [
