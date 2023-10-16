@@ -2164,7 +2164,7 @@ function EditViewDialog(props) {
             var row_1 = 0;
             var col_1 = 0;
             pixelData.forEach(function (chunkData) {
-                if ((chunkData = 0)) {
+                if ((chunkData == 0)) {
                     row_1++;
                     col_1 = 0;
                 }
