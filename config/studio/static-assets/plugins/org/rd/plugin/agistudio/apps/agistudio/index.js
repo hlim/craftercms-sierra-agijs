@@ -2224,7 +2224,7 @@ function EditViewDialog(props) {
                 viewData ? viewData.numLoops : 0),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: JSON.stringify(viewData) }),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
-            React.createElement(Paper, { elevation: 1, sx: { width: '900px', padding: '15px' } },
+            React.createElement(Paper, { elevation: 1, sx: { width: '1000px', padding: '15px' } },
                 React.createElement(FormControl, { fullWidth: true },
                     React.createElement(InputLabel, { id: "demo-simple-select-label" }, "Current Loop"),
                     React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", value: currentLoop, label: "Loop", onChange: handleLoopChange },
@@ -2232,8 +2232,8 @@ function EditViewDialog(props) {
                         React.createElement(MenuItem$1, { value: 1 }, "1"),
                         React.createElement(MenuItem$1, { value: 2 }, "2"),
                         React.createElement(MenuItem$1, { value: 3 }, "3"))),
-                React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, max: cellCount, "aria-label": "Default", valueLabelDisplay: "auto" }),
-                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, marks: true, value: currentCell, max: cellCount, "aria-label": "Default", valueLabelDisplay: "auto" }),
+                React.createElement(ButtonGroup, { sx: { "width": "355px" }, variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { onClick: function () {
                         }, sx: { height: '35px', 'background-color': 'black' } }),
                     React.createElement(Button, { onClick: function () {
@@ -2267,7 +2267,7 @@ function EditViewDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
                     React.createElement(Button, { onClick: function () {
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } })),
-                React.createElement(Paper, { elevation: 1, sx: { width: '500px', padding: '1px' } },
+                React.createElement(Paper, { elevation: 1, sx: { width: '300px', padding: '1px' } },
                     React.createElement(Table, { "aria-label": "simple table" },
                         React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { width: '10px', height: '10px', backgroundColor: htmlColor(value) } })); }))); }))))))));
 }
