@@ -19,6 +19,7 @@ const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
 const { post } = craftercms.utils.ajax;
 const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
+const TheatersRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded');
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -2189,6 +2190,22 @@ function EditViewDialog(props) {
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } }))));
 }
 
+function OpenViewDialogButton(props) {
+    useDispatch();
+    var _a = React.useState(false), drawerOpen = _a[0], setDrawerOpen = _a[1];
+    var handleClick = function () {
+        var drawerState = drawerOpen ? false : true;
+        setDrawerOpen(drawerState);
+    };
+    return (React.createElement(React.Fragment, null,
+        React.createElement(SwipeableDrawer, { anchor: 'left', variant: "persistent", ModalProps: {
+                keepMounted: false
+            }, open: drawerOpen, onClose: function (event) { }, onOpen: function (event) { } }, drawerOpen ? (React.createElement(EditViewDialog, { props: true })) : ""),
+        React.createElement(Tooltip, { title: 'Open View Editor' },
+            React.createElement(IconButton, { disabled: !AgiActiveGame.gameIsLoaded(), size: "medium", style: { padding: 4 }, id: "go-positioned-button", "aria-controls": drawerOpen ? 'demo-positioned-menu' : undefined, "aria-haspopup": "true", "aria-expanded": drawerOpen ? 'true' : undefined, onClick: handleClick },
+                React.createElement(TheatersRoundedIcon, null)))));
+}
+
 var plugin = {
     locales: undefined,
     scripts: undefined,
@@ -2206,8 +2223,9 @@ var plugin = {
         'org.rd.plugin.agistudio.AddGame': AddGame,
         'org.rd.plugin.agistudio.EditPictureDialog': EditPictureDialog,
         'org.rd.plugin.agistudio.EditViewDialog': EditViewDialog,
-        'org.rd.plugin.agistudio.OpenPicDialogButton': OpenPicDialogButton
+        'org.rd.plugin.agistudio.OpenPicDialogButton': OpenPicDialogButton,
+        'org.rd.plugin.agistudio.OpenViewDialogButton': OpenViewDialogButton
     }
 };
 
-export { AddGame, AllowInput, CurrentRoom, EditPictureDialog, EditViewDialog, OpenPicDialogButton, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
+export { AddGame, AllowInput, CurrentRoom, EditPictureDialog, EditViewDialog, OpenPicDialogButton, OpenViewDialogButton, RoomSelector, SetEgoPosition, ShowCode, ShowWords, SoundSelector, plugin as default };
