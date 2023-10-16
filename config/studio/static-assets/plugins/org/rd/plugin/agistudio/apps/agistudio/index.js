@@ -2142,15 +2142,19 @@ function OpenPicDialogButton(props) {
 
 function EditViewDialog(props) {
     useActiveSiteId();
-    var _a = React.useState(''), viewData = _a[0]; _a[1];
+    var _a = React.useState(null), viewData = _a[0], setreviewData = _a[1];
     var handleViewDataUpdate = function (event) {
-        event.target.value;
+        var viewDataAsJson = event.target.value;
+        setreviewData(JSON.parse(viewDataAsJson));
     };
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null),
         React.createElement(DialogContent, null,
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } }),
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: viewData }),
+            React.createElement("p", null,
+                "Loops: ",
+                viewData ? viewData.numLoops : 0),
+            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: JSON.stringify(viewData) }),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
