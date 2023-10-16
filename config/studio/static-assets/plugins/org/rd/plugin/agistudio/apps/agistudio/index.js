@@ -2146,6 +2146,7 @@ function EditViewDialog(props) {
     var _b = React.useState([]), rows = _b[0], setRows = _b[1];
     var _c = React.useState(0), currentLoop = _c[0], setCurrentLoop = _c[1];
     var _d = React.useState(0), currentCell = _d[0], setCurrentCell = _d[1];
+    var _e = React.useState(0), cellCount = _e[0], setCellCount = _e[1];
     var handleViewDataUpdate = function (event) {
         var viewDataAsJson = event.target.value;
         setViewData(JSON.parse(viewDataAsJson));
@@ -2209,10 +2210,11 @@ function EditViewDialog(props) {
     function handleLoopChange(event, child) {
         setCurrentLoop(Number(event.target.value));
         setCurrentCell(0);
+        setCellCount(viewData.loops[currentLoop].cels.length);
     }
     useEffect(function () {
         renderCell();
-    }, [currentCell, currentLoop]);
+    }, [cellCount, currentCell, currentLoop]);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null),
         React.createElement(DialogContent, null,
@@ -2230,7 +2232,7 @@ function EditViewDialog(props) {
                         React.createElement(MenuItem$1, { value: 1 }, "1"),
                         React.createElement(MenuItem$1, { value: 2 }, "2"),
                         React.createElement(MenuItem$1, { value: 3 }, "3"))),
-                React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, value: currentCell, max: viewData && viewData.loops ? viewData.loops[currentLoop].cels.length : 0, "aria-label": "Default", valueLabelDisplay: "auto" }),
+                React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, value: currentCell, max: cellCount, "aria-label": "Default", valueLabelDisplay: "auto" }),
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { onClick: function () {
                         }, sx: { height: '35px', 'background-color': 'black' } }),
@@ -2264,10 +2266,10 @@ function EditViewDialog(props) {
                     React.createElement(Button, { onClick: function () {
                         }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
                     React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
-            React.createElement(Paper, { elevation: 1, sx: { width: '500px', padding: '2px' } },
-                React.createElement(Table, { "aria-label": "simple table" },
-                    React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { backgroundColor: htmlColor(value) } })); }))); })))))));
+                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } })),
+                React.createElement(Paper, { elevation: 1, sx: { width: '500px', padding: '1px' } },
+                    React.createElement(Table, { "aria-label": "simple table" },
+                        React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { width: '10px', height: '10px', backgroundColor: htmlColor(value) } })); }))); }))))))));
 }
 
 function OpenViewDialogButton(props) {
