@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer, Table, TableBody, TableRow, TableCell } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer, InputLabel, Select, MenuItem: MenuItem$1, Slider, Table, TableBody, TableRow, TableCell } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -2144,27 +2144,32 @@ function EditViewDialog(props) {
     useActiveSiteId();
     var _a = React.useState(null), viewData = _a[0], setViewData = _a[1];
     var _b = React.useState([]), rows = _b[0], setRows = _b[1];
+    var _c = React.useState(0), currentLoop = _c[0], setCurrentLoop = _c[1];
+    var _d = React.useState(0), currentCell = _d[0], setCurrentCell = _d[1];
     var handleViewDataUpdate = function (event) {
         var viewDataAsJson = event.target.value;
         setViewData(JSON.parse(viewDataAsJson));
+        renderCell();
+    };
+    var renderCell = function () {
         if (viewData &&
             viewData.loops &&
-            viewData.loops[0] &&
-            viewData.loops[0].cels &&
-            viewData.loops[0].cels[0] &&
-            viewData.loops[0].cels[0].pixelData) {
+            viewData.loops[currentLoop] &&
+            viewData.loops[currentLoop].cels &&
+            viewData.loops[currentLoop].cels[currentCell] &&
+            viewData.loops[currentLoop].cels[currentCell].pixelData) {
             // transform pixel data for cel into 16 color bitmap
-            var cel_1 = viewData.loops[0].cels[0];
+            var cel_1 = viewData.loops[currentLoop].cels[currentCell];
             var pixelData = cel_1.pixelData;
             // initialize the bitmap with trasparent color
-            //@ts-ignore
-            var bitmap_1 = Array(cel_1.celHeight).fill().map(function () {
-                return Array(cel_1.celWidth).fill(3);
-            });
+            var bitmap_1 = Array(cel_1.celHeight)
+                //@ts-ignore
+                .fill()
+                .map(function () { return Array(cel_1.celWidth).fill(3); });
             var row_1 = 0;
             var col_1 = 0;
             pixelData.forEach(function (chunkData) {
-                if ((chunkData == 0)) {
+                if (chunkData == 0) {
                     row_1++;
                     col_1 = 0;
                 }
@@ -2201,16 +2206,31 @@ function EditViewDialog(props) {
         var colorName = colors[colorNo];
         return colorName;
     };
+    function handleLoopChange(event, child) {
+        setCurrentLoop(Number(event.target.value));
+        setCurrentCell(0);
+    }
+    useEffect(function () {
+        renderCell();
+    }, [currentCell, currentLoop]);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null),
         React.createElement(DialogContent, null,
-            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } }),
+            React.createElement(Paper, { elevation: 1, sx: { width: '900', padding: '15px' } }),
             React.createElement("p", null,
                 "Loops: ",
                 viewData ? viewData.numLoops : 0),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: JSON.stringify(viewData) }),
             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
             React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
+                React.createElement(FormControl, { fullWidth: true },
+                    React.createElement(InputLabel, { id: "demo-simple-select-label" }, "Current Loop"),
+                    React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", value: currentLoop, label: "Loop", onChange: handleLoopChange },
+                        React.createElement(MenuItem$1, { value: 0 }, "0"),
+                        React.createElement(MenuItem$1, { value: 1 }, "1"),
+                        React.createElement(MenuItem$1, { value: 2 }, "2"),
+                        React.createElement(MenuItem$1, { value: 3 }, "3"))),
+                React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, value: currentCell, max: viewData && viewData.loops ? viewData.loops[currentLoop].cels.length : 0, "aria-label": "Default", valueLabelDisplay: "auto" }),
                 React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
                     React.createElement(Button, { onClick: function () {
                         }, sx: { height: '35px', 'background-color': 'black' } }),
@@ -2245,7 +2265,7 @@ function EditViewDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
                     React.createElement(Button, { onClick: function () {
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
-            React.createElement(Paper, { elevation: 1, sx: { width: '900px', padding: '5px' } },
+            React.createElement(Paper, { elevation: 1, sx: { width: '500px', padding: '2px' } },
                 React.createElement(Table, { "aria-label": "simple table" },
                     React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { backgroundColor: htmlColor(value) } })); }))); })))))));
 }
