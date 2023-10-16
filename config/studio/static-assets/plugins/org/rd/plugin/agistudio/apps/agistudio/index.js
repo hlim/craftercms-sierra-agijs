@@ -2159,7 +2159,7 @@ function EditViewDialog(props) {
             // initialize the bitmap with trasparent color
             //@ts-ignore
             var bitmap_1 = Array(cel_1.celHeight).fill().map(function () {
-                return Array(cel_1.celWidth).fill(4);
+                return Array(cel_1.celWidth).fill(3);
             });
             var row_1 = 0;
             var col_1 = 0;
@@ -2195,18 +2195,12 @@ function EditViewDialog(props) {
             'Aqua',
             'Salmon',
             'magenta',
+            'yellow',
             'white'
         ];
         var colorName = colors[colorNo];
         return colorName;
     };
-    // const rows = [
-    //   ["black", "black", "black",  "black", "black"],
-    //   ["black", "blue",  "blue",   "blue",  "black"],
-    //   ["black", "blue",  "yellow", "blue",  "black"],
-    //   ["black", "blue",  "blue",   "blue",  "black"],
-    //   ["black", "black", "black",  "black", "black"],
-    // ];
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null),
         React.createElement(DialogContent, null,
