@@ -44,9 +44,11 @@ Sierra AGI emulator and game resources editor running AGI.JS in CrafterCMS  -- W
 ### Read WORDS.TOK files
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/476a3ebe-ea42-4639-b63f-dea3f520d747)
 
-### Command-based Picture Editing 
-Todo: Add save, improve UI and add painting tools (commands suck)
+### Picture (Background) Editing 
 ![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/c9a9cb88-7031-4a84-b7c7-b294b337eb69)
+
+### View (Sprite) Editing
+![image](https://github.com/russdanner/craftercms-sierra-agijs/assets/169432/29dde6a7-f15f-456c-bef8-f9781e0f59bb)
 
 
 # Updates to AGI.js 
