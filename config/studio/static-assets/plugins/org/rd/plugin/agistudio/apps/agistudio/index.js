@@ -2142,18 +2142,73 @@ function OpenPicDialogButton(props) {
 
 function EditViewDialog(props) {
     useActiveSiteId();
-    var _a = React.useState(null), viewData = _a[0], setreviewData = _a[1];
+    var _a = React.useState(null), viewData = _a[0], setViewData = _a[1];
+    var _b = React.useState([]), rows = _b[0], setRows = _b[1];
     var handleViewDataUpdate = function (event) {
         var viewDataAsJson = event.target.value;
-        setreviewData(JSON.parse(viewDataAsJson));
+        setViewData(JSON.parse(viewDataAsJson));
+        if (viewData &&
+            viewData.loops &&
+            viewData.loops[0] &&
+            viewData.loops[0].cels &&
+            viewData.loops[0].cels[0] &&
+            viewData.loops[0].cels[0].pixelData) {
+            // transform pixel data for cel into 16 color bitmap
+            var cel = viewData.loops[0].cels[0];
+            var pixelData = cel.pixelData;
+            var bitmap_1 = [cel.celHeight][cel.celWidth];
+            // initialize the bitmap with trasparent color
+            for (var i = 0; i < cel.celHeight; i++) {
+                for (var j = 0; j < cel.celWidth; j++) {
+                    bitmap_1[i][j] = '0';
+                }
+            }
+            var row_1 = 0;
+            var col_1 = 0;
+            pixelData.forEach(function (chunkData) {
+                if ((chunkData = 0)) {
+                    row_1++;
+                    col_1 = 0;
+                }
+                else {
+                    var color = chunkData >>> 4;
+                    var numPixels = chunkData & 0x0f;
+                    for (var k = 0; k < numPixels; k++) {
+                        bitmap_1[row_1][col_1++] = color;
+                    }
+                }
+                setRows(bitmap_1);
+            });
+        }
     };
-    var rows = [
-        ["black", "black", "black", "black", "black"],
-        ["black", "blue", "blue", "blue", "black"],
-        ["black", "blue", "yellow", "blue", "black"],
-        ["black", "blue", "blue", "blue", "black"],
-        ["black", "black", "black", "black", "black"],
-    ];
+    var htmlColor = function (colorNo) {
+        var colors = [
+            'black',
+            'blue',
+            'green',
+            'teal',
+            'red',
+            'purple',
+            'brown',
+            'lightgray',
+            'gray',
+            'RoyalBlue',
+            'lightgreen',
+            'Aqua',
+            'Salmon',
+            'magenta',
+            'white'
+        ];
+        var colorName = colors[colorNo];
+        return colorName;
+    };
+    // const rows = [
+    //   ["black", "black", "black",  "black", "black"],
+    //   ["black", "blue",  "blue",   "blue",  "black"],
+    //   ["black", "blue",  "yellow", "blue",  "black"],
+    //   ["black", "blue",  "blue",   "blue",  "black"],
+    //   ["black", "black", "black",  "black", "black"],
+    // ];
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null),
         React.createElement(DialogContent, null,
@@ -2200,7 +2255,7 @@ function EditViewDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
             React.createElement(Paper, { elevation: 1, sx: { width: '900px', padding: '15px' } },
                 React.createElement(Table, { "aria-label": "simple table" },
-                    React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { backgroundColor: value } })); }))); })))))));
+                    React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { backgroundColor: htmlColor(value) } })); }))); })))))));
 }
 
 function OpenViewDialogButton(props) {
