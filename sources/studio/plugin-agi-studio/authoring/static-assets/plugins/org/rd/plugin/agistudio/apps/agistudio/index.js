@@ -1,7 +1,7 @@
 const React = craftercms.libs.React;
 const { useState, useEffect } = craftercms.libs.React;
 const { useSelector, useDispatch } = craftercms.libs.ReactRedux;
-const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer } = craftercms.libs.MaterialUI;
+const { Tooltip, Badge, CircularProgress, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, FormControl, Paper, ButtonGroup, SwipeableDrawer, Table, TableRow, TableCell, InputLabel, Select, MenuItem: MenuItem$1, Slider, TableBody } = craftercms.libs.MaterialUI;
 const IconButton = craftercms.libs.MaterialUI.IconButton && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.IconButton, 'default') ? craftercms.libs.MaterialUI.IconButton['default'] : craftercms.libs.MaterialUI.IconButton;
 const DirectionsRunRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/DirectionsRunRounded');
 const AccountTreeRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AccountTreeRounded');
@@ -2142,52 +2142,141 @@ function OpenPicDialogButton(props) {
 
 function EditViewDialog(props) {
     useActiveSiteId();
-    var _a = React.useState(''), viewData = _a[0]; _a[1];
+    var _a = React.useState(null), viewData = _a[0], setViewData = _a[1];
+    var _b = React.useState([]), rows = _b[0], setRows = _b[1];
+    var _c = React.useState(0), currentLoop = _c[0], setCurrentLoop = _c[1];
+    var _d = React.useState(0), currentCell = _d[0], setCurrentCell = _d[1];
+    var _e = React.useState(0), cellCount = _e[0], setCellCount = _e[1];
     var handleViewDataUpdate = function (event) {
-        event.target.value;
+        var viewDataAsJson = event.target.value;
+        setViewData(JSON.parse(viewDataAsJson));
+        renderCell();
     };
+    var renderCell = function () {
+        if (viewData &&
+            viewData.loops &&
+            viewData.loops[currentLoop] &&
+            viewData.loops[currentLoop].cels &&
+            viewData.loops[currentLoop].cels[currentCell] &&
+            viewData.loops[currentLoop].cels[currentCell].pixelData) {
+            // transform pixel data for cel into 16 color bitmap
+            var cel_1 = viewData.loops[currentLoop].cels[currentCell];
+            var pixelData = cel_1.pixelData;
+            // initialize the bitmap with trasparent color
+            var bitmap_1 = Array(cel_1.celHeight)
+                //@ts-ignore
+                .fill()
+                .map(function () { return Array(cel_1.celWidth).fill(3); });
+            var row_1 = 0;
+            var col_1 = 0;
+            pixelData.forEach(function (chunkData) {
+                if (chunkData == 0) {
+                    row_1++;
+                    col_1 = 0;
+                }
+                else {
+                    var color = chunkData >>> 4;
+                    var numPixels = chunkData & 0x0f;
+                    for (var k = 0; k < numPixels; k++) {
+                        bitmap_1[row_1][col_1++] = color;
+                    }
+                }
+                setRows(bitmap_1);
+            });
+        }
+    };
+    var htmlColor = function (colorNo) {
+        var colors = [
+            'black',
+            'blue',
+            'green',
+            'teal',
+            'red',
+            'purple',
+            'brown',
+            'lightgray',
+            'gray',
+            'RoyalBlue',
+            'lightgreen',
+            'Aqua',
+            'Salmon',
+            'magenta',
+            'yellow',
+            'white'
+        ];
+        var colorName = colors[colorNo];
+        return colorName;
+    };
+    function handleLoopChange(event, child) {
+        setCurrentLoop(Number(event.target.value));
+        setCurrentCell(0);
+        setCellCount(viewData.loops[currentLoop].cels.length);
+    }
+    var handleCelChange = function (event, newValue) {
+        var celNo = Number(newValue);
+        setCurrentCell(celNo);
+        renderCell();
+    };
+    useEffect(function () {
+        renderCell();
+    }, [cellCount, currentCell, currentLoop]);
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null),
         React.createElement(DialogContent, null,
-            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } }),
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: viewData }),
-            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
-            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } },
-                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'black' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'blue' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'green' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'Teal' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'red' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'purple' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'brown' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'lightgray' } })),
-                React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'gray' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'RoyalBlue' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'Aqua' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'Salmon' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'magenta' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
-                    React.createElement(Button, { onClick: function () {
-                        }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
-            React.createElement(Paper, { elevation: 1, sx: { width: '355px', padding: '15px' } }))));
+            React.createElement(Paper, { elevation: 1, sx: { width: '1000px', padding: '1px' } },
+                React.createElement(Table, null,
+                    React.createElement(TableRow, null,
+                        React.createElement(TableCell, null,
+                            React.createElement("p", null,
+                                "Loops: ",
+                                viewData ? viewData.numLoops : 0),
+                            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 3, value: JSON.stringify(viewData) }),
+                            React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
+                            React.createElement(FormControl, { fullWidth: true },
+                                React.createElement(InputLabel, { id: "demo-simple-select-label" }, "Current Loop"),
+                                React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", value: currentLoop, label: "Loop", onChange: handleLoopChange },
+                                    React.createElement(MenuItem$1, { value: 0 }, "0"),
+                                    React.createElement(MenuItem$1, { value: 1 }, "1"),
+                                    React.createElement(MenuItem$1, { value: 2 }, "2"),
+                                    React.createElement(MenuItem$1, { value: 3 }, "3"))),
+                            React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, marks: true, max: cellCount, onChange: handleCelChange, "aria-label": "Default", valueLabelDisplay: "auto" }),
+                            React.createElement(ButtonGroup, { sx: { width: '355px' }, variant: "contained", "aria-label": "outlined primary button group" },
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'black' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'blue' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'green' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'Teal' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'red' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'purple' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'brown' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'lightgray' } })),
+                            React.createElement(ButtonGroup, { variant: "contained", "aria-label": "outlined primary button group" },
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'gray' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'RoyalBlue' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'lightgreen' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'Aqua' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'Salmon' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'magenta' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
+                                React.createElement(Button, { onClick: function () {
+                                    }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
+                        React.createElement(TableCell, null,
+                            React.createElement(Table, { "aria-label": "simple table" },
+                                React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { width: '10px', height: '10px', backgroundColor: htmlColor(value) } })); }))); }))))))))));
 }
 
 function OpenViewDialogButton(props) {

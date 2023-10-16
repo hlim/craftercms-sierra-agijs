@@ -3,9 +3,9 @@ import { Button, ButtonGroup, DialogActions, Paper } from '@mui/material';
 import { DialogContent, TextField } from '@mui/material';
 import { useState, useEffect } from 'react';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
-import  AgiPicture  from "../agibridge/AgiPicture"
-import  AgiResources  from "../agibridge/AgiResources"
-import  AgiActiveGame  from "../agibridge/AgiActiveGame"
+import AgiPicture from '../agibridge/AgiPicture';
+import AgiResources from '../agibridge/AgiResources';
+import AgiActiveGame from '../agibridge/AgiActiveGame';
 
 export function EditPictureDialog(props) {
   const siteId = useActiveSiteId();
@@ -163,7 +163,7 @@ export function EditPictureDialog(props) {
   const handleSaveAsNewPicture = () => {
     var game = AgiActiveGame.getActiveGameId();
 
-    let agiResources = new AgiResources()
+    let agiResources = new AgiResources();
     agiResources.saveAsNewPicture(siteId, game);
 
     alert('New Picture Add Complete'); // do better
@@ -173,12 +173,13 @@ export function EditPictureDialog(props) {
   const handleSavePicture = () => {
     var game = AgiActiveGame.getActiveGameId();
 
-    let agiResources = new AgiResources()
+    let agiResources = new AgiResources();
     agiResources.savePicture(siteId, game, commands);
 
     alert('Save Complete'); // do better
     // AgiActiveGame.reload(); need to add a promise so this waits until the save is done
   };
+
 
   return (
     <>
@@ -357,10 +358,11 @@ export function EditPictureDialog(props) {
           <Button onClick={handleSavePicture} variant="outlined" sx={{ mr: 1 }}>
             Save Picture
           </Button>
+
+
         </Paper>
       </DialogContent>
     </>
   );
 }
-export {}
 export default EditPictureDialog;
