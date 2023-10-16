@@ -2213,7 +2213,9 @@ function EditViewDialog(props) {
         setCellCount(viewData.loops[currentLoop].cels.length);
     }
     var handleCelChange = function (event, newValue) {
-        setCurrentCell(Number(newValue));
+        var celNo = Number(newValue);
+        setCurrentCell(celNo);
+        renderCell();
     };
     useEffect(function () {
         renderCell();
@@ -2221,7 +2223,7 @@ function EditViewDialog(props) {
     return (React.createElement(React.Fragment, null,
         React.createElement(DialogActions, null),
         React.createElement(DialogContent, null,
-            React.createElement(Paper, { elevation: 1, sx: { width: '300px', padding: '1px' } },
+            React.createElement(Paper, { elevation: 1, sx: { width: '1000px', padding: '1px' } },
                 React.createElement(Table, null,
                     React.createElement(TableRow, null,
                         React.createElement(TableCell, null,
