@@ -2159,7 +2159,7 @@ function EditViewDialog(props) {
             // initialize the bitmap with trasparent color
             //@ts-ignore
             var bitmap_1 = Array(cel_1.celHeight).fill().map(function () {
-                return Array(cel_1.celWidth).fill(0);
+                return Array(cel_1.celWidth).fill(4);
             });
             var row_1 = 0;
             var col_1 = 0;
@@ -2197,7 +2197,7 @@ function EditViewDialog(props) {
             'magenta',
             'white'
         ];
-        var colorName = colors[colorNo];
+        var colorName = colors[colorNo - 1];
         return colorName;
     };
     // const rows = [
@@ -2251,7 +2251,7 @@ function EditViewDialog(props) {
                         }, sx: { height: '35px', 'background-color': 'yellow', color: 'black' } }),
                     React.createElement(Button, { onClick: function () {
                         }, sx: { height: '35px', 'background-color': 'white', color: 'black' } }))),
-            React.createElement(Paper, { elevation: 1, sx: { width: '900px', padding: '15px' } },
+            React.createElement(Paper, { elevation: 1, sx: { width: '900px', padding: '5px' } },
                 React.createElement(Table, { "aria-label": "simple table" },
                     React.createElement(TableBody, null, rows.map(function (row) { return (React.createElement(TableRow, null, row.map(function (value) { return (React.createElement(TableCell, { component: "th", scope: "row", style: { backgroundColor: htmlColor(value) } })); }))); })))))));
 }
