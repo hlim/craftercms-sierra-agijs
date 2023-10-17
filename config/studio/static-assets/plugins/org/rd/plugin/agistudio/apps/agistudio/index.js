@@ -2234,7 +2234,7 @@ function EditViewDialog(props) {
                             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
                             React.createElement(FormControl, { fullWidth: true },
                                 React.createElement(InputLabel, { id: "demo-simple-select-label" }, "Current Loop"),
-                                React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", value: currentLoop, label: "Loop", onChange: handleLoopChange }, viewData === null || viewData === void 0 ? void 0 : viewData.loops.map(function (loop, idx) { return (React.createElement(MenuItem$1, { value: idx }, idx)); }))),
+                                React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", value: currentLoop, label: "Loop", onChange: handleLoopChange }, viewData === null || viewData === void 0 ? void 0 : viewData.loops.values(function (loop, idx) { return (React.createElement(MenuItem$1, { value: idx }, idx)); }))),
                             React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, marks: true, max: cellCount, onChange: handleCelChange, "aria-label": "Default", valueLabelDisplay: "auto" }),
                             React.createElement(ButtonGroup, { sx: { width: '355px' }, variant: "contained", "aria-label": "outlined primary button group" },
                                 React.createElement(Button, { onClick: function () {
