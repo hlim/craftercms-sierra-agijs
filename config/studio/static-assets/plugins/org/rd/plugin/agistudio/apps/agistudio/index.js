@@ -2147,9 +2147,16 @@ function EditViewDialog(props) {
     var _c = React.useState(0), currentLoop = _c[0], setCurrentLoop = _c[1];
     var _d = React.useState(0), currentCell = _d[0], setCurrentCell = _d[1];
     var _e = React.useState(0), cellCount = _e[0], setCellCount = _e[1];
+    var _f = React.useState([]), loops = _f[0], setLoops = _f[1];
     var handleViewDataUpdate = function (event) {
         var viewDataAsJson = event.target.value;
         setViewData(JSON.parse(viewDataAsJson));
+        // populate loop descriptions
+        var loops = Array(viewData.numLoops);
+        for (var l = 0; l < viewData.numLoops; l++) {
+            loops[l] = { "id": l, "description": "Loop " + l };
+        }
+        setLoops(loops);
         renderCell();
     };
     var renderCell = function () {
@@ -2234,7 +2241,7 @@ function EditViewDialog(props) {
                             React.createElement(TextField, { id: "outlined-textarea", sx: { width: '100%' }, multiline: true, rows: 1, onChange: handleViewDataUpdate }),
                             React.createElement(FormControl, { fullWidth: true },
                                 React.createElement(InputLabel, { id: "demo-simple-select-label" }, "Current Loop"),
-                                React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", value: currentLoop, label: "Loop", onChange: handleLoopChange }, viewData === null || viewData === void 0 ? void 0 : viewData.loops.forEach(function (loop, idx) { return (React.createElement(MenuItem$1, { value: idx }, idx)); }))),
+                                React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", value: currentLoop, label: "Loop", onChange: handleLoopChange }, loops === null || loops === void 0 ? void 0 : loops.map(function (loop) { return (React.createElement(MenuItem$1, { value: loop.id }, loop.description)); }))),
                             React.createElement(Slider, { defaultValue: 0, step: 1, min: 0, marks: true, max: cellCount, onChange: handleCelChange, "aria-label": "Default", valueLabelDisplay: "auto" }),
                             React.createElement(ButtonGroup, { sx: { width: '355px' }, variant: "contained", "aria-label": "outlined primary button group" },
                                 React.createElement(Button, { onClick: function () {
