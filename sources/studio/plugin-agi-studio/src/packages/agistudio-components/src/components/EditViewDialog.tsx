@@ -18,6 +18,7 @@ import {
 import { DialogContent, TextField } from '@mui/material';
 import { useState, useEffect } from 'react';
 import useActiveSiteId from '@craftercms/studio-ui/hooks/useActiveSiteId';
+import { get } from '@craftercms/studio-ui/utils/ajax';
 
 export function EditViewDialog(props) {
   const siteId = useActiveSiteId();
@@ -27,10 +28,66 @@ export function EditViewDialog(props) {
   const [currentLoop, setCurrentLoop] = React.useState(0);
   const [currentCell, setCurrentCell] = React.useState(0);
   const [cellCount, setCellCount] = React.useState(0);
+  const [loops, setLoops] = React.useState([]);
+  const [availableViews, setAvailableViews] = React.useState([])
+
+  const getViewFilesForGame = () => {
+    let serviceUrl =
+      'http://localhost:8080/api/1/site/content_store/children.json?url=/static-assets/games/test/agi-studio-let-them-eat-cake/src/view';
+
+    get(serviceUrl).subscribe({
+      next: (response) => {
+        //@ts-ignore
+        var views: { url: string; name: string }[] = [];
+
+        //@ts-ignore
+        (response.response).forEach(function(item) {
+          views.push( {name: item.name, url: item.url} )
+        })
+
+        setAvailableViews(views)
+      },
+      error(e) {
+      }
+    });
+  };
+
+  const getViewFileForGame = (url) => {
+    let serviceUrl = url
+    get(serviceUrl).subscribe({
+      next: (response) => {
+        setViewData(response.response);
+
+        // populate loop descriptions
+        var loops = Array(response.response.numLoops);
+    
+        for (var l = 0; l < response.response.numLoops; l++) {
+          loops[l] = { id: l, description: 'Loop ' + l };
+        }
+    
+        setLoops(loops);
+        renderCell();
+    
+      },
+      error(e) {
+      }
+    });
+  };
+
+
 
   const handleViewDataUpdate = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     let viewDataAsJson = event.target.value;
     setViewData(JSON.parse(viewDataAsJson));
+
+    // populate loop descriptions
+    var loops = Array(viewData.numLoops);
+
+    for (var l = 0; l < viewData.numLoops; l++) {
+      loops[l] = { id: l, description: 'Loop ' + l };
+    }
+
+    setLoops(loops);
     renderCell();
   };
 
@@ -47,11 +104,15 @@ export function EditViewDialog(props) {
       let cel = viewData.loops[currentLoop].cels[currentCell];
       let pixelData = cel.pixelData;
 
+      var celMirrored = (cel.celMirrorTrans & 0x80) == 0x80;
+      var celMirrorLoop = (cel.celMirrorTrans >>> 4) & 7;
+      var celTransparentColor = cel.celMirrorTrans & 0x0f;
+
       // initialize the bitmap with trasparent color
       let bitmap = Array(cel.celHeight)
         //@ts-ignore
         .fill()
-        .map(() => Array(cel.celWidth).fill(3));
+        .map(() => Array(cel.celWidth).fill(celTransparentColor));
 
       let row = 0;
       let col = 0;
@@ -98,6 +159,10 @@ export function EditViewDialog(props) {
 
   const handleSetColor = (color: number) => {};
 
+  function handleViewChange(event: SelectChangeEvent<number>, child: React.ReactNode): void {
+    getViewFileForGame(event.target.value);
+  }
+
   function handleLoopChange(event: SelectChangeEvent<number>, child: React.ReactNode): void {
     setCurrentLoop(Number(event.target.value));
     setCurrentCell(0);
@@ -105,12 +170,14 @@ export function EditViewDialog(props) {
   }
 
   const handleCelChange = (event: Event, newValue: number | number[]) => {
-    let celNo = Number(newValue)
+    let celNo = Number(newValue);
     setCurrentCell(celNo);
     renderCell();
   };
 
+
   useEffect(() => {
+    getViewFilesForGame()
     renderCell();
   }, [cellCount, currentCell, currentLoop]);
 
@@ -123,6 +190,27 @@ export function EditViewDialog(props) {
           <Table>
             <TableRow>
               <TableCell>
+
+                <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Select a View</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="View"
+                      onChange={handleViewChange}
+                    >
+                      {availableViews?.map((view) => (
+                        <MenuItem value={view.url}>{view.name}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+
+
+
+
+
+
                 <p>Loops: {viewData ? viewData.numLoops : 0}</p>
                 <TextField
                   id="outlined-textarea"
@@ -148,10 +236,9 @@ export function EditViewDialog(props) {
                     label="Loop"
                     onChange={handleLoopChange}
                   >
-                    <MenuItem value={0}>0</MenuItem>
-                    <MenuItem value={1}>1</MenuItem>
-                    <MenuItem value={2}>2</MenuItem>
-                    <MenuItem value={3}>3</MenuItem>
+                    {loops?.map((loop) => (
+                      <MenuItem value={loop.id}>{loop.description}</MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
 
