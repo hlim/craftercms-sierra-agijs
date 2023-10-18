@@ -17,7 +17,7 @@ const DataObjectRoundedIcon = craftercms.utils.constants.components.get('@mui/ic
 const AddRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/AddRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/AddRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/AddRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/AddRounded');
 const { createAction } = craftercms.libs.ReduxToolkit;
 const { createCustomDocumentEventListener } = craftercms.utils.dom;
-const { post } = craftercms.utils.ajax;
+const { post, get } = craftercms.utils.ajax;
 const ImageAspectRatioRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/ImageAspectRatioRounded');
 const TheatersRoundedIcon = craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded') && Object.prototype.hasOwnProperty.call(craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded'), 'default') ? craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded')['default'] : craftercms.utils.constants.components.get('@mui/icons-material/TheatersRounded');
 
@@ -2148,13 +2148,45 @@ function EditViewDialog(props) {
     var _d = React.useState(0), currentCell = _d[0], setCurrentCell = _d[1];
     var _e = React.useState(0), cellCount = _e[0], setCellCount = _e[1];
     var _f = React.useState([]), loops = _f[0], setLoops = _f[1];
+    var _g = React.useState([]), availableViews = _g[0], setAvailableViews = _g[1];
+    var getViewFilesForGame = function () {
+        var serviceUrl = 'http://localhost:8080/api/1/site/content_store/children.json?url=/static-assets/games/test/agi-studio-let-them-eat-cake/src/view';
+        get(serviceUrl).subscribe({
+            next: function (response) {
+                //@ts-ignore
+                var views = [](response).forEach(function (item) {
+                    views.push({ name: item.name, url: item.url });
+                });
+                setAvailableViews(views);
+            },
+            error: function (e) {
+            }
+        });
+    };
+    var getViewFileForGame = function (url) {
+        var serviceUrl = url;
+        get(serviceUrl).subscribe({
+            next: function (response) {
+                setViewData(response);
+                // populate loop descriptions
+                var loops = Array(viewData.numLoops);
+                for (var l = 0; l < viewData.numLoops; l++) {
+                    loops[l] = { id: l, description: 'Loop ' + l };
+                }
+                setLoops(loops);
+                renderCell();
+            },
+            error: function (e) {
+            }
+        });
+    };
     var handleViewDataUpdate = function (event) {
         var viewDataAsJson = event.target.value;
         setViewData(JSON.parse(viewDataAsJson));
         // populate loop descriptions
         var loops = Array(viewData.numLoops);
         for (var l = 0; l < viewData.numLoops; l++) {
-            loops[l] = { "id": l, "description": "Loop " + l };
+            loops[l] = { id: l, description: 'Loop ' + l };
         }
         setLoops(loops);
         renderCell();
@@ -2171,7 +2203,7 @@ function EditViewDialog(props) {
             var pixelData = cel_1.pixelData;
             (cel_1.celMirrorTrans & 0x80) == 0x80;
             (cel_1.celMirrorTrans >>> 4) & 7;
-            var celTransparentColor = cel_1.celMirrorTrans & 0x0F;
+            var celTransparentColor = cel_1.celMirrorTrans & 0x0f;
             // initialize the bitmap with trasparent color
             var bitmap_1 = Array(cel_1.celHeight)
                 //@ts-ignore
@@ -2217,6 +2249,9 @@ function EditViewDialog(props) {
         var colorName = colors[colorNo];
         return colorName;
     };
+    function handleViewChange(event, child) {
+        getViewFileForGame(event.target.value);
+    }
     function handleLoopChange(event, child) {
         setCurrentLoop(Number(event.target.value));
         setCurrentCell(0);
@@ -2228,6 +2263,7 @@ function EditViewDialog(props) {
         renderCell();
     };
     useEffect(function () {
+        getViewFilesForGame();
         renderCell();
     }, [cellCount, currentCell, currentLoop]);
     return (React.createElement(React.Fragment, null,
@@ -2237,6 +2273,9 @@ function EditViewDialog(props) {
                 React.createElement(Table, null,
                     React.createElement(TableRow, null,
                         React.createElement(TableCell, null,
+                            React.createElement(FormControl, { fullWidth: true },
+                                React.createElement(InputLabel, { id: "demo-simple-select-label" }, "Select a View"),
+                                React.createElement(Select, { labelId: "demo-simple-select-label", id: "demo-simple-select", label: "View", onChange: handleViewChange }, availableViews === null || availableViews === void 0 ? void 0 : availableViews.map(function (view) { return (React.createElement(MenuItem$1, { value: view.url }, view.name)); }))),
                             React.createElement("p", null,
                                 "Loops: ",
                                 viewData ? viewData.numLoops : 0),
