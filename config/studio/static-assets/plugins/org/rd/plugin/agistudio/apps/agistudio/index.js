@@ -2156,7 +2156,7 @@ function EditViewDialog(props) {
                 //@ts-ignore
                 var views = [];
                 //@ts-ignore
-                (response).forEach(function (item) {
+                (response.response).forEach(function (item) {
                     views.push({ name: item.name, url: item.url });
                 });
                 setAvailableViews(views);
