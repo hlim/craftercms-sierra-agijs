@@ -2171,8 +2171,8 @@ function EditViewDialog(props) {
             next: function (response) {
                 setViewData(response.response);
                 // populate loop descriptions
-                var loops = Array(viewData.numLoops);
-                for (var l = 0; l < viewData.numLoops; l++) {
+                var loops = Array(response.response.numLoops);
+                for (var l = 0; l < response.response.numLoops; l++) {
                     loops[l] = { id: l, description: 'Loop ' + l };
                 }
                 setLoops(loops);
