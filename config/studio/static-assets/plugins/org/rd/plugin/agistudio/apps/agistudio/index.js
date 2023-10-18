@@ -2154,7 +2154,9 @@ function EditViewDialog(props) {
         get(serviceUrl).subscribe({
             next: function (response) {
                 //@ts-ignore
-                var views = [](response).forEach(function (item) {
+                var views = [];
+                //@ts-ignore
+                (response).forEach(function (item) {
                     views.push({ name: item.name, url: item.url });
                 });
                 setAvailableViews(views);
